@@ -37,6 +37,14 @@ func CreateTongs(tongs *models.Tongs) (interface{}, error) {
             tongs.Status = 1
         }
 
+        if tongs.CreatedAt.IsZero() {
+            tongs.CreatedAt = time.Now()
+        }
+
+        if tongs.UpdatedAt.IsZero() {
+            tongs.UpdatedAt = time.Now()
+        }
+
         result, err := collection.InsertOne(ctx, tongs)
         if err != nil {
             return nil, err
@@ -90,6 +98,10 @@ func UpdateTongsByID(id string, updateData *models.Tongs) (interface{}, error) {
 
     if err != nil {
         return nil, err
+    }
+
+    if updateData.UpdatedAt.IsZero() {
+        updateData.UpdatedAt = time.Now()
     }
 
     result, err := collection.UpdateOne(ctx, filter, bson.M{
