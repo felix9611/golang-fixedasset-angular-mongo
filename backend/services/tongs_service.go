@@ -79,6 +79,52 @@ func GetOneTongsRun(id string) (*models.Tongs, error) {
 	return &tongs, nil
 }
 
+func VoidTongs(id string) (interface{}, error) {
+    collection := config.GetCollection("tongs")
+
+     objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID}
+
+	var tongs models.Tongs
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = collection.FindOne(ctx, filter).Decode(&tongs)
+
+    if err != nil {
+        return nil, err
+    }
+    
+    if tongs.Status == 1 {
+        tongs.Status = 0 // Set status to voided
+
+        tongs.UpdatedAt = time.Now()
+
+        result, err := collection.UpdateOne(ctx, filter, bson.M{
+            "$set": bson.M{
+                "status": tongs.Status,
+                "updated_at": tongs.UpdatedAt,
+            },
+        })
+
+        if err != nil {
+            return nil, err
+        }
+        if result.MatchedCount == 0 {
+            return nil, mongo.ErrNoDocuments
+        }
+        return result.ModifiedCount, nil
+    } else {
+        return "Tongs is already voided", nil
+    }
+    
+}
+
 func UpdateTongsByID(id string, updateData *models.Tongs) (interface{}, error) {
 	collection := config.GetCollection("tongs")
 

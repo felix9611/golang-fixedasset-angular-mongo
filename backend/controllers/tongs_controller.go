@@ -60,6 +60,16 @@ func UpdateTongsByID(c *gin.Context) {
 }
 
 
+func VoidTongs(c *gin.Context) {
+	id := c.Param("id")
+	result, err := services.VoidTongs(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to void tongs"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Tong voided successfully", "result": result})
+}
+
 func RegisterTongsRoutes(rg *gin.RouterGroup) {
 	tongs := rg.Group("/tongs")
 	{
@@ -67,6 +77,7 @@ func RegisterTongsRoutes(rg *gin.RouterGroup) {
 		tongs.GET("/one/:id", GetOneTongsRun)
 		tongs.POST("/create", CreateTongs)
 		tongs.POST("/update/:id", UpdateTongsByID) // Uncomment when implemented
+		tongs.DELETE("/void/:id", VoidTongs) // Uncomment when implemented
 		// tongs.DELETE("/delete/:id", DeleteTongsByID) // Uncomment
 		
 	}
