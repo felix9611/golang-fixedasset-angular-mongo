@@ -11,7 +11,7 @@ func main() {
 
 	config.ConnectDatabase()
 
-	api := router.Group("/api")
+	api := router.Group("/")
 	controllers.RegisterTongsRoutes(api)
 
 	router.Run(":6500")

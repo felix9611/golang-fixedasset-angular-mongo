@@ -7,20 +7,11 @@ import (
 //	"time"
 
 	"github.com/gin-gonic/gin"
-//	"go.mongodb.org/mongo-driver/bson"
 )
 
 // var tongsCollection = config.GetCollection("tongs")
 
 var u models.Tongs
-
-func RegisterTongsRoutes(rg *gin.RouterGroup) {
-	tongs := rg.Group("/tongs")
-	{
-		tongs.GET("/get", GetTongs)
-		tongs.POST("/create", CreateTongs)
-	}
-}
 
 func GetTongs(c *gin.Context) {
 	// Placeholder for the actual logic to get a Tong
@@ -32,15 +23,52 @@ func GetTongs(c *gin.Context) {
 
 func CreateTongs(c *gin.Context) {
 	
-	var user models.Tongs
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var tong models.Tongs
+	if err := c.ShouldBindJSON(&tong); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	id, err := services.CreateTongs(&user)
+
+	id, err := services.CreateTongs(&tong)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
+
+func GetOneTongsRun(c *gin.Context) {
+	id := c.Param("id")
+	tongs, err := services.GetOneTongsRun(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get tongs"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": tongs })
+}
+
+func UpdateTongsByID(c *gin.Context) {
+	id := c.Param("id")
+	var tong models.Tongs
+	if err := c.ShouldBindJSON(&tong); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Update Tongs by ID", "id": id, "data": tong})
+
+}
+
+
+func RegisterTongsRoutes(rg *gin.RouterGroup) {
+	tongs := rg.Group("/tongs")
+	{
+		tongs.GET("/get", GetTongs)
+		tongs.GET("/one/:id", GetOneTongsRun)
+		tongs.POST("/create", CreateTongs)
+		tongs.POST("/update/:id", UpdateTongsByID) // Uncomment when implemented
+		// tongs.DELETE("/delete/:id", DeleteTongsByID) // Uncomment
+		
+	}
+}
+
