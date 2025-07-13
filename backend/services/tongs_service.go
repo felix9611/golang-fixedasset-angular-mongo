@@ -7,24 +7,45 @@ import (
 	"time"
     "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
+    "errors"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func Foo() error {
+    return errors.New("some error happened")
+}
+
 func CreateTongs(tongs *models.Tongs) (interface{}, error) {
-	collection := config.GetCollection("tongs")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
-    if tongs.Status == 0 {
-		tongs.Status = 1
-	}
+    filter := bson.M{"status": 1, "name": tongs.Name}
 
-	result, err := collection.InsertOne(ctx, tongs)
-	if err != nil {
-		return nil, err
-	}
-	return result.InsertedID, nil
+    // Check if a Tong with the same name already exists
+    collection := config.GetCollection("tongs")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    count, err := collection.CountDocuments(ctx, filter)
+    if err != nil {
+        return nil, err
+    }
+
+    if count == 0 {
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+
+        if tongs.Status == 0 {
+            tongs.Status = 1
+        }
+
+        result, err := collection.InsertOne(ctx, tongs)
+        if err != nil {
+            return nil, err
+        }
+        return result.InsertedID, nil
+    } else {
+        return "Tong with the same name already exists", nil
+    }
+
 }
 
 func GetOneTongsRun(id string) (*models.Tongs, error) {
