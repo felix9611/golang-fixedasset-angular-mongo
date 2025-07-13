@@ -3,10 +3,12 @@ package controllers
 import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 //	"time"
 
 	"github.com/gin-gonic/gin"
+
 )
 
 // var tongsCollection = config.GetCollection("tongs")
@@ -70,6 +72,21 @@ func VoidTongs(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Tong voided successfully", "result": result})
 }
 
+func ListPageTongs(c *gin.Context) {
+	var tongReq dto.TongsPageDto
+	if err := c.ShouldBindJSON(&tongReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	tongs, err := services.TongsListPage(&tongReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list tongs"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": tongs})
+	
+}
+
 func RegisterTongsRoutes(rg *gin.RouterGroup) {
 	tongs := rg.Group("/tongs")
 	{
@@ -78,6 +95,7 @@ func RegisterTongsRoutes(rg *gin.RouterGroup) {
 		tongs.POST("/create", CreateTongs)
 		tongs.POST("/update/:id", UpdateTongsByID) // Uncomment when implemented
 		tongs.DELETE("/void/:id", VoidTongs) // Uncomment when implemented
+		tongs.POST("/list", ListPageTongs) // Uncomment when implemented
 		// tongs.DELETE("/delete/:id", DeleteTongsByID) // Uncomment
 		
 	}

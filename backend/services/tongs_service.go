@@ -4,11 +4,15 @@ import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/models"
+    "golang-fixedasset-mongo-backend/backend/dto"
 	"time"
     "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
     "errors"
 	"go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+    "github.com/gin-gonic/gin"
+    "log"
 )
 
 func Foo() error {
@@ -162,4 +166,57 @@ func UpdateTongsByID(id string, updateData *models.Tongs) (interface{}, error) {
         return nil, mongo.ErrNoDocuments
     }
     return result.ModifiedCount, nil
+}
+
+func TongsListPage(pageDto *dto.TongsPageDto) (interface{}, error) {
+    log.Println("TongsListPage called with pageDto:", pageDto)
+    if pageDto.Page < 1 {
+        pageDto.Page = 1
+    }
+    if pageDto.Limit < 1 {
+        pageDto.Limit = 10
+    }
+
+    collection := config.GetCollection("tongs")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    filter := bson.M{"status": 1}
+    if pageDto.Name != "" {
+        filter["name"] = bson.M{"$regex": pageDto.Name, "$options": "i"}
+    }
+
+    count, errCount := collection.CountDocuments(ctx, filter)
+    if errCount != nil {
+        return nil, errCount
+    }
+
+    skip := int64((pageDto.Page - 1) * pageDto.Limit)
+    limit := int64(pageDto.Limit)
+
+    findOptions := options.Find()
+    findOptions.SetSkip(skip)
+    findOptions.SetLimit(limit)
+    findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+    cursor, err := collection.Find(ctx, filter, findOptions)
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(ctx)
+
+    var results []models.Tongs
+    for cursor.Next(ctx) {
+        var t models.Tongs
+        if err := cursor.Decode(&t); err != nil {
+            return nil, err
+        }
+        results = append(results, t)
+    }
+
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+    return gin.H{"lists": results, "total": count}, nil
 }
