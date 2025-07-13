@@ -218,5 +218,5 @@ func TongsListPage(pageDto *dto.TongsPageDto) (interface{}, error) {
         return nil, err
     }
 
-    return gin.H{"lists": results, "total": count}, nil
+    return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
 }
