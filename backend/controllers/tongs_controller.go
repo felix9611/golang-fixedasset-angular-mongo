@@ -1,0 +1,46 @@
+package controllers
+
+import (
+	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/services"
+	"net/http"
+//	"time"
+
+	"github.com/gin-gonic/gin"
+//	"go.mongodb.org/mongo-driver/bson"
+)
+
+// var tongsCollection = config.GetCollection("tongs")
+
+var u models.Tongs
+
+func RegisterTongsRoutes(rg *gin.RouterGroup) {
+	tongs := rg.Group("/tongs")
+	{
+		tongs.GET("/get", GetTongs)
+		tongs.POST("/create", CreateTongs)
+	}
+}
+
+func GetTongs(c *gin.Context) {
+	// Placeholder for the actual logic to get a Tong
+	// This should interact with the database to retrieve the Tong data
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Hey Tongs",
+	})
+}
+
+func CreateTongs(c *gin.Context) {
+	
+	var user models.Tongs
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	id, err := services.CreateTongs(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"id": id})
+}
