@@ -1,10 +1,5 @@
 package models
 
-import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
-)
-
 type Department struct {
 	Base
 	DeptCode string             `bson:"deptCode" json:"deptCode"`
