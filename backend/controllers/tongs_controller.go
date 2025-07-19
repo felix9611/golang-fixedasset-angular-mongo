@@ -52,13 +52,13 @@ func GetOneTongsRun(c *gin.Context) {
 func UpdateTongsByID(c *gin.Context) {
 	id := c.Param("id")
 	var tong models.Tongs
-	if err := c.ShouldBindJSON(&tong); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	result, err := services.UpdateTongsByID(id, &tong)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update tongs"})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Update Tongs by ID", "id": id, "data": tong})
-
+	c.JSON(http.StatusOK, gin.H{"message": "Update Tongs by ID", "id": id, "data": result})
 }
 
 

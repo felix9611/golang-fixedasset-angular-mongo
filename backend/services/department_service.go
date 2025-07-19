@@ -4,14 +4,20 @@ import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"time"
     "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/gin-gonic/gin"
     // "errors"
-    //"log"
+    "log"
 )
 
 func CreateDepartment(department *models.Department) (interface{}, error) {
+	log.Printf("Insert Department: %+v\n", department)
+	
 	filter := bson.M{"status": 1, "deptCode": department.DeptCode, "deptName": department.DeptName}
 
 	// Check if a Department with the same name already exists
@@ -72,3 +78,137 @@ func GetOneDepartment(id string) (*models.Department, error) {
 
 	return &department, nil
 }
+
+func VoidDepartment(id string) (interface{}, error) {
+	collection := config.GetCollection("departments")
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	
+	filter := bson.M{"_id": objectID}
+
+	var dept models.Department
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = collection.FindOne(ctx, filter).Decode(&dept)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if dept.Status == 1 {
+
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+            "$set": bson.M{
+                "status": 0,
+                "updated_at": time.Now(),
+            },
+        })
+
+        if err != nil {
+            return nil, err
+        }
+        return result.ModifiedCount, nil
+	} else {
+		return "Department is already voided", nil
+	}
+}
+
+func UpdateDeptById(id string, updateData *models.Department) (interface{}, error) {
+    collection := config.GetCollection("departments")
+
+    objectID, err := primitive.ObjectIDFromHex(id)
+    if err != nil {
+        return nil, err
+    }
+
+    filter := bson.M{"_id": objectID}
+
+    updateFields := bson.M{}
+    if updateData.DeptCode != "" {
+        updateFields["deptCode"] = updateData.DeptCode
+    }
+    if updateData.DeptName != "" {
+        updateFields["deptName"] = updateData.DeptName
+    }
+    if updateData.Remark != "" {
+        updateFields["remark"] = updateData.Remark
+    }
+
+    updateFields["updated_at"] = time.Now()
+
+    result, err := collection.UpdateOne(context.TODO(), filter, bson.M{"$set": updateFields})
+    if err != nil {
+        return nil, err
+    }
+
+    return result.ModifiedCount, nil
+}
+
+
+func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
+
+	if pageDto.Page < 1 {
+		pageDto.Page = 1
+	}
+	if pageDto.Limit < 1 {
+	pageDto.Limit = 10
+	}
+
+
+	collection := config.GetCollection("departments")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+	filter := bson.M{"status": 1}
+	if pageDto.Name != "" {
+		filter = bson.M{
+			"status": 1,
+			"$or": []bson.M{
+				{"dept_name": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+				{"dept_code": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			},
+		}
+	}
+
+	count, errCount := collection.CountDocuments(ctx, filter)
+	if errCount != nil {
+		return nil, errCount
+	}
+
+	skip := int64((pageDto.Page - 1) * pageDto.Limit)
+    limit := int64(pageDto.Limit)
+
+	findOptions := options.Find()
+    findOptions.SetSkip(skip)
+    findOptions.SetLimit(limit)
+    findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var results []models.Department
+	for cursor.Next(ctx) {
+		var department models.Department
+		if err := cursor.Decode(&department); err != nil {
+			return nil, err
+		}
+		results = append(results, department)
+	}
+
+	if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+	return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+
+}
+

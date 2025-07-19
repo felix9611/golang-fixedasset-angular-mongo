@@ -1,8 +1,16 @@
 package models
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
+
 type Department struct {
-	Base
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	DeptCode string             `bson:"deptCode" json:"deptCode"`
 	DeptName string             `bson:"deptName" json:"deptName"`
 	Remark   string             `bson:"remark" json:"remark"`
+	Status    int                `bson:"status" json:"status"`
+	CreatedAt time.Time          `bson:"createdAt,omitempty"`
+	UpdatedAt time.Time          `bson:"updatedAt,omitempty"`
 }

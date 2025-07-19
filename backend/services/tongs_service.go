@@ -105,14 +105,11 @@ func VoidTongs(id string) (interface{}, error) {
     }
     
     if tongs.Status == 1 {
-        tongs.Status = 0 // Set status to voided
-
-        tongs.UpdatedAt = time.Now()
 
         result, err := collection.UpdateOne(ctx, filter, bson.M{
             "$set": bson.M{
-                "status": tongs.Status,
-                "updated_at": tongs.UpdatedAt,
+                "status": 0,
+                "updated_at": time.Now(),
             },
         })
 
@@ -132,41 +129,45 @@ func VoidTongs(id string) (interface{}, error) {
 func UpdateTongsByID(id string, updateData *models.Tongs) (interface{}, error) {
 	collection := config.GetCollection("tongs")
 
-    objectID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        return nil, err
-    }
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
 
-    filter := bson.M{"_id": objectID}
+	filter := bson.M{"_id": objectID}
 
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-    var checkTongs models.Tongs
+	var checkTongs models.Tongs
 
-    err = collection.FindOne(ctx, filter).Decode(&checkTongs)
+	err = collection.FindOne(ctx, filter).Decode(&checkTongs)
+	if err != nil {
+		return nil, err
+	}
 
-    if err != nil {
-        return nil, err
-    }
+	if checkTongs.Status == 1 {
+		if updateData.UpdatedAt.IsZero() {
+			updateData.UpdatedAt = time.Now()
+		}
 
-    if updateData.UpdatedAt.IsZero() {
-        updateData.UpdatedAt = time.Now()
-    }
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": updateData,
+		})
+		if err != nil {
+			return nil, err
+		}
 
-    result, err := collection.UpdateOne(ctx, filter, bson.M{
-        "$set": updateData,
-    })
+		if result.MatchedCount == 0 {
+			return nil, mongo.ErrNoDocuments
+		}
 
-    if err != nil {
-        return nil, err
-    }
-
-    if result.MatchedCount == 0 {
-        return nil, mongo.ErrNoDocuments
-    }
-    return result.ModifiedCount, nil
+		return result.ModifiedCount, nil
+	} else {
+		return "Tongs is already voided", nil
+	}
 }
+
 
 func TongsListPage(pageDto *dto.TongsPageDto) (interface{}, error) {
     log.Println("TongsListPage called with pageDto:", pageDto)
