@@ -6,7 +6,7 @@ import (
 )
 
 type Tongs struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	ID        primitive.ObjectID `bson:"_id,omitempty"  json:"id"`
 	Name      string             `bson:"name" json:"name"`
 	Status    int                `bson:"status" json:"status"`
 	CreatedAt time.Time          `bson:"createdAt,omitempty" json:"createdAt"`
