@@ -3,7 +3,7 @@ package controllers
 import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	// "golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 //	"time"
 
@@ -59,15 +59,38 @@ func UpdateDepartment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Update Tongs by ID", "id": id, "data": result})
 }
 
+func VoidDepartmentById(c *gin.Context) {
+	id := c.Param("id")
+	result, err := services.VoidDepartmentById(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to void department"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Department voided successfully", "data": result})
+}
+
+func ListPageDepartment(c *gin.Context) {
+	var deptPageDto dto.DepartmentPageDto
+	if err := c.ShouldBindJSON(&deptPageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	departments, err := services.DepartmentList(&deptPageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list departments"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": departments})
+
+}
+
 func RegisterDepartmentRoutes(rg *gin.RouterGroup) {
 	departments := rg.Group("/departments")
 	{
 		departments.GET("/one/:id", GetOneDepartmentById)
 		departments.POST("/create", CreateDepartment)
 		departments.POST("/update/:id", UpdateDepartment) // Uncomment when implemented
-	//	departments.DELETE("/void/:id", VoidDepartment) // Uncomment when implemented
-	//	departments.POST("/list", ListPageDepartment) // Uncomment when implemented
-		// departments.DELETE("/delete/:id", DeleteDepartmentByID) // Uncomment
-
+		departments.DELETE("/void/:id", VoidDepartmentById) // Uncomment when implemented
+		departments.POST("/list", ListPageDepartment) // Uncomment when implemented
 	}
 }

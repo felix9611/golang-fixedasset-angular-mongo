@@ -50,7 +50,7 @@ func CreateDepartment(department *models.Department) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		return result.InsertedID, nil
+		return result, nil
 	} else {
 		return "Department with the same name already exists", nil
 	}
@@ -64,7 +64,7 @@ func GetOneDepartment(id string) (*models.Department, error) {
 		return nil, err
 	}
 
-	filter := bson.M{"_id": objectID}
+	filter := bson.M{ "_id": objectID, "status": 1 }
 
 	var department models.Department
 
@@ -79,7 +79,7 @@ func GetOneDepartment(id string) (*models.Department, error) {
 	return &department, nil
 }
 
-func VoidDepartment(id string) (interface{}, error) {
+func VoidDepartmentById(id string) (interface{}, error) {
 	collection := config.GetCollection("departments")
 
 	objectID, err := primitive.ObjectIDFromHex(id)

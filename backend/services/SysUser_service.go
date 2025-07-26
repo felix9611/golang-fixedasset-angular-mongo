@@ -1,0 +1,97 @@
+package services
+
+import (
+	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/config"
+	"golang-fixedasset-mongo-backend/backend/tools"
+	"time"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
+	"github.com/gin-gonic/gin"
+)
+
+func CreateSysUser(user *models.SysUser) (interface{}, error) {
+	log.Printf("Insert SysUser: %+v\n", user)
+
+	filter := bson.M{"status": 1, "username": user.Username }
+
+	collection := config.GetCollection("sys_users")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	count, err := collection.CountDocuments(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if user.Status == 0 {
+			user.Status = 1
+		}
+
+		if user.CreatedAt.IsZero() {
+			user.CreatedAt = time.Now()
+		}
+
+		if user.UpdatedAt.IsZero() {
+			user.UpdatedAt = time.Now()
+		}
+
+		if user.Password == "" {
+			user.Password = tools.HashPassword("888888", tools.Salt)
+		}
+
+		result, err := collection.InsertOne(ctx, user)
+		if err != nil {
+			return nil, err
+		}
+
+		return result, nil
+	} else {
+		return "User with the same username already exists", nil
+	}
+}
+
+func GetOneSysUserById(id string) (*models.SysUser, error) {
+	collection := config.GetCollection("sys_users")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{ "_id": objectID, "status": 1 }
+	var user models.SysUser
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func GetUserByUsername(username string) (*models.SysUser, error) {
+	collection := config.GetCollection("sys_users")
+	filter := bson.M{"username": username, "status": 1}
+
+	var user models.SysUser
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
