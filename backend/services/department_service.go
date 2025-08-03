@@ -153,7 +153,7 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 			return nil, mongo.ErrNoDocuments
 		}
 
-		return result.ModifiedCount, nil
+		return result, nil
 	} else {
 		return "Department is already voided", nil
 	}
