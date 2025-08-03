@@ -14,6 +14,7 @@ func main() {
 	api := router.Group("/")
 	controllers.RegisterTongsRoutes(api)
 	controllers.RegisterDepartmentRoutes(api)
+	controllers.RegisterSysUserRoutes(api)
 
 	router.Run(":6500")
 }

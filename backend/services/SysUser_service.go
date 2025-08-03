@@ -62,6 +62,76 @@ func CreateSysUser(user *models.SysUser) (interface{}, error) {
 	}
 }
 
+func UpdateSysUserByID(id string, updateData *models.SysUser) (interface{}, error) {
+	collection := config.GetCollection("sys_users")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID, "status": 1}
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var checkSysUser models.SysUser
+	err = collection.FindOne(ctx, filter).Decode(&checkSysUser)
+	if err != nil {
+		return nil, err
+	}
+
+	if checkSysUser.Status == 1 {
+
+		if updateData.UpdatedAt.IsZero() {
+			updateData.UpdatedAt = time.Now()
+		}
+
+		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	} else {
+		return "User not found or inactive", nil
+	}
+}
+
+func InactiveUserByID(id string) (interface{}, error) {
+	collection := config.GetCollection("sys_users")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID, "status": 1}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.SysUser
+
+	err = collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Status == 1 {
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": bson.M{
+				"status": 0,
+				"updated_at": time.Now(),
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	} else {
+		return "User is already inactive", nil
+	}
+}
+
 func GetOneSysUserById(id string) (*models.SysUser, error) {
 	collection := config.GetCollection("sys_users")
 	objectID, err := primitive.ObjectIDFromHex(id)
