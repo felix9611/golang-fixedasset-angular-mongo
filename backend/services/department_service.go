@@ -128,25 +128,35 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 
     filter := bson.M{"_id": objectID}
 
-    updateFields := bson.M{}
-    if updateData.DeptCode != "" {
-        updateFields["deptCode"] = updateData.DeptCode
-    }
-    if updateData.DeptName != "" {
-        updateFields["deptName"] = updateData.DeptName
-    }
-    if updateData.Remark != "" {
-        updateFields["remark"] = updateData.Remark
-    }
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-    updateFields["updated_at"] = time.Now()
+	var checkDept models.Department
+	err = collection.FindOne(ctx, filter).Decode(&checkDept)
+	if err != nil {
+		return nil, err
+	}
 
-    result, err := collection.UpdateOne(context.TODO(), filter, bson.M{"$set": updateFields})
-    if err != nil {
-        return nil, err
-    }
+	if checkDept.Status == 1 {
+		if updateData.UpdatedAt.IsZero() {
+			updateData.UpdatedAt = time.Now()
+		}
 
-    return result.ModifiedCount, nil
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": updateData,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if result.MatchedCount == 0 {
+			return nil, mongo.ErrNoDocuments
+		}
+
+		return result.ModifiedCount, nil
+	} else {
+		return "Department is already voided", nil
+	}
 }
 
 
