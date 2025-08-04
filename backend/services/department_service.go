@@ -149,10 +149,6 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 			return nil, err
 		}
 
-		if result.MatchedCount == 0 {
-			return nil, mongo.ErrNoDocuments
-		}
-
 		return result, nil
 	} else {
 		return "Department is already voided", nil

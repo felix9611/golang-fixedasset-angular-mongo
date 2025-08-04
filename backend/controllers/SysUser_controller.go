@@ -11,7 +11,6 @@ import (
 
 )
 
-var u models.SysUsers
 
 func CreateSysUser(c *gin.Context) {
 	var user models.SysUsers
@@ -47,7 +46,7 @@ func UpdateSysUserByID(c *gin.Context) {
 
 func GetSysUsersById(c *gin.Context) {
 	id := c.Param("id")
-	user, err := services.GetOneSysUser(id)
+	user, err := services.GetOneSysUserById(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
 		return
@@ -57,7 +56,7 @@ func GetSysUsersById(c *gin.Context) {
 
 func InactiveUserByID(c *gin.Context) {
 	id := c.Param("id")
-	result, err := services.InactiveSysUserByID(id)
+	result, err := services.InactiveUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to inactive user"})
 		return

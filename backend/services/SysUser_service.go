@@ -7,14 +7,11 @@ import (
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
-	"github.com/gin-gonic/gin"
 )
 
-func CreateSysUser(user *models.SysUser) (interface{}, error) {
+func CreateSysUser(user *models.SysUsers) (interface{}, error) {
 	log.Printf("Insert SysUser: %+v\n", user)
 
 	filter := bson.M{"status": 1, "username": user.Username }
@@ -62,7 +59,7 @@ func CreateSysUser(user *models.SysUser) (interface{}, error) {
 	}
 }
 
-func UpdateSysUserByID(id string, updateData *models.SysUser) (interface{}, error) {
+func UpdateSysUserByID(id string, updateData *models.SysUsers) (interface{}, error) {
 	collection := config.GetCollection("sys_users")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -74,7 +71,7 @@ func UpdateSysUserByID(id string, updateData *models.SysUser) (interface{}, erro
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var checkSysUser models.SysUser
+	var checkSysUser models.SysUsers
 	err = collection.FindOne(ctx, filter).Decode(&checkSysUser)
 	if err != nil {
 		return nil, err
@@ -108,7 +105,7 @@ func InactiveUserByID(id string) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var user models.SysUser
+	var user models.SysUsers
 
 	err = collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
@@ -132,7 +129,7 @@ func InactiveUserByID(id string) (interface{}, error) {
 	}
 }
 
-func GetOneSysUserById(id string) (*models.SysUser, error) {
+func GetOneSysUserById(id string) (*models.SysUsers, error) {
 	collection := config.GetCollection("sys_users")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -140,7 +137,7 @@ func GetOneSysUserById(id string) (*models.SysUser, error) {
 	}
 
 	filter := bson.M{ "_id": objectID, "status": 1 }
-	var user models.SysUser
+	var user models.SysUsers
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -151,11 +148,11 @@ func GetOneSysUserById(id string) (*models.SysUser, error) {
 	return &user, nil
 }
 
-func GetUserByUsername(username string) (*models.SysUser, error) {
+func GetUserByUsername(username string) (*models.SysUsers, error) {
 	collection := config.GetCollection("sys_users")
 	filter := bson.M{"username": username, "status": 1}
 
-	var user models.SysUser
+	var user models.SysUsers
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -164,4 +161,39 @@ func GetUserByUsername(username string) (*models.SysUser, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func UpdateUserPassword(id string, newPassword string) (interface{}, error) {
+	collection := config.GetCollection("sys_users")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID, "status": 1}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.SysUsers
+	err = collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Status == 1 {
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": bson.M{
+				"password": tools.HashPassword(newPassword, tools.Salt),
+				"updated_at": time.Now(),
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+		return result.ModifiedCount, nil
+	} else {
+		return "User not found or inactive", nil
+	}
 }
