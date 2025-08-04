@@ -4,12 +4,21 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"time"		
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 var (
 	identityKey = "username"
 	port        string
 )
+
+func HandlerMiddleWare(authMiddleware *jwt.GinJWTMiddleware) gin.HandlerFunc {
+	// 確保中介軟體已初始化
+	if err := authMiddleware.MiddlewareInit(); err != nil {
+		log.Fatal("authMiddleware.MiddlewareInit() Error:" + err.Error())
+	}
+	return authMiddleware.MiddlewareFunc()
+}
 
 func InitAuthParams() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{

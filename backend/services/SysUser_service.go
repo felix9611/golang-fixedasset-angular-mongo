@@ -129,7 +129,7 @@ func InactiveUserByID(id string) (interface{}, error) {
 	}
 }
 
-func GetOneSysUserById(id string) (*models.SysUsers, error) {
+func GetOneSysUserById(id string) (interface{}, error) {
 	collection := config.GetCollection("sys_users")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -147,7 +147,7 @@ func GetOneSysUserById(id string) (*models.SysUsers, error) {
 	}
 	
 	if user.Status == 0 {
-		return nil, errors.New("User is inactive")
+		return "User is inactive", nil
 	} else {
 		return &user, nil
 	}

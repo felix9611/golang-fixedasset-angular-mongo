@@ -3,12 +3,18 @@ package services
 import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/config"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"time"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/gin-gonic/gin"
 )
 
 
 
-func CreateSysRole(role *models.SysRole) (interface{}, error) {
+func CreateSysRole(role *models.SysRoles) (interface{}, error) {
 	collection := config.GetCollection("sys_roles")
 
 	filter := bson.M{"status": 1, "name": role.Name}
@@ -38,7 +44,7 @@ func CreateSysRole(role *models.SysRole) (interface{}, error) {
 			role.UpdatedAt = time.Now()
 		}
 
-		result, err := collection.InsertOne(ctx, user)
+		result, err := collection.InsertOne(ctx, role)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +60,7 @@ func GetAllRoles() (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var roles []*models.SysRole	
+	var roles []*models.SysRoles
 
 	cursor, err := collection.Find(ctx, bson.M{"status": 1})
 	if err != nil {
@@ -62,7 +68,7 @@ func GetAllRoles() (interface{}, error) {
 	}
 
 	for cursor.Next(ctx) {
-		var role models.SysRole
+		var role models.SysRoles
 		err := cursor.Decode(&role)
 		if err != nil {
 			return nil, err
@@ -74,7 +80,7 @@ func GetAllRoles() (interface{}, error) {
 	return roles, nil
 }
 
-func GetOneSysRoleById(id string) (*models.SysUsers, error) {
+func GetOneSysRoleById(id string) (interface{}, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -85,20 +91,20 @@ func GetOneSysRoleById(id string) (*models.SysUsers, error) {
 		return nil, err
 	}
 	filter := bson.M{"_id": objectID, "status": 1}
-	var role models.SysRole
+	var role models.SysRoles
 	err = collection.FindOne(ctx, filter).Decode(&role)
 	if err != nil {
 		return nil, err
 	}
 
 	if role.Status == 0 {
-		return nil, errors.New("Role is inactive")
+		return "Role is inactive", nil
 	} else {
 		return &role, nil
 	}
 }
 
-func UpdateRoleById(id string, updateData *models.SysRole) (interface{}, error) {
+func UpdateRoleById(id string, updateData *models.SysRoles) (interface{}, error) {
 	collection := config.GetCollection("sys_roles")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -109,13 +115,13 @@ func UpdateRoleById(id string, updateData *models.SysRole) (interface{}, error) 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var checkSysRole models.SysRole
+	var checkSysRole models.SysRoles
 	err = collection.FindOne(ctx, filter).Decode(&checkSysRole)
 	if err != nil {
 		return nil, err
 	}
 
-	if checkDept.Status == 1 {
+	if checkSysRole.Status == 1 {
 
 		updateData.UpdatedAt = time.Now()
 		update := bson.M{"$set": updateData}
@@ -141,7 +147,7 @@ func VoidRoleById(id string) (interface{}, error) {
 
 	filter := bson.M{"_id": objectID}
 
-	var role models.SysRole
+	var role models.SysRoles
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -170,7 +176,7 @@ func VoidRoleById(id string) (interface{}, error) {
 	}
 }
 
-func RolesList(pageDto *dto.RolePageDto) (interface{}, error) {
+func RolesList(pageDto *dto.RolesPageDto) (interface{}, error) {
 
 	if pageDto.Page < 1 {
 		pageDto.Page = 1
@@ -208,9 +214,9 @@ func RolesList(pageDto *dto.RolePageDto) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	var roles []models.SysRole
+	var roles []models.SysRoles
 	for cursor.Next(ctx) {
-		var role models.SysRole
+		var role models.SysRoles
 		if err := cursor.Decode(&role); err != nil {
 			return nil, err
 		}

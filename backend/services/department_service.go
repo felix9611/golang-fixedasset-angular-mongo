@@ -82,7 +82,7 @@ func GetAllDepartments() ([]*models.Department, error) {
 	return departments, nil
 }
 
-func GetOneDepartment(id string) (*models.Department, error) {
+func GetOneDepartment(id string) (interface{}, error) {
 	collection := config.GetCollection("departments")
 
 	objectID, err := primitive.ObjectIDFromHex(id)
@@ -103,7 +103,7 @@ func GetOneDepartment(id string) (*models.Department, error) {
 	}
 
 	if department.Status == 0 {
-		return nil, errors.New("Department is inactive")
+		return "Department is inactive", nil
 	} else {
 		return &department, nil
 	}

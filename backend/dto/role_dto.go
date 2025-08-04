@@ -1,6 +1,6 @@
 package dto
 
-type DepartmentPageDto struct {
+type RolesPageDto struct {
 	Name  string `json:"name"`
 	Code  string `json:"code"`
 	Page  int64  `json:"page"`

@@ -6,11 +6,10 @@ import (
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/tools"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"log"
 )
 
 type AuthUser struct {
-	Username string
+	Username string `json:"username"`
 }
 
 func AuthPayloadFunc() func(data interface{}) jwt.MapClaims {
@@ -27,8 +26,12 @@ func AuthPayloadFunc() func(data interface{}) jwt.MapClaims {
 func AuthIdentityHandler() func(c *gin.Context) interface{} {
 	return func(c *gin.Context) interface{} {
 		claims := jwt.ExtractClaims(c)
+		username, ok := claims[identityKey].(string)
+		if !ok {
+			return nil // 導致 Unauthorized
+		}
 		return &AuthUser{
-			Username: claims["username"].(string),
+			Username: username,
 		}
 	}
 }
@@ -75,7 +78,7 @@ func LoginAuthenticator() func(c *gin.Context) (interface{}, error) {
 func Authorizator() func(data interface{}, c *gin.Context) bool {
 	return func(data interface{}, c *gin.Context) bool {
 		v := data.(*AuthUser)
-		user, err := services.GetUserByUsername(v.Username)
+		user, err := services.GetUserByUsername(v.Username) // 🔁
 		if err != nil || user.Status != 1 {
 			return false
 		}

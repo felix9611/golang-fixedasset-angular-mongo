@@ -3,12 +3,13 @@ package controllers
 import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
-func CreateSysUser(c *gin.Context) {
-	var role models.SysRole
+func CreateSysRoleApi(c *gin.Context) {
+	var role models.SysRoles
 	if err := c.ShouldBindJSON(&role); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -33,7 +34,7 @@ func GetRoleById(c *gin.Context) {
 }
 
 func GetAllRoles(c *gin.Context) {
-	roles, err := services.GetAllSysRoles()
+	roles, err := services.GetAllRoles()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get roles"})
 		return
@@ -43,13 +44,13 @@ func GetAllRoles(c *gin.Context) {
 
 func UpdateSysRole(c *gin.Context) {
 	id := c.Param("id")
-	var role models.SysRole
+	var role models.SysRoles
 	if err := c.ShouldBindJSON(&role); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := services.UpdateSysRoleById(id, &role)
+	result, err := services.UpdateRoleById(id, &role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update role"})
 		return
@@ -59,7 +60,7 @@ func UpdateSysRole(c *gin.Context) {
 
 func InactiveSysRoleByID(c *gin.Context) {
 	id := c.Param("id")
-	result, err := services.InactiveSysRoleByID(id)
+	result, err := services.VoidRoleById(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to deactivate role"})
 		return
@@ -68,7 +69,7 @@ func InactiveSysRoleByID(c *gin.Context) {
 }
 
 func ListPageRoles(c *gin.Context) {
-	var rolePageDto dto.RolePageDto
+	var rolePageDto dto.RolesPageDto
 	if err := c.ShouldBindJSON(&rolePageDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -84,7 +85,7 @@ func ListPageRoles(c *gin.Context) {
 func RegisterSysRoleRoutes(rg *gin.RouterGroup) {
 	roleGroup := rg.Group("/sys-role")
 	{
-		roleGroup.POST("/create", CreateSysRole)
+		roleGroup.POST("/create", CreateSysRoleApi)
 		roleGroup.GET("/one/:id", GetRoleById)
 		roleGroup.POST("/update/:id", UpdateSysRole)
 		roleGroup.DELETE("/void/:id", InactiveSysRoleByID)
