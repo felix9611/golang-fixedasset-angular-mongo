@@ -6,9 +6,11 @@ import (
 	"time"
 )
 
-collection := config.GetCollection("sys_roles")
+
 
 func CreateSysRole(role *models.SysRole) (interface{}, error) {
+	collection := config.GetCollection("sys_roles")
+
 	filter := bson.M{"status": 1, "name": role.Name}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -45,6 +47,31 @@ func CreateSysRole(role *models.SysRole) (interface{}, error) {
 	} else {
 		return "Role with the same name already exists", nil
 	}
+}
+
+func GetAllRoles() (interface{}, error) {
+	collection := config.GetCollection("sys_roles")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var roles []*models.SysRole	
+
+	cursor, err := collection.Find(ctx, bson.M{"status": 1})
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(ctx) {
+		var role models.SysRole
+		err := cursor.Decode(&role)
+		if err != nil {
+			return nil, err
+		}
+		roles = append(roles, &role)
+
+	}
+
+	return roles, nil
 }
 
 func GetOneSysRoleById(id string) (*models.SysUsers, error) {

@@ -32,6 +32,15 @@ func GetRoleById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": role})
 }
 
+func GetAllRoles(c *gin.Context) {
+	roles, err := services.GetAllSysRoles()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get roles"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": roles})
+}
+
 func UpdateSysRole(c *gin.Context) {
 	id := c.Param("id")
 	var role models.SysRole
@@ -79,6 +88,7 @@ func RegisterSysRoleRoutes(rg *gin.RouterGroup) {
 		roleGroup.GET("/one/:id", GetRoleById)
 		roleGroup.POST("/update/:id", UpdateSysRole)
 		roleGroup.DELETE("/void/:id", InactiveSysRoleByID)
-		roleGroup.GET("/list", ListPageRoles)
+		roleGroup.POST("/list", ListPageRoles)
+		roleGroup.GET("/all", GetAllRoles)
 	}
 }
