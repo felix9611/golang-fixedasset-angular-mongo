@@ -56,6 +56,32 @@ func CreateDepartment(department *models.Department) (interface{}, error) {
 	}
 }
 
+func GetAllDepartments() ([]*models.Department, error) {
+	collection := config.GetCollection("departments")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer cancel()
+
+	var departments []*models.Department
+
+	cursor, err := collection.Find(ctx, bson.M{"status": 1})
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(ctx) {
+		var department models.Department
+		err := cursor.Decode(&department)
+		if err != nil {
+			return nil, err
+		}
+		departments = append(departments, &department)
+	}
+
+	return departments, nil
+}
+
 func GetOneDepartment(id string) (*models.Department, error) {
 	collection := config.GetCollection("departments")
 

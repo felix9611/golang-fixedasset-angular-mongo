@@ -26,6 +26,15 @@ func GetOneDepartmentById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": department })
 }
 
+func GetAllDepartments(c *gin.Context) {
+	departments, err := services.GetAllDepartments()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get departments"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": departments})
+}
+
 func CreateDepartment(c *gin.Context) {
 	var department models.Department
 	if err := c.ShouldBindJSON(&department); err != nil {
@@ -89,8 +98,9 @@ func RegisterDepartmentRoutes(rg *gin.RouterGroup) {
 	{
 		departments.GET("/one/:id", GetOneDepartmentById)
 		departments.POST("/create", CreateDepartment)
-		departments.POST("/update/:id", UpdateDepartment) // Uncomment when implemented
-		departments.DELETE("/void/:id", VoidDepartmentById) // Uncomment when implemented
-		departments.POST("/list", ListPageDepartment) // Uncomment when implemented
+		departments.POST("/update/:id", UpdateDepartment)
+		departments.DELETE("/void/:id", VoidDepartmentById)
+		departments.POST("/list", ListPageDepartment)
+		departments.GET("/all", GetAllDepartments)
 	}
 }
