@@ -145,7 +145,12 @@ func GetOneSysUserById(id string) (*models.SysUsers, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	
+	if user.Status == 0 {
+		return nil, errors.New("User is inactive")
+	} else {
+		return &user, nil
+	}
 }
 
 func GetUserByUsername(username string) (*models.SysUsers, error) {

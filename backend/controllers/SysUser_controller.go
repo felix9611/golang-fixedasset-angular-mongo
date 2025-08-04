@@ -70,8 +70,8 @@ func RegisterSysUserRoutes(rg *gin.RouterGroup) {
 	userGroup := rg.Group("/sys-users")
 	{
 		userGroup.POST("/create", CreateSysUser)
-		userGroup.POST("/:id", UpdateSysUserByID)
-		userGroup.GET("/:id", GetSysUsersById)
+		userGroup.POST("/update/:id", UpdateSysUserByID)
+		userGroup.GET("/one/:id", GetSysUsersById)
 		userGroup.DELETE("/:id", InactiveUserByID)
 	}
 }

@@ -76,7 +76,11 @@ func GetOneDepartment(id string) (*models.Department, error) {
 		return nil, err
 	}
 
-	return &department, nil
+	if department.Status == 0 {
+		return nil, errors.New("Department is inactive")
+	} else {
+		return &department, nil
+	}
 }
 
 func VoidDepartmentById(id string) (interface{}, error) {
