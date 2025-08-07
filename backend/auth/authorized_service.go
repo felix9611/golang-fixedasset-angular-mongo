@@ -66,8 +66,10 @@ func LoginAuthenticator() func(c *gin.Context) (interface{}, error) {
 		}
 
 		if user.Password != hashedPassword {
+			services.AddLoginRecord(user.Username, loginVals.IpAddress, "failed")
 			return nil, jwt.ErrFailedAuthentication
 		} else {
+			services.AddLoginRecord(user.Username, loginVals.IpAddress, "success")
 			return &AuthUser{
 				Username: user.Username,
 			}, nil
