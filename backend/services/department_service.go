@@ -168,9 +168,7 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 	}
 
 	if checkDept.Status == 1 {
-		if updateData.UpdatedAt.IsZero() {
-			updateData.UpdatedAt = time.Now()
-		}
+		updateData.UpdatedAt = time.Now()
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
 			"$set": updateData,

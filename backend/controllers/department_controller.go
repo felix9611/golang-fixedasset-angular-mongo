@@ -94,7 +94,7 @@ func ListPageDepartment(c *gin.Context) {
 }
 
 func RegisterDepartmentRoutes(rg *gin.RouterGroup) {
-	departments := rg.Group("/departments")
+	departments := rg.Group("/sys/department")
 	{
 		departments.GET("/one/:id", GetOneDepartmentById)
 		departments.POST("/create", CreateDepartment)
