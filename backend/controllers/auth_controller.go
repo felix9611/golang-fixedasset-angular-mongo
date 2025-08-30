@@ -73,7 +73,7 @@ func RegisterAuthRoute(r *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	auth := r.Group("/auth", handle.MiddlewareFunc())
 	{
 		auth.GET("/refresh_token", handle.RefreshHandler)
-		auth.GET("/test", HeyTongsHandler)
-		auth.GET("/user-details", GetUserDetails)
+		auth.GET("/verify-token", HeyTongsHandler)
+		auth.GET("/user-profile", GetUserDetails)
 	}
 }
