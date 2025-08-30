@@ -85,7 +85,7 @@ func GetOneSysRoleById(id string) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	collection := config.GetCollection("sys_users")
+	collection := config.GetCollection("sys_roles")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -104,19 +104,17 @@ func GetOneSysRoleById(id string) (interface{}, error) {
 	}
 }
 
-func UpdateRoleById(id string, updateData *models.SysRoles) (interface{}, error) {
+func UpdateRoleById(updateData *models.SysRoles) (interface{}, error) {
 	collection := config.GetCollection("sys_roles")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
+	//objectID, err := primitive.ObjectIDFromHex(updateData.ID)
+	
 
-	filter := bson.M{"_id": objectID, "status": 1}
+	filter := bson.M{"_id": updateData.ID, "status": 1}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var checkSysRole models.SysRoles
-	err = collection.FindOne(ctx, filter).Decode(&checkSysRole)
+	err := collection.FindOne(ctx, filter).Decode(&checkSysRole)
 	if err != nil {
 		return nil, err
 	}

@@ -43,19 +43,19 @@ func GetAllRoles(c *gin.Context) {
 }
 
 func UpdateSysRole(c *gin.Context) {
-	id := c.Param("id")
+	// id := c.Param("id")
 	var role models.SysRoles
 	if err := c.ShouldBindJSON(&role); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := services.UpdateRoleById(id, &role)
+	result, err := services.UpdateRoleById(&role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update role"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Role updated successfully", "id": id, "data": result})
+	c.JSON(http.StatusOK, gin.H{"message": "Role updated successfully", "id": role.ID, "data": result})
 }
 
 func InactiveSysRoleByID(c *gin.Context) {
@@ -83,11 +83,11 @@ func ListPageRoles(c *gin.Context) {
 }	
 
 func RegisterSysRoleRoutes(rg *gin.RouterGroup) {
-	roleGroup := rg.Group("/sys-role")
+	roleGroup := rg.Group("/sys/role")
 	{
 		roleGroup.POST("/create", CreateSysRoleApi)
 		roleGroup.GET("/one/:id", GetRoleById)
-		roleGroup.POST("/update/:id", UpdateSysRole)
+		roleGroup.POST("/update", UpdateSysRole)
 		roleGroup.DELETE("/void/:id", InactiveSysRoleByID)
 		roleGroup.POST("/list", ListPageRoles)
 		roleGroup.GET("/all", GetAllRoles)
