@@ -42,7 +42,7 @@ func main() {
 	controllers.RegisterSysUserRoutes(api)
 	example.RegisterAuthExampleRoute(api, authMiddleware)
 	controllers.RegisterAuthRoute(api, authServiceMiddleware)
-	controllers.RegisterSysRoleRoutes(api)
+	controllers.RegisterSysRoleRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }

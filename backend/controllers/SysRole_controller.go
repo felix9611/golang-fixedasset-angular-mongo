@@ -6,6 +6,7 @@ import (
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	jwt "github.com/appleboy/gin-jwt/v2"
 )
 
 func CreateSysRoleApi(c *gin.Context) {
@@ -82,8 +83,8 @@ func ListPageRoles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }	
 
-func RegisterSysRoleRoutes(rg *gin.RouterGroup) {
-	roleGroup := rg.Group("/sys/role")
+func RegisterSysRoleRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
+	roleGroup := rg.Group("/sys/role", handle.MiddlewareFunc())
 	{
 		roleGroup.POST("/create", CreateSysRoleApi)
 		roleGroup.GET("/one/:id", GetRoleById)

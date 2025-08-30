@@ -3,7 +3,7 @@ package controllers
 import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	//"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 //	"time"
 
@@ -65,13 +65,29 @@ func InactiveUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+func SysUserLists(c *gin.Context) {
+	var pageDto dto.SysUserPageDto
+	if err := c.ShouldBindJSON(&pageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.SysUserList(&pageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user list"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": result})
+}
 
 func RegisterSysUserRoutes(rg *gin.RouterGroup) {
-	userGroup := rg.Group("/sys-users")
+	userGroup := rg.Group("/sys/user")
 	{
 		userGroup.POST("/create", CreateSysUser)
 		userGroup.POST("/update/:id", UpdateSysUserByID)
 		userGroup.GET("/one/:id", GetSysUsersById)
 		userGroup.DELETE("/:id", InactiveUserByID)
+		userGroup.POST("/list", SysUserLists)
 	}
 }

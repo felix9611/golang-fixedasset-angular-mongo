@@ -4,10 +4,13 @@ import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/tools"
+	"golang-fixedasset-mongo-backend/backend/dto"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/gin-gonic/gin"
 	"log"
 )
 
@@ -201,4 +204,58 @@ func UpdateUserPassword(id string, newPassword string) (interface{}, error) {
 	} else {
 		return "User not found or inactive", nil
 	}
+}
+
+func SysUserList(pageDto *dto.SysUserPageDto) (interface{}, error) {
+
+	if pageDto.Page < 1 {
+		pageDto.Page = 1
+	}
+
+	if pageDto.Limit < 1 {
+		pageDto.Limit = 10
+	}
+
+	collection := config.GetCollection("sys_users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+	filter := bson.M{"status": 1}
+
+	count, errCount := collection.CountDocuments(ctx, filter)
+
+	if errCount != nil {
+		return nil, errCount
+	}
+
+	skip := int64((pageDto.Page - 1) * pageDto.Limit)
+    limit := int64(pageDto.Limit)
+
+	findOptions := options.Find()
+	findOptions.SetSkip(skip)
+	findOptions.SetLimit(limit)
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var results []models.SysUsers
+	for cursor.Next(ctx) {
+		var user models.SysUsers
+		if err := cursor.Decode(&user); err != nil {
+			return nil, err
+		}
+		results = append(results, user)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
+
 }

@@ -189,10 +189,10 @@ func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
 	if pageDto.Page < 1 {
 		pageDto.Page = 1
 	}
+
 	if pageDto.Limit < 1 {
 	pageDto.Limit = 10
 	}
-
 
 	collection := config.GetCollection("departments")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

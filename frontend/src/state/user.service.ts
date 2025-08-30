@@ -104,7 +104,7 @@ export class UserStoreService {
 
     async loadUserInfo() {
         const data = await getApiWithAuth('/auth/user-profile')
-        this.setUser(data)
+        this.setUser(data.data)
     }
 
     async verifyToken(): Promise<boolean> {

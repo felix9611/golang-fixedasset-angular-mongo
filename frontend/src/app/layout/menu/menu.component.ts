@@ -36,9 +36,9 @@ export class MenuComponent implements OnInit{
 
 
     ngOnInit() {
-        this.userService.menu$.subscribe(menuItems => {
+      /*  this.userService.menu$.subscribe(menuItems => {
             this.menuItems = menuItems
-        })
+        }) */
     }
 
     year: number = new Date().getFullYear()
@@ -70,68 +70,68 @@ export class MenuComponent implements OnInit{
     menuItems: any[] = [
         {
             path: '',
-            label: 'Home',
+            name: 'Home',
             icon: 'home'
         },
         {
-            label: 'System Management',
+            name: 'System Management',
             icon: 'settings',
             isOpen: false,
             childrens: [
                 {
-                    label: 'User',
+                    name: 'User',
                     path: 'users',
                     icon: 'account-circle'
                 },
                 {
-                    label: 'Role',
+                    name: 'Role',
                     path: 'role',
                     icon: ''
                 },
                 {
-                    label: 'Menu',
+                    name: 'Menu',
                     icon: '',
                     path: 'menu'
                 },
                 {
-                    label: 'Department',
-                    path: 'department',
+                    name: 'Department',
+                    path: 'departments',
                     icon: 'team_dashboard'
                 }
             ]
         },
         {
-            label: 'Base Management',
+            name: 'Base Management',
             icon: 'dock_to_bottom',
             isOpen: false,
             childrens: [
                 {
-                    label: 'Tax Information',
+                    name: 'Tax Information',
                     icon: '',
                     path: 'tax-information'
                 },
                 {
-                    label: 'Budget',
+                    name: 'Budget',
                     path: 'budget',
                     icon: ''
                 },
                 {
-                    label: 'Action Log',
+                    name: 'Action Log',
                     icon: '',
                     path: 'action-record'
                 },
                 {
-                    label: 'Vendor',
+                    name: 'Vendor',
                     icon: '',
                     path: 'vendor'
                 },
                 {
-                    label: 'Location',
+                    name: 'Location',
                     path: 'location',
                     icon: 'location'
                 },
                 {
-                    label: 'Code Type',
+                    name: 'Code Type',
                     icon: '',
                     path: 'code-type'
                 }

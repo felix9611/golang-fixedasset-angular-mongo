@@ -37,13 +37,13 @@ import { UserStoreService } from '../../../../state/user.service'
     styleUrl: './users.component.css',
 })
 export class UsersComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
 
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'User', 'users')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -52,20 +52,20 @@ export class UsersComponent {
                 delete: answer.delete ?? false
                  // keep default value
             }
-        })
+        }) */
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
+     //       this.rightSubscription.unsubscribe()
         }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true
     }
 
 
@@ -75,7 +75,7 @@ export class UsersComponent {
     }
 
     editForm: UserForm=  {
-        _id: '',
+        id: '',
         username: '',
         avatarBase64: '',
         deptId: 0,
@@ -125,8 +125,8 @@ export class UsersComponent {
 
     ngOnInit() {
         this.loadUserLists()
-        this.loadDeptLists()
-        this.loadRoleLists()
+        //this.loadDeptLists()
+       // this.loadRoleLists()
     }
 
     async loadRoleLists() {
@@ -138,9 +138,9 @@ export class UsersComponent {
     }
 
     async submitForm() {
-        const url = this.editForm._id === '' ? '/sys/user/create-user' : `/sys/user/update-uesr`
+        const url = this.editForm.id === '' ? '/sys/user/create-user' : `/sys/user/update-uesr`
 
-        const res = await postApiWithAuth(url, this.editForm._id? {
+        const res = await postApiWithAuth(url, this.editForm.id? {
             avatarBase64: this.avatarUrl ? this.avatarUrl : this.editForm.avatarBase64,
             ...this.editForm
         } : {
@@ -159,7 +159,7 @@ export class UsersComponent {
             this.loadUserLists()
 
             this.editForm = {
-                _id: '',
+                id: '',
                 username: '',
                 avatarBase64: '',
                 deptId: 0,
@@ -171,8 +171,8 @@ export class UsersComponent {
 
     async loadUserLists() {
         const res = await postApiWithAuth('/sys/user/list', this.searchForm)
-        this.dataLists = res.lists
-        this.totals = res.total
+        this.dataLists = res.data.lists
+        this.totals = res.data.total
     }
 
     showDialog() {
@@ -210,7 +210,7 @@ export class UsersComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/sys/user/one/${id}`)
-        this.editForm = res
+        this.editForm = res.data
         this.department = res.department
         this.okText = 'Update'
         this.showDialog()
