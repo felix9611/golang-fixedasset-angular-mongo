@@ -41,12 +41,12 @@ import { Subscription } from 'rxjs'
 })
 export class RoleComponent implements OnInit{
     @ViewChild('nzTreeComponent', { static: false }) nzTreeComponent!: NzTreeComponent
-    private rightSubscription: Subscription
+//    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Role', 'role')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -55,21 +55,21 @@ export class RoleComponent implements OnInit{
                 delete: answer.delete ?? false
                  // keep default value
             }
-        })         
+        })   */      
     }
     
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-                this.rightSubscription.unsubscribe()
-        }
+       // if (this.userStoreService.menuRole$) {
+     //           this.rightSubscription.unsubscribe()
+      //  }
     }
     
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true
     }
 
     searchForm: any = {
@@ -78,7 +78,7 @@ export class RoleComponent implements OnInit{
     }
 
     editForm: RoleForm = {
-        _id: '',
+        id: '',
         code: '',
         name: '',
         remark: '',
@@ -105,19 +105,19 @@ export class RoleComponent implements OnInit{
     }
 
     async submitForm() {
-        const url = this.editForm._id === '' ? '/sys/role/create' : `/sys/role/update`
+        const url = this.editForm.id === '' ? '/sys/role/create' : `/sys/role/update`
 
         const res = await postApiWithAuth(url, {
             
             ...this.editForm,
-            ...this.editForm._id ? { _id: this.editForm._id} : {},
+            ...this.editForm.id ? { _id: this.editForm.id} : {},
         })
 
         if (res.msg) {
             this.message.error(res.msg)
         } else if (res.matchedCount === 1 || !res.msg) {
             this.editForm = {
-                _id: '',
+                id: '',
                 code: '',
                 name: '',
                 remark: '',
@@ -143,8 +143,8 @@ export class RoleComponent implements OnInit{
 
     async loadSysRoleLists() {
         const res = await postApiWithAuth('/sys/role/list', this.searchForm)
-        this.dataLists = res.lists
-        this.totals = res.total
+        this.dataLists = res.data.lists
+        this.totals = res.data.total
     }
 
     showDialog() {
@@ -165,12 +165,12 @@ export class RoleComponent implements OnInit{
     }
 
     async handleRemove() {
-        const url = `/sys/role/remove/${this.handleRemoveId}`
+        const url = `/sys/role/void/${this.handleRemoveId}`
 
-        const res: any = await getApiWithAuth(url)
+        const res: any = await deleteApiWithAuth(url)
 
-        if (res.msg) {
-            this.message.info(res.msg)
+        if (res.message) {
+            this.message.info(res.message)
         }
         this.loadSysRoleLists()
         this.closeRemoveDialog()
@@ -184,7 +184,7 @@ export class RoleComponent implements OnInit{
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/sys/role/one/${id}`)
-        this.editForm = res
+        this.editForm = res.data
         this.okText = 'Update'
         this.showDialog()
     }
