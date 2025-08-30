@@ -1,0 +1,127 @@
+<div>
+  <nz-modal 
+        nzWidth="550px"
+        [(nzVisible)]="repairRecordDialog" 
+        (nzOnCancel)="closeDialog()"
+        (nzOnOk)="goToSave()"
+        nzTitle="Save Repair Record"
+        [nzOkLoading]="false"
+    >
+    <ng-container *nzModalContent>
+      <form nz-form class="grid lg:grid-cols-1 p-2 gap-2">
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Asset Code</div>
+          <nz-form-control>
+            <input class="w-[100%]" nz-input type="text" name="assetCode" [(ngModel)]="editForm.assetCode"  [disabled]="true" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Asset Name</div>
+          <nz-form-control>
+            <input class="w-[100%]" nz-input type="text" name="assetName" [(ngModel)]="editForm.assetName" [disabled]="true"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Purchase Date</div>
+          <nz-form-control>
+            <nz-date-picker
+                [disabled]="true"
+                class="w-[100%]"
+                name="purchaseDate"
+                nzShowTime
+                nzFormat="yyyy-MM-dd HH:mm:ss"
+                [(ngModel)]="editForm.purchaseDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Repair Reason</div>
+          <nz-form-control>
+            <input class="w-[100%]" nz-input type="text" name="repairReason" [(ngModel)]="editForm.repairReason"/>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Maintenance Reriod</div>
+          <nz-form-control>
+            <label nz-checkbox name="maintenanceReriod" [(ngModel)]="editForm.maintenanceReriod"></label>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Maintenance Start Date</div>
+          <nz-form-control>
+            <nz-date-picker
+                class="w-[100%]"
+                name="maintenanceDate"
+                nzShowTime
+                nzFormat="yyyy-MM-dd HH:mm:ss"
+                [(ngModel)]="editForm.maintenanceDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Maintenance Finish Date</div>
+          <nz-form-control>
+            <nz-date-picker
+                class="w-[100%]"
+                name="maintenanceFinishDate"
+                nzShowTime
+                nzFormat="yyyy-MM-dd HH:mm:ss"
+                [(ngModel)]="editForm.maintenanceFinishDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Maintenance Name</div>
+          <nz-form-control>
+            <input class="w-[100%]" nz-input type="text" name="maintenanceName" [(ngModel)]="editForm.maintenanceName"/>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Repair Invoice Date</div>
+          <nz-form-control>
+            <nz-date-picker
+                class="w-[100%]"
+                name="repairInvoiceDate"
+                nzShowTime
+                nzFormat="yyyy-MM-dd HH:mm:ss"
+                [(ngModel)]="editForm.repairInvoiceDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Repair InvoiceNo</div>
+          <nz-form-control>
+            <input class="w-[100%]" nz-input type="text" name="repairInvoiceNo" [(ngModel)]="editForm.repairInvoiceNo"/>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Repair Amount</div>
+          <nz-form-control>
+              <nz-form-control class="w-full">
+                <nz-input-number [style.width.%]="100" name="repairAmount" [(ngModel)]="editForm.repairAmount">
+                    <span nzInputPrefix>$</span>
+                </nz-input-number>
+            </nz-form-control>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <div class="px-1 w-[160px] flex items-center">Remark</div>
+          <nz-form-control >
+            <textarea nz-input name="remarkRepair" [(ngModel)]="editForm.remarkRepair"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>

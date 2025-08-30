@@ -1,0 +1,279 @@
+<div class="bg-white p-[1rem]">
+    <div *ngIf="userRightInside.write">
+      <div class="flex py-3 gap-5">
+          <div class="text-[2rem] hover:text-[#ff9200] px-3" (click)="backToList()">
+              <mat-icon cl aria-hidden="false" fontIcon="chevron_left"></mat-icon>
+          </div>
+          <div class="text-center text-[2rem] font-bold">Write Off Form</div>
+      </div>
+        <form nz-form class="grid lg:grid-cols-4 p-2 gap-2">
+            <nz-form-item>
+              <div class="px-1 w-[105px] flex items-center">Asset Code</div>
+                <nz-form-control>
+                  <input nz-input type="text" name="assetCode" [(ngModel)]="editForm.assetCode"  [disabled]="true" />
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="lg:col-span-3">
+                <div class="px-1 w-[105px] flex items-center">Asset Name</div>
+                <nz-form-control>
+                  <input class="w-[100%]" nz-input type="text" name="assetName" [(ngModel)]="editForm.assetName" [disabled]="true"/>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[105px] flex items-center">Type</div>
+                <nz-form-control>
+                    <nz-select name="typeId" [(ngModel)]="editForm.typeId"  nzPlaceHolder="Please select" [disabled]="true">
+                        @for (option of typeLists; track option) {
+                          <nz-option [nzLabel]="option.typeName" [nzValue]="option._id"></nz-option>
+                        }
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <div class="px-1 w-[105px] flex items-center">Location</div>
+                <nz-form-control>
+                    <nz-select name="placeId" [(ngModel)]="editForm.placeId"  nzPlaceHolder="Please select" [disabled]="true">
+                        @for (option of placeLists; track option) {
+                          <nz-option [nzLabel]="option.placeName" [nzValue]="option._id"></nz-option>
+                        }
+                      </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <div class="px-1 w-[105px] flex items-center">Department</div>
+                <nz-form-control>
+                    <nz-select name="deptId" [(ngModel)]="editForm.deptId"  nzPlaceHolder="Please select" [disabled]="true">
+                        @for (option of deptLists; track option) {
+                          <nz-option [nzLabel]="option.deptName" [nzValue]="option._id"></nz-option>
+                        }
+                      </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[105px] flex items-center">Purchase Date</div>
+              <nz-form-control>
+                <nz-date-picker
+                    [disabled]="true"
+                    class="w-[100%]"
+                    name="purchaseDate"
+                    nzShowTime
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="editForm.purchaseDate"
+                >
+                </nz-date-picker>
+              </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="lg:col-span-4">
+            <div class="px-1 w-[105px] flex items-center">Description</div>
+            <nz-form-control >
+              <textarea nz-input name="description" [disabled]="true" [(ngModel)]="editForm.description" [disabled]="true"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <div class="px-1 w-[105px] flex items-center">Vendor</div>
+            <nz-form-control>
+                <nz-select name="vendorId" [(ngModel)]="editForm.vendorId"  nzPlaceHolder="Please select" [disabled]="true">
+                    @for (option of vendorLists; track option) {
+                      <nz-option [nzLabel]="option.vendorName" [nzValue]="option._id"></nz-option>
+                    }
+                  </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <div class="px-1 w-[105px] flex items-center">Unit</div>
+            <nz-form-control>
+              <input nz-input type="text" name="unit" [(ngModel)]="editForm.unit" [disabled]="true" [disabled]="true"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <div class="px-1 lg:px-8 w-[105px] flex items-center">Cost</div>
+            <nz-form-control class="w-full">
+                <nz-input-number [style.width.%]="100" name="cost" [(ngModel)]="editForm.cost" [disabled]="true" [disabled]="true">
+                    <span nzInputPrefix>$</span>
+                </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <div class="px-1 w-[105px] flex items-center">Serial No.</div>
+            <nz-form-control>
+              <input nz-input type="text" name="serialNo" [(ngModel)]="editForm.serialNo" [disabled]="true" [disabled]="true"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="lg:col-span-2">
+            <div class="px-1 w-[105px] flex items-center">Invoice No.</div>
+            <nz-form-control>
+              <input nz-input type="text" name="invoiceNo" [(ngModel)]="editForm.invoiceNo" [disabled]="true" [disabled]="true"/>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="lg:col-span-2">
+            <div class="px-1 w-[105px] flex items-center">Invoice Date</div>
+            <nz-form-control>
+              <nz-date-picker
+                    [disabled]="true"
+                    [disabled]="true"
+                    class="w-[100%]"
+                    name="invoiceDate"
+                    nzShowTime
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="editForm.invoiceDate"
+                >
+                </nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="lg:col-span-4">
+            <div class="px-1 w-[105px] flex items-center">Invoice Remark</div>
+            <nz-form-control >
+              <textarea nz-input name="invoiceRemark" [(ngModel)]="editForm.invoiceRemark" [disabled]="true"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="lg:col-span-2">
+            <div class="px-1 w-[105px] flex items-center">Warranty Date Start From</div>
+            <nz-form-control>
+              <nz-date-picker
+                    [disabled]="true"
+                    class="w-[100%]"
+                    name="imaintenancePeriodStart"
+                    nzShowTime
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="editForm.maintenancePeriodStart"
+                >
+                </nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="lg:col-span-2">
+            <div class="px-1 w-[105px] flex items-center">Warranty Date End To</div>
+            <nz-form-control>
+              <nz-date-picker
+                    [disabled]="true"
+                    class="w-[100%]"
+                    name="imaintenancePeriodEnd"
+                    nzShowTime
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="editForm.maintenancePeriodStart"
+                >
+                </nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="lg:col-span-4">
+            <div class="px-1 w-[105px] flex items-center">Remark</div>
+            <nz-form-control >
+              <textarea nz-input name="remark" [(ngModel)]="editForm.remark" [disabled]="true"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="lg:col-span-2">
+            <div class="px-1 w-[130px] flex items-center">Write Off Reason</div>
+            <nz-form-control>
+              <input nz-input type="text" name="reason" [(ngModel)]="editForm.reason"/>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <div class="px-1 w-[120px] flex items-center">Write Off Day</div>
+            <nz-form-control>
+              <nz-date-picker
+                    class="w-[100%]"
+                    name="lastDay"
+                    nzShowTime
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="editForm.lastDay"
+                    (ngModelChange)="valueOnChange($event)"
+                >
+                </nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <div class="px-1 w-[130px] flex items-center">Disposal Method</div>
+            <nz-form-control>
+              <nz-select name="disposalMethod" [(ngModel)]="editForm.disposalMethod"  nzPlaceHolder="Please select">
+                  @for (option of typeCodeList; track option) {
+                    <nz-option [nzLabel]="option.valueName" [nzValue]="option.valueCode"></nz-option>
+                  }
+                </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <div class="lg:col-span-4 flex">
+            <nz-form-item>
+              <div class="px-1 w-[200px] flex items-center">Value Remaining Calculate</div>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[60px] flex items-center">Cost</div>
+              <nz-form-control>
+                  <nz-form-control class="w-full">
+                    <nz-input-number [style.width.%]="100" name="cost" [(ngModel)]="editForm.cost" [disabled]="true">
+                        <span nzInputPrefix>$</span>
+                    </nz-input-number>
+                </nz-form-control>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[30px] flex items-center">X</div>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[120px] flex items-center">Depreciation Rate</div>
+              <nz-form-control>
+                  <nz-form-control class="w-full">
+                    <nz-input-number [style.width.%]="100" name="depreciationRate" [(ngModel)]="editForm.depreciationRate" [disabled]="true">
+                      <span nzInputAddonAfter>%</span>
+                    </nz-input-number>
+                </nz-form-control>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[30px] flex items-center">/</div>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[120px] flex items-center">Year of use period</div>
+              <nz-form-control>
+                  <nz-form-control class="w-full">
+                    <nz-input-number [style.width.%]="100" name="yearNumber" [(ngModel)]="editForm.yearNumber" [disabled]="true">
+                    </nz-input-number>
+                </nz-form-control>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[30px] flex items-center">=</div>
+            </nz-form-item>
+            <nz-form-item>
+              <div class="px-1 w-[120px] flex items-center">Value Remaining</div>
+              <nz-form-control>
+                  <nz-form-control class="w-full">
+                    <nz-input-number [style.width.%]="100" name="remainingValue" [(ngModel)]="editForm.remainingValue" [disabled]="true">
+                    </nz-input-number>
+                </nz-form-control>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+
+          
+          
+
+          <div class="flex gap-5">
+            <div (click)="backTo()" class="rounded-lg border-2 text-[#bf7b00] border-[#bf7b00] bg-[#fbd695] hover:bg-[#dabc87] p-1 w-[100px] text-center ">
+              Back
+            </div>
+            <div (click)="showDialog()" class="rounded-lg border-2 text-[#32c244] border-[#32c244] bg-[#a2ff80] hover:bg-[#91e274] p-1 w-[100px] text-center ">
+              Submit
+            </div>
+          </div>
+          
+        </form>
+
+        <nz-modal
+            [(nzVisible)]="removeDialog" 
+            nzTitle="Confirm again Write Off"
+            (nzOnCancel)="closeRemoveDialog()"
+            (nzOnOk)="goToWriteOff()"
+        >
+            <ng-container *nzModalContent>
+                Are you sure to confirm write off this asset?
+            </ng-container>
+        </nz-modal>
+    </div>
+</div>

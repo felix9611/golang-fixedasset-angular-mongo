@@ -1,0 +1,57 @@
+<div class="bg-white px-[2rem]">
+    <div class="p-1  lg:p-6" *ngIf="userRightInside.read">
+        <div class="flex gap-2 py-5">
+            <div class="w-[150px]">
+                <input class="h-full" nz-input type="text" name="assetCode" placeholder="Input Asset Code" [(ngModel)]="searchForm.assetCode" />
+            </div>
+            <div>
+                <nz-range-picker
+                    class="h-full"
+                    name="dateRange" 
+                    [nzShowTime]="{ nzFormat: 'HH:mm' }"
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="searchForm.dateRange"
+                ></nz-range-picker>
+            </div>
+            <div (click)="loadWriteOffLists()" class="w-[100px]  border-1 border-[#54A4FF] hover:bg-[#2E7FDB] text-center px-1 py-2 rounded-lg">
+                Search
+            </div>
+        </div>
+        <nz-table
+                [nzData]="dataLists"
+                #dataTable
+                nzFrontPagination="false"
+            >
+                <thead>
+                    <tr>
+                        <th>Asset Code</th>
+                        <th>Asset Name</th>
+                        <th>Place Code From</th>
+                        <th>Place Name From</th>
+                        <th>Place Code From</th>
+                        <th>Place Name To</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of dataTable.data">
+                        <td>{{data.assetCode}}</td>
+                        <td>{{data.assetlist.assetName}}</td>
+                        <td>{{data.placeFromData && data.placeFromData.placeCode}}</td>
+                        <td>{{data.placeFromData && data.placeFromData.placeName}}</td>
+                        <td>{{data.placeToData && data.placeToData.placeCode}}</td>
+                        <td>{{data.placeToData && data.placeToData.placeName}}</td>
+                        <td>{{  dateFormat(data.createdAt)  }}</td>
+                    </tr>
+                </tbody>
+        </nz-table>
+        <nz-pagination 
+            [nzPageIndex]="searchForm.page" 
+            [nzTotal]="totals" 
+            nzShowSizeChanger 
+            [nzPageSize]="searchForm.limit"
+            (nzPageIndexChange)="searchForm.page = $event;loadWriteOffLists()"
+            (nzPageSizeChange)="searchForm.limit = $event; loadWriteOffLists()"
+        ></nz-pagination>
+    </div>
+</div>

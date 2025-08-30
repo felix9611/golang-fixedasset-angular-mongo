@@ -1,0 +1,202 @@
+<div class="bg-white px-[2rem]">
+    <div class="p-1  lg:p-6"  *ngIf="userRightInside.read">
+        <div class="flex gap-2 py-5">
+            <div>
+                <nz-range-picker
+                    class="h-full"
+                    name="dateRange" 
+                    [nzShowTime]="{ nzFormat: 'HH:mm' }"
+                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                    [(ngModel)]="searchForm.dateRange"
+                ></nz-range-picker>
+            </div>
+            <div class="w-[150px]">
+                <input class="h-full" nz-input type="text" name="assetCode" placeholder="Input Asset Code" [(ngModel)]="searchForm.assetCode" />
+            </div>
+
+            <div (click)="loadRepairRecordLists()" class="w-[100px]  border-1 border-[#54A4FF] hover:bg-[#2E7FDB] text-center px-1 py-2 rounded-lg">
+                Search
+            </div>
+
+            <div *ngIf="userRightInside.upload" class="w-[200px] border-1 border-[#D17600] text-center px-1 py-2 rounded-lg">
+                <app-download-excel-template 
+                    class="text-[#D17600] hover:text-[#B06400]" 
+                    buttonLabel="Download Excel Template" 
+                    excelFileName="repair-record_template.xlsx" 
+                    [excelFieldList]="excelFieldList" 
+                />
+            </div>
+            <div *ngIf="userRightInside.upload" class="w-[100px] bg-[#54A4FF] hover:bg-[#2E7FDB] text-white text-center px-1 py-2 rounded-lg">
+                <app-upload-dialog
+                    uploadButtonLabel="Upload"
+                    uploadApiUrl="/asset/repair-record/batch-create"
+                    [excelFieldList]="excelFieldList"
+                    [dbFieldList]="dbFieldList"
+                />
+            </div>
+        </div>
+        <nz-table
+                [nzData]="dataLists"
+                #dataTable
+                nzFrontPagination="false"
+            >
+                <thead>
+                    <tr>
+                        <th>Asset Code</th>
+                        <th>Asset Name</th>
+                        <th>Repair Reason</th>
+                        <th>Maintenance Reriod</th>
+                        <th>Maintenance Date</th>
+                        <th>Amount</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of dataTable.data">
+                        <td>{{data.assetlist.assetCode}}</td>
+                        <td>{{data.assetlist.assetName}}</td>
+                        <td>{{data.repairReason}}</td>
+                        <td>{{data.maintenanceReriod}}</td>
+                        <td>{{ dateFormat(data.maintenanceDate)}}</td>
+                        <td>${{ data.repairAmount || '0' }}</td>
+                        <td>{{  dateFormat(data.createdAt)  }}</td>
+                        <td>{{  dateFormat(data.updatedAt)  }}</td>
+                        <td>
+                            <div class="flex gap-3">
+                                <div 
+                                    *ngIf="userRightInside.update"
+                                    (click)="openEdit(data)"
+                                    class="w-[100px] hover:bg-[#90E975] bg-[#B7FFA1] border-1 border-[#3AB713] text-[#3AB713] text-center p-1 rounded-lg">
+                                    Edit
+                                </div>
+                                <div 
+                                    *ngIf="userRightInside.delete"
+                                    (click)="handleRomeve(data._id)"
+                                    class="w-[100px] bg-[#FFA8A8] hover:bg-[#EC7272] border-1 border-[#CB0000] text-[#CB0000] text-center p-1 rounded-lg">
+                                    Void
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+        </nz-table>
+        <nz-pagination 
+            [nzPageIndex]="searchForm.page" 
+            [nzTotal]="totals" 
+            nzShowSizeChanger 
+            [nzPageSize]="searchForm.limit"
+            (nzPageIndexChange)="searchForm.page = $event;loadRepairRecordLists()"
+            (nzPageSizeChange)="searchForm.limit = $event; loadRepairRecordLists()"
+        ></nz-pagination>
+
+        <nz-modal
+            [(nzVisible)]="removeDialog" 
+            nzTitle="Confirm Write Off"
+            (nzOnCancel)="closeRemoveDialog()"
+            (nzOnOk)="goToWriteOff()"
+        >
+            <ng-container *nzModalContent>
+                Are you sure to confirm remove this record?
+            </ng-container>
+        </nz-modal>
+
+        <nz-modal
+            [(nzVisible)]="editFormDialog" 
+            (nzOnCancel)="closeEditDialog()"
+            (nzOnOk)="goToSave()"
+            [nzTitle]="editTitle"
+        >
+            <ng-container *nzModalContent>
+                <form nz-form class="grid lg:grid-cols-1 p-2 gap-2">
+                    <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Repair Reason</div>
+                        <nz-form-control>
+                          <input class="w-[100%]" nz-input type="text" name="repairReason" [(ngModel)]="editForm.repairReason"/>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Maintenance Reriod</div>
+                        <nz-form-control>
+                          <label nz-checkbox name="maintenanceReriod" [(ngModel)]="editForm.maintenanceReriod"></label>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Maintenance Start Date</div>
+                        <nz-form-control>
+                          <nz-date-picker
+                              class="w-[100%]"
+                              name="maintenanceDate"
+                              nzShowTime
+                              nzFormat="yyyy-MM-dd HH:mm:ss"
+                              [(ngModel)]="editForm.maintenanceDate"
+                          >
+                          </nz-date-picker>
+                        </nz-form-control>
+                      </nz-form-item>
+              
+                      <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Maintenance Finish Date</div>
+                        <nz-form-control>
+                          <nz-date-picker
+                              class="w-[100%]"
+                              name="maintenanceFinishDate"
+                              nzShowTime
+                              nzFormat="yyyy-MM-dd HH:mm:ss"
+                              [(ngModel)]="editForm.maintenanceFinishDate"
+                          >
+                          </nz-date-picker>
+                        </nz-form-control>
+                      </nz-form-item>
+              
+                      <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Maintenance Name</div>
+                        <nz-form-control>
+                          <input class="w-[100%]" nz-input type="text" name="maintenanceName" [(ngModel)]="editForm.maintenanceName"/>
+                        </nz-form-control>
+                      </nz-form-item>
+              
+                      <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Repair Invoice Date</div>
+                        <nz-form-control>
+                          <nz-date-picker
+                              class="w-[100%]"
+                              name="repairInvoiceDate"
+                              nzShowTime
+                              nzFormat="yyyy-MM-dd HH:mm:ss"
+                              [(ngModel)]="editForm.repairInvoiceDate"
+                          >
+                          </nz-date-picker>
+                        </nz-form-control>
+                      </nz-form-item>
+              
+                      <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Repair InvoiceNo</div>
+                        <nz-form-control>
+                          <input class="w-[100%]" nz-input type="text" name="repairInvoiceNo" [(ngModel)]="editForm.repairInvoiceNo"/>
+                        </nz-form-control>
+                      </nz-form-item>
+              
+                      <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Repair Amount</div>
+                        <nz-form-control>
+                            <nz-form-control class="w-full">
+                              <nz-input-number [style.width.%]="100" name="repairAmount" [(ngModel)]="editForm.repairAmount">
+                                  <span nzInputPrefix>$</span>
+                              </nz-input-number>
+                          </nz-form-control>
+                        </nz-form-control>
+                      </nz-form-item>
+              
+                      <nz-form-item>
+                        <div class="px-1 w-[160px] flex items-center">Remark</div>
+                        <nz-form-control >
+                          <textarea nz-input name="remarkRepair" [(ngModel)]="editForm.remark"></textarea>
+                        </nz-form-control>
+                    </nz-form-item>
+                </form>
+            </ng-container>
+        </nz-modal>
+    </div>
+</div>
