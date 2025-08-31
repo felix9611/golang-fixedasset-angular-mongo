@@ -228,3 +228,34 @@ func RolesList(pageDto *dto.RolesPageDto) (interface{}, error) {
 
 	return gin.H{"lists": roles, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
 }
+
+func findRoleListByUser(ids []primitive.ObjectID) ([]models.SysRoles, error) {
+	collection := config.GetCollection("sys_roles")
+
+	filter := bson.M{"_id": bson.M{"$in": ids}, "status": 1}
+
+	var roles []models.SysRoles
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var role models.SysRoles
+		if err := cursor.Decode(&role); err != nil {
+			return nil, err
+		}
+		roles = append(roles, role)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return roles, nil
+}

@@ -6,9 +6,8 @@ import (
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 //	"time"
-
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-
 )
 
 
@@ -96,8 +95,24 @@ func SysUserAvatarUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
-func RegisterSysUserRoutes(rg *gin.RouterGroup) {
-	userGroup := rg.Group("/sys/user")
+func SysUserPasswordUpdate(c *gin.Context) {
+	var passwordDto dto.SysUserUpdatePasswordDto
+	if err := c.ShouldBindJSON(&passwordDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.UpdateUserPassword(passwordDto.Username, passwordDto.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"result": result})
+}
+
+func RegisterSysUserRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
+	userGroup := rg.Group("/sys/user", handle.MiddlewareFunc())
 	{
 		userGroup.POST("/create", CreateSysUser)
 		userGroup.POST("/update", UpdateSysUserByID)
@@ -105,5 +120,6 @@ func RegisterSysUserRoutes(rg *gin.RouterGroup) {
 		userGroup.DELETE("/:id", InactiveUserByID)
 		userGroup.POST("/list", SysUserLists)
 		userGroup.POST("/user-self/update-avatar", SysUserAvatarUpdate)
+		userGroup.POST("/user-self/update-password", SysUserPasswordUpdate)
 	}
 }

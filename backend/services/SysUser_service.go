@@ -78,9 +78,7 @@ func UpdateSysUserByID(updateData *models.SysUsers) (interface{}, error) {
 
 	if checkSysUser.Status == 1 {
 
-		if updateData.UpdatedAt.IsZero() {
-			updateData.UpdatedAt = time.Now()
-		}
+		updateData.UpdatedAt = time.Now()
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
 		if err != nil {
@@ -167,20 +165,55 @@ func GetUserByUsername(username string) (*models.SysUsers, error) {
 	return &user, nil
 }
 
-func UpdateUserPassword(id string, newPassword string) (interface{}, error) {
+func GetUserDetailByUsername(username string) (interface{}, error) {
 	collection := config.GetCollection("sys_users")
-	objectID, err := primitive.ObjectIDFromHex(id)
+	filter := bson.M{"username": username, "status": 1}
+
+	var user models.SysUsers
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
 
-	filter := bson.M{"_id": objectID, "status": 1}
+	var roleLists []models.SysRoles
+	roleLists, err = findRoleListByUser(user.Roles)
+
+	department, err := GetOneDepartment(user.DeptId.Hex())
+	var loginRecords []models.LoginRecords
+	loginRecords, err = GetLoginRecords(user.Username)
+
+	if err != nil {
+		return nil, err
+	}
+
+	last := gin.H{
+		"id":       user.ID,
+		"username": user.Username,
+		"email":    user.Email,
+		"avatarBase64":   user.AvatarBase64,
+		"roles": user.Roles,
+		"deptId": user.DeptId,
+		"roleLists": roleLists,
+		"department": department,
+		"loginRecords": loginRecords,
+	}
+
+	return last, nil
+}
+
+func UpdateUserPassword(Username string, NewPassword string) (interface{}, error) {
+	collection := config.GetCollection("sys_users")
+
+	filter := bson.M{"username": Username, "status": 1}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var user models.SysUsers
-	err = collection.FindOne(ctx, filter).Decode(&user)
+	err := collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -188,15 +221,15 @@ func UpdateUserPassword(id string, newPassword string) (interface{}, error) {
 	if user.Status == 1 {
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
 			"$set": bson.M{
-				"password": tools.HashPassword(newPassword, tools.Salt),
-				"updated_at": time.Now(),
+				"password": tools.HashPassword(NewPassword, tools.Salt),
+				"updatedAt": time.Now(),
 			},
 		})
 
 		if err != nil {
 			return nil, err
 		}
-		return result.ModifiedCount, nil
+		return result, nil
 	} else {
 		return "User not found or inactive", nil
 	}

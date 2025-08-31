@@ -39,7 +39,7 @@ func main() {
 	api := router.Group("/")
 	controllers.RegisterTongsRoutes(api)
 	controllers.RegisterDepartmentRoutes(api)
-	controllers.RegisterSysUserRoutes(api)
+	controllers.RegisterSysUserRoutes(api, authServiceMiddleware)
 	example.RegisterAuthExampleRoute(api, authMiddleware)
 	controllers.RegisterAuthRoute(api, authServiceMiddleware)
 	controllers.RegisterSysRoleRoutes(api, authServiceMiddleware)

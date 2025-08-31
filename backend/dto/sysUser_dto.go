@@ -7,7 +7,7 @@ type SysUserPageDto struct {
 	Limit   int64    `json:"limit"`
 }
 
-type SysUserUpdateDto struct {
+type SysUserUpdatePasswordDto struct {
 	Username string `json:"username"`
 	NewPassword string `json:"newPassword"`
 }

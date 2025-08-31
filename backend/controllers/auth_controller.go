@@ -54,7 +54,7 @@ func GetUserDetails(c *gin.Context) {
 	}
 
 	username := authUser.Username
-	userDetails, err := services.GetUserByUsername(username)
+	userDetails, err := services.GetUserDetailByUsername(username)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Internal server error: failed to get user details",
