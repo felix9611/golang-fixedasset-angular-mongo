@@ -156,7 +156,7 @@ export class DepartmentComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).utc().format('DD-MM-YYYY HH:mm') : null
     }
 
     async getOneData(id:string) {
