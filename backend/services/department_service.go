@@ -56,7 +56,33 @@ func CreateDepartment(department *models.Department) (interface{}, error) {
 	}
 }
 
-func GetOneDepartment(id string) (*models.Department, error) {
+func GetAllDepartments() ([]*models.Department, error) {
+	collection := config.GetCollection("departments")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer cancel()
+
+	var departments []*models.Department
+
+	cursor, err := collection.Find(ctx, bson.M{"status": 1})
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(ctx) {
+		var department models.Department
+		err := cursor.Decode(&department)
+		if err != nil {
+			return nil, err
+		}
+		departments = append(departments, &department)
+	}
+
+	return departments, nil
+}
+
+func GetOneDepartment(id string) (interface{}, error) {
 	collection := config.GetCollection("departments")
 
 	objectID, err := primitive.ObjectIDFromHex(id)
@@ -76,7 +102,11 @@ func GetOneDepartment(id string) (*models.Department, error) {
 		return nil, err
 	}
 
-	return &department, nil
+	if department.Status == 0 {
+		return "Department is inactive", nil
+	} else {
+		return &department, nil
+	}
 }
 
 func VoidDepartmentById(id string) (interface{}, error) {
@@ -128,25 +158,29 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 
     filter := bson.M{"_id": objectID}
 
-    updateFields := bson.M{}
-    if updateData.DeptCode != "" {
-        updateFields["deptCode"] = updateData.DeptCode
-    }
-    if updateData.DeptName != "" {
-        updateFields["deptName"] = updateData.DeptName
-    }
-    if updateData.Remark != "" {
-        updateFields["remark"] = updateData.Remark
-    }
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-    updateFields["updated_at"] = time.Now()
+	var checkDept models.Department
+	err = collection.FindOne(ctx, filter).Decode(&checkDept)
+	if err != nil {
+		return nil, err
+	}
 
-    result, err := collection.UpdateOne(context.TODO(), filter, bson.M{"$set": updateFields})
-    if err != nil {
-        return nil, err
-    }
+	if checkDept.Status == 1 {
+		updateData.UpdatedAt = time.Now()
 
-    return result.ModifiedCount, nil
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": updateData,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		return result, nil
+	} else {
+		return "Department is already voided", nil
+	}
 }
 
 
@@ -155,10 +189,10 @@ func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
 	if pageDto.Page < 1 {
 		pageDto.Page = 1
 	}
+
 	if pageDto.Limit < 1 {
 	pageDto.Limit = 10
 	}
-
 
 	collection := config.GetCollection("departments")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
