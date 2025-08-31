@@ -245,4 +245,3 @@ func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
 	return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
 
 }
-

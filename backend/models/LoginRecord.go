@@ -7,8 +7,8 @@ import (
 
 type LoginRecords struct {
 	ID        	primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	username  	string             `bson:"username" json:"username"`
-	ipAddress 	string             `bson:"ipAddress" json:"ipAddress"`
-	loginStatus string            	`bson:"loginStatus" json:"loginStatus"`
-	loginTime 	time.Time          `bson:"loginTime" json:"loginTime"`
+	Username  	string             `bson:"username" json:"username"`
+	IpAddress 	string             `bson:"ipAddress" json:"ipAddress"`
+	LoginStatus string            	`bson:"loginStatus" json:"loginStatus"`
+	LoginTime 	time.Time          `bson:"loginTime" json:"loginTime"`
 }
