@@ -11,3 +11,8 @@ type SysUserUpdateDto struct {
 	Username string `json:"username"`
 	NewPassword string `json:"newPassword"`
 }
+
+type SysUserAvatarUpdateDto struct {
+	Username  string `json:"username"`
+	PhotoBase string `json:"photo"`
+}

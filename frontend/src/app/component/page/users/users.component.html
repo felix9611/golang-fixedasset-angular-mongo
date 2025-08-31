@@ -137,7 +137,7 @@
                         <nz-form-control [nzSpan]="14">
                             <nz-select name="deptId" [(ngModel)]="editForm.deptId" nzAllowClear  nzShowArrow nzPlaceHolder="Please select">
                                 @for (option of deptLists; track option) {
-                                  <nz-option [nzLabel]="option.deptName" [nzValue]="option._id"></nz-option>
+                                  <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
                                 }
                               </nz-select>
                         </nz-form-control>
@@ -153,7 +153,7 @@
                                 nzAllowClear  nzShowArrow
                                 [nzShowArrow]="true">
                                 @for (option of roleLists; track option) {
-                                    <nz-option [nzLabel]="option.name" [nzValue]="option._id"></nz-option>
+                                    <nz-option [nzLabel]="option.name" [nzValue]="option.id"></nz-option>
                                 }
                             </nz-select>
                         </nz-form-control>

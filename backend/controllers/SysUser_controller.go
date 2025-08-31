@@ -28,14 +28,13 @@ func CreateSysUser(c *gin.Context) {
 }
 
 func UpdateSysUserByID(c *gin.Context) {
-	id := c.Param("id")
 	var user models.SysUsers
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := services.UpdateSysUserByID(id, &user)
+	result, err := services.UpdateSysUserByID(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
 		return
@@ -81,13 +80,30 @@ func SysUserLists(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
+func SysUserAvatarUpdate(c *gin.Context) {
+	var avatarDto dto.SysUserAvatarUpdateDto
+	if err := c.ShouldBindJSON(&avatarDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.UserUpdateAvatar(avatarDto.Username, avatarDto.PhotoBase)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update avatar"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"result": result})
+}
+
 func RegisterSysUserRoutes(rg *gin.RouterGroup) {
 	userGroup := rg.Group("/sys/user")
 	{
 		userGroup.POST("/create", CreateSysUser)
-		userGroup.POST("/update/:id", UpdateSysUserByID)
+		userGroup.POST("/update", UpdateSysUserByID)
 		userGroup.GET("/one/:id", GetSysUsersById)
 		userGroup.DELETE("/:id", InactiveUserByID)
 		userGroup.POST("/list", SysUserLists)
+		userGroup.POST("/user-self/update-avatar", SysUserAvatarUpdate)
 	}
 }

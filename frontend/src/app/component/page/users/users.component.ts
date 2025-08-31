@@ -125,20 +125,22 @@ export class UsersComponent {
 
     ngOnInit() {
         this.loadUserLists()
-        //this.loadDeptLists()
-       // this.loadRoleLists()
+        this.loadDeptLists()
+        this.loadRoleLists()
     }
 
     async loadRoleLists() {
-        this.roleLists = await getApiWithAuth('/sys/role/getAll')
+        const res = await getApiWithAuth('/sys/role/all')
+        this.roleLists = res.data
     }
 
     async loadDeptLists() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
+        const res = await getApiWithAuth('/sys/department/all')
+        this.deptLists = res.data
     }
 
     async submitForm() {
-        const url = this.editForm.id === '' ? '/sys/user/create-user' : `/sys/user/update-uesr`
+        const url = this.editForm.id === '' ? '/sys/user/create' : `/sys/user/update`
 
         const res = await postApiWithAuth(url, this.editForm.id? {
             avatarBase64: this.avatarUrl ? this.avatarUrl : this.editForm.avatarBase64,

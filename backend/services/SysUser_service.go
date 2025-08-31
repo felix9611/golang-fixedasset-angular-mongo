@@ -62,20 +62,16 @@ func CreateSysUser(user *models.SysUsers) (interface{}, error) {
 	}
 }
 
-func UpdateSysUserByID(id string, updateData *models.SysUsers) (interface{}, error) {
+func UpdateSysUserByID(updateData *models.SysUsers) (interface{}, error) {
 	collection := config.GetCollection("sys_users")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
 
-	filter := bson.M{"_id": objectID, "status": 1}
+	filter := bson.M{"_id": updateData.ID, "status": 1}
 	
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var checkSysUser models.SysUsers
-	err = collection.FindOne(ctx, filter).Decode(&checkSysUser)
+	err := collection.FindOne(ctx, filter).Decode(&checkSysUser)
 	if err != nil {
 		return nil, err
 	}
@@ -258,4 +254,34 @@ func SysUserList(pageDto *dto.SysUserPageDto) (interface{}, error) {
 
 	return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 
+}
+
+func UserUpdateAvatar(Username string, PhotoBase string) (interface{}, error) {
+	collection := config.GetCollection("sys_users")
+	filter := bson.M{"username": Username, "status": 1}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.SysUsers
+	err := collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Status == 1 {
+		result, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": bson.M{
+				"avatarBase64": PhotoBase,
+				"createdAt":   time.Now(),
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	} else {
+		return "This user has been invalidated! Please contact admin!", nil
+	}
 }

@@ -108,9 +108,9 @@ export class UserInfoComponent implements OnInit {
 
 
     async handleUpdateAvatar() {
-        const response = await postApiWithAuth('/sys/user/user-self/update-avatar', { photo: this.avatarUrl})
+        const response = await postApiWithAuth('/sys/user/user-self/update-avatar', { photo: this.avatarUrl, username: this.userInfo.username })
 
-        if (response.matchedCount) {
+        if (response.result.ModifiedCount === 1) {
             this.message.success('Update success!')
             this.userService.loadUserInfo()
             this.avatarUrl = ''
