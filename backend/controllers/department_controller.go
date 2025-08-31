@@ -6,7 +6,7 @@ import (
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
 //	"time"
-
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"log"
 
@@ -93,8 +93,8 @@ func ListPageDepartment(c *gin.Context) {
 
 }
 
-func RegisterDepartmentRoutes(rg *gin.RouterGroup) {
-	departments := rg.Group("/sys/department")
+func RegisterDepartmentRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
+	departments := rg.Group("/sys/department", handle.MiddlewareFunc())
 	{
 		departments.GET("/one/:id", GetOneDepartmentById)
 		departments.POST("/create", CreateDepartment)

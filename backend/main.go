@@ -38,11 +38,12 @@ func main() {
 
 	api := router.Group("/")
 	controllers.RegisterTongsRoutes(api)
-	controllers.RegisterDepartmentRoutes(api)
+	controllers.RegisterDepartmentRoutes(api, authServiceMiddleware)
 	controllers.RegisterSysUserRoutes(api, authServiceMiddleware)
 	example.RegisterAuthExampleRoute(api, authMiddleware)
 	controllers.RegisterAuthRoute(api, authServiceMiddleware)
 	controllers.RegisterSysRoleRoutes(api, authServiceMiddleware)
+	controllers.RegisterVendorRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }
