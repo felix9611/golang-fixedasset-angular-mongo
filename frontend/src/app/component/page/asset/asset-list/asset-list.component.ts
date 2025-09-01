@@ -43,12 +43,12 @@ import { DownloadExcelTemplateComponent } from '../../../components/download-tem
     styleUrl: './asset-list.component.css',
 })
 export class AssetListComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private routeTo: Router,
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+       /* this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Tax Information', 'tax-information')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -60,13 +60,13 @@ export class AssetListComponent {
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
-        })
+        }) */
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+   //     if (this.userStoreService.menuRole$) {
+   //        this.rightSubscription.unsubscribe()
+       // }
     }
 
     searchForm: any = {
@@ -75,9 +75,9 @@ export class AssetListComponent {
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
+        read: true,
+        write: true,
+        update: true,
         delete: false
     }
 
@@ -112,6 +112,9 @@ export class AssetListComponent {
 
     async loadAssetListLists() {
         const res = await postApiWithAuth('/asset/asset-list/list', this.searchForm)
+        for (let i = 0; i < res.lists.length; i++) {
+            console.log(res.lists[i].location)
+        }
         this.dataLists = res.lists
         this.totals = res.total
     }
@@ -127,7 +130,7 @@ export class AssetListComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     openEdit(id: string) {
