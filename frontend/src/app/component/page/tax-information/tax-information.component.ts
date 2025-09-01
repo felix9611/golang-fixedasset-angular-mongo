@@ -1,7 +1,7 @@
 import { Component, OnChanges } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { getApiWithAuth, postApiWithAuth } from '../../../../tool/httpRequest-auth'
+import { deleteApiWithAuth, getApiWithAuth, postApiWithAuth } from '../../../../tool/httpRequest-auth'
 import { NzTableModule } from 'ng-zorro-antd/table'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal'
@@ -45,13 +45,13 @@ import { DownloadExcelTemplateComponent } from '../../components/download-templa
     styleUrl: './tax-information.component.css',
 })
 export class TaxInformationComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
 
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+    /*    this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Tax Information', 'tax-information')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -63,21 +63,21 @@ export class TaxInformationComponent {
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
-        })
+        })*/
         
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+       // if (this.userStoreService.menuRole$) {
+        //    this.rightSubscription.unsubscribe()
+       // }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true
     }
 
     searchForm: any = {
@@ -211,11 +211,11 @@ export class TaxInformationComponent {
     }
 
     async handleRemove() {
-        const url = `/base/tax-information/remove/${this.handleRemoveId}`
+        const url = `/base/tax-information/void/${this.handleRemoveId}`
 
-        const res: any = await getApiWithAuth(url)
+        const res: any = await deleteApiWithAuth(url)
 
-        this.message.info(res.msg)
+        this.message.info(res.message)
         this.loadTaxInfoLists()
         this.closeRemoveDialog()
         
@@ -223,7 +223,7 @@ export class TaxInformationComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     async getOneData(id:string) {
