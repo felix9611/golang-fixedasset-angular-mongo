@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { getApiWithAuth, postApiWithAuth } from '../../../../tool/httpRequest-auth'
+import { deleteApiWithAuth, getApiWithAuth, postApiWithAuth } from '../../../../tool/httpRequest-auth'
 import { NzTableModule } from 'ng-zorro-antd/table'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal'
@@ -46,7 +46,7 @@ export class CodeTypeComponent {
         private userStoreService: UserStoreService
     ) {
         this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Code Type', 'code-type')
+          /*  const answer = findMenuItem(data, 'Code Type', 'code-type')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -56,21 +56,21 @@ export class CodeTypeComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting()
+            this.preLoadExcelSetting() */
         })
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+     //   if (this.userStoreService.menuRole$) {
+          //  this.rightSubscription.unsubscribe()
+      //  }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true,
     }
 
     searchForm: any = {
@@ -79,7 +79,7 @@ export class CodeTypeComponent {
     }
 
     editForm: CodeTypeForm = {
-        _id: '',
+        id: '',
         valueCode: '',
         valueName: '',
         type: ''
@@ -98,19 +98,19 @@ export class CodeTypeComponent {
     }
 
     async submitForm() {
-        const url = this.editForm._id === '' ? '/base/code-type/create' : `/base/code-type/update`
+        const url = this.editForm.id === '' ? '/base/code-type/create' : `/base/code-type/update`
 
         const res = await postApiWithAuth(url, this.editForm)
 
         if (res.msg) {
             this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+        } else if (res.MatchedCount === 1 || !res.msg) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadCodeTypeLists()
 
             this.editForm = {
-                _id: '',
+                id: '',
                 valueCode: '',
                 valueName: '',
                 type: ''
@@ -142,11 +142,11 @@ export class CodeTypeComponent {
     }
 
     async handleRemove() {
-        const url = `/base/code-type/remove/${this.handleRemoveId}`
+        const url = `/base/code-type/void/${this.handleRemoveId}`
 
-        const res: any = await getApiWithAuth(url)
+        const res: any = await deleteApiWithAuth(url)
 
-        this.message.info(res.msg)
+        this.message.info('Void successful!')
 
         this.closeRemoveDialog()
         this.loadCodeTypeLists()
@@ -154,7 +154,7 @@ export class CodeTypeComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     async getOneData(id:string) {

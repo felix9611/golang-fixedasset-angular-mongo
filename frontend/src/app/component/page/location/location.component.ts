@@ -40,12 +40,12 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
     styleUrl: './location.component.css',
 })
 export class LocationComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
         constructor(
             private message: NzMessageService,
             private userStoreService: UserStoreService
         ) {
-            this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+   /*         this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Location', 'location')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -57,24 +57,24 @@ export class LocationComponent {
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
-        })
+        }) */
                     
     }
     
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+      //  if (this.userStoreService.menuRole$) {
+       //     this.rightSubscription.unsubscribe()
+    //    }
     }
     
     
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false,
-        upload: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true,
+        upload: true
     }
 
     searchForm: any = {
@@ -150,9 +150,9 @@ export class LocationComponent {
     }
 
     async handleRemove() {
-        const url = `/base/location/remove/${this.handleRemoveId}`
+        const url = `/base/location/void/${this.handleRemoveId}`
 
-        const res: any = await getApiWithAuth(url)
+        const res: any = await deleteApiWithAuth(url)
 
         this.message.info(res.msg)
 
@@ -162,7 +162,7 @@ export class LocationComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     async getOneData(id:string) {

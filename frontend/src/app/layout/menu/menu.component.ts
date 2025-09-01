@@ -138,46 +138,46 @@ export class MenuComponent implements OnInit{
             ]
         },
         {
-            label: 'Asset Managemnt',
+            name: 'Asset Managemnt',
             icon: 'save',
             childrens: [
                 {
-                    label: 'Asset Type',
+                    name: 'Asset Type',
                     icon: '',
                     path: 'asset-type'
                 },
                 {
-                    label: 'Asset List',
+                    name: 'Asset List',
                     icon: '',
                     path: 'asset-lists'
                 },
                 {
-                    label: 'Create Asset',
+                    name: 'Create Asset',
                     icon: '',
                     path: 'asset-create'
                 },
                 {
-                    label: 'Stock Take',
+                    name: 'Stock Take',
                     icon: '',
                     path: 'stock-takes'
                 },
                 {
-                    label: 'Asset List Report',
+                    name: 'Asset List Report',
                     icon: '',
                     path: 'asset-list-all'
                 },
                 {
-                    label: 'Inventory Record',
+                    name: 'Inventory Record',
                     icon: '',
                     path: 'inventory-record'
                 },
                 {
-                    label: 'Repair Record',
+                    name: 'Repair Record',
                     icon: '',
                     path: 'repair-records'
                 },
                 {
-                    label: 'Write Off Record',
+                    name: 'Write Off Record',
                     path: 'write-off-list'
                 }
             ]
