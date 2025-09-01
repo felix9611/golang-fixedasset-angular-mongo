@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/controllers"
-	"golang-fixedasset-mongo-backend/backend/example"
+	//"golang-fixedasset-mongo-backend/backend/example"
 	"golang-fixedasset-mongo-backend/backend/auth"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -26,25 +26,21 @@ func main() {
 
 	config.ConnectDatabase()
 
-	authMiddleware, errAuth := jwt.New(example.InitParams())
-	if errAuth != nil {
-		panic("JWT Middleware initialization failed: " + errAuth.Error())
-	}
-
 	authServiceMiddleware, errAuthService := jwt.New(auth.InitAuthParams())
-	if  errAuthService != nil {
-		panic("JWT Middleware initialization failed: " + errAuth.Error())
+	if errAuthService != nil {
+		panic("JWT Middleware initialization failed: " + errAuthService.Error())
 	}
 
 	api := router.Group("/")
 	controllers.RegisterTongsRoutes(api)
 	controllers.RegisterDepartmentRoutes(api, authServiceMiddleware)
 	controllers.RegisterSysUserRoutes(api, authServiceMiddleware)
-	example.RegisterAuthExampleRoute(api, authMiddleware)
+	// example.RegisterAuthExampleRoute(api, authMiddleware)
 	controllers.RegisterAuthRoute(api, authServiceMiddleware)
 	controllers.RegisterSysRoleRoutes(api, authServiceMiddleware)
 	controllers.RegisterVendorRoutes(api, authServiceMiddleware)
 	controllers.RegisterLocationRoutes(api, authServiceMiddleware)
+	controllers.RegisterCodeTypeRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }

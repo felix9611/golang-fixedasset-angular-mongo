@@ -12,11 +12,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gin-gonic/gin"
     // "errors"
-    "log"
+    // "log"
 )
 
 func CreateDepartment(department *models.Department) (interface{}, error) {
-	log.Printf("Insert Department: %+v\n", department)
 	
 	filter := bson.M{"status": 1, "deptCode": department.DeptCode, "deptName": department.DeptName}
 
@@ -156,7 +155,7 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
         return nil, err
     }
 
-    filter := bson.M{"_id": objectID}
+    filter := bson.M{"_id": objectID, "status": 1}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
