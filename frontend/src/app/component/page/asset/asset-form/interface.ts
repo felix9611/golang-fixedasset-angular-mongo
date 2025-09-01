@@ -41,6 +41,6 @@ export interface CreateAsset {
 }
 
 export interface AssetFormDto extends CreateAsset {
-    _id?: string
+    id?: string
     assetCode?: string
 }

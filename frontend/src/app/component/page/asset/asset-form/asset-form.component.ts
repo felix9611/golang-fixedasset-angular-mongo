@@ -93,7 +93,7 @@ export class AssetFormComponent implements OnInit {
     private changeEvent$ = new Subject<NzUploadChangeParam>()
 
     editForm: AssetFormDto = {
-        _id: '',
+        id: '',
         assetCode: '',
         assetName: '',
         unit: '',
@@ -267,7 +267,7 @@ export class AssetFormComponent implements OnInit {
     }
 
     async submitForm() {
-        const url = this.editForm._id ? '/asset/asset-list/update' : '/asset/asset-list/create'
+        const url = this.editForm.id ? '/asset/asset-list/update' : '/asset/asset-list/create'
         this.editForm.uploadAssetListFiles = this.finalFileList
 
         const res = await postApiWithAuth(url, this.editForm)
@@ -282,7 +282,7 @@ export class AssetFormComponent implements OnInit {
 
     resetForm() {
         this.editForm = {
-            _id: '',
+            id: '',
             assetCode: '',
             assetName: '',
             unit: '',

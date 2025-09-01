@@ -277,11 +277,11 @@
         </nz-form-item>
 
         <div class="flex gap-5">
-          <div *ngIf="userRightInside.write || userRightInside.update" (click)="resetForm()" class="rounded-lg border-2 text-[#bf7b00] border-[#bf7b00] bg-[#fbd695] hover:bg-[#dabc87] p-1 w-[100px] text-center ">
+          <div (click)="resetForm()" class="rounded-lg border-2 text-[#bf7b00] border-[#bf7b00] bg-[#fbd695] hover:bg-[#dabc87] p-1 w-[100px] text-center ">
             Reset
           </div>
-          <div *ngIf="userRightInside.write || userRightInside.update" (click)="submitForm()" class="rounded-lg border-2 text-[#32c244] border-[#32c244] bg-[#a2ff80] hover:bg-[#91e274] p-1 w-[100px] text-center ">
-            {{ editForm._id ? 'Update' : 'Create' }}
+          <div (click)="submitForm()" class="rounded-lg border-2 text-[#32c244] border-[#32c244] bg-[#a2ff80] hover:bg-[#91e274] p-1 w-[100px] text-center ">
+            {{ editForm.id ? 'Update' : 'Create' }}
           </div>
         </div>
 
