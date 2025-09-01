@@ -182,7 +182,7 @@ func CodeTypeList(pageDto *dto.CodeTypeListDto) (interface{}, error) {
 	findOptions := options.Find()
     findOptions.SetSkip(skip)
     findOptions.SetLimit(limit)
-    findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+    findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
 
 	cursor, err := collection.Find(ctx, filter, findOptions)
 	if err != nil {

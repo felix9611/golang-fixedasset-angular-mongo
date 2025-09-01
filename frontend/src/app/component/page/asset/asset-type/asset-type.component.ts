@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { getApiWithAuth, postApiWithAuth } from '../../../../../tool/httpRequest-auth'
+import { deleteApiWithAuth, getApiWithAuth, postApiWithAuth } from '../../../../../tool/httpRequest-auth'
 import { NzTableModule } from 'ng-zorro-antd/table'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal'
@@ -41,12 +41,12 @@ import { UploadDialogComponent } from '../../../components/upload-dialog-compone
     styleUrl: './asset-type.component.css',
 })
 export class AssetTypeComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+     /*   this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Asset Type', 'asset-type')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -57,22 +57,22 @@ export class AssetTypeComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting()
-        })
+            this.preLoadExcelSetting() 
+        })*/
 
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+      //  if (this.userStoreService.menuRole$) {
+      //      this.rightSubscription.unsubscribe()
+      //  }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true,
     }
 
     searchForm: any = {
@@ -81,7 +81,7 @@ export class AssetTypeComponent {
     }
 
     editForm: AssetTypeForm = {
-        _id: '',
+        id: '',
         typeCode: '',
         typeName: '',
         remark: '',
@@ -101,12 +101,12 @@ export class AssetTypeComponent {
     }
 
     async submitForm() {
-        const url = this.editForm._id === '' ? '/asset/type/create' : `/asset/type/update`
+        const url = this.editForm.id === '' ? '/asset/type/create' : `/asset/type/update`
 
         const res = await postApiWithAuth(url, {
             
             ...this.editForm,
-            ...this.editForm._id ? { _id: this.editForm._id} : {},
+            ...this.editForm.id ? { _id: this.editForm.id} : {},
             ...this.editForm.depreciationRate ? { depreciationRate: this.editForm.depreciationRate / 100 } : {}
         })
 
@@ -118,7 +118,7 @@ export class AssetTypeComponent {
             this.loadAssetTypeLists()
 
             this.editForm = {
-                _id: '',
+                id: '',
                 typeCode: '',
                 typeName: '',
                 remark: ''
@@ -151,9 +151,9 @@ export class AssetTypeComponent {
 
     async handleRemove() {
         if (this.handleRemoveId) {
-            const url = `/asset/type/remove/${this.handleRemoveId}`
+            const url = `/asset/type/void/${this.handleRemoveId}`
 
-            const res: any = await getApiWithAuth(url)
+            const res: any = await deleteApiWithAuth(url)
 
             this.message.info(res.msg)
 
@@ -164,7 +164,7 @@ export class AssetTypeComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     async getOneData(id:string) {

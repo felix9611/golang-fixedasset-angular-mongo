@@ -42,6 +42,7 @@ func main() {
 	controllers.RegisterLocationRoutes(api, authServiceMiddleware)
 	controllers.RegisterCodeTypeRoutes(api, authServiceMiddleware)
 	controllers.RegisterTaxInformationRoutes(api, authServiceMiddleware)
+	controllers.RegisterAssetTypeRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }
