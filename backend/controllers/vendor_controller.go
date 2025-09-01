@@ -90,6 +90,15 @@ func UpdateVendor(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+func GetAllVendors(c *gin.Context) {
+	vendors, err := services.GetAllVendors()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get vendors"})
+		return
+	}
+	c.JSON(http.StatusOK, vendors)
+}
+
 func RegisterVendorRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	vendorGroup := rg.Group("/base/vendor", handle.MiddlewareFunc())
 	{
@@ -98,6 +107,7 @@ func RegisterVendorRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		vendorGroup.DELETE("/void/:id", DeleteVendorById)
 		vendorGroup.POST("/list", VendorList)
 		vendorGroup.POST("/update", UpdateVendor)
+		vendorGroup.GET("/all", GetAllVendors)
 	}
 }
 

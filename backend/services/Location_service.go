@@ -192,3 +192,33 @@ func LocationList(pageDto *dto.LocationPageDto) (interface{}, error) {
 
 	return gin.H{"lists": locations, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
 }
+
+func ListAllLocation() (interface{}, error) {
+	collection := config.GetCollection("locations")
+
+	filter := bson.M{"status": 1}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var locations []models.Locations
+	for cursor.Next(ctx) {
+		var location models.Locations
+		if err := cursor.Decode(&location); err != nil {
+			return nil, err
+		}
+		locations = append(locations, location)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return gin.H{"data": locations}, nil
+}
