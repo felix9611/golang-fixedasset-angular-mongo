@@ -50,7 +50,7 @@
           <nz-form-item>
             <div class="px-1 w-[105px] flex items-center">Type</div>
               <nz-form-control>
-                  <nz-select name="typeId" [(ngModel)]="editForm.typeId" nzAllowClear  nzShowArrow nzPlaceHolder="Please select">
+                  <nz-select name="typeId1" [(ngModel)]="editForm.typeId" nzAllowClear  nzShowArrow nzPlaceHolder="Please select">
                       @for (option of typeLists; track option) {
                         <nz-option [nzLabel]="option.typeName" [nzValue]="option.id"></nz-option>
                       }
