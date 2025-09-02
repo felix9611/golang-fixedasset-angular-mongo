@@ -52,31 +52,42 @@ func GetOneAssetItemByAssetCode(assetCode string) (interface{}, error) {
 func CreateAssetItem(assetItem *models.AssetLists) (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
 
-	
 	filter := bson.M{"assetName": assetItem.AssetName}
 
 	var existingAsset models.AssetLists
 	err := collection.FindOne(context.Background(), filter).Decode(&existingAsset)
 	if err != nil {
-		return nil, err
-	}
+		if err == mongo.ErrNoDocuments {
+			// No existing asset, proceed to insert
+			newAssetCode, err := CreateNewAssetCode()
+			if err != nil {
+				return nil, err
+			}
 
-	if existingAsset.AssetCode != "" && existingAsset.Status == 1 {
-		return "This asset name already exist! Please check again!", nil
-	} else {
-		newAssetCode, err := CreateNewAssetCode()
-		if err != nil {
+			assetItem.Status = 1
+			assetItem.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
+			assetItem.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
+			assetItem.AssetCode = newAssetCode
+
+			_, errInv := CreateInvRecord(newAssetCode, "", assetItem.PlaceId)
+			if errInv != nil {
+				return nil, errInv
+			}
+
+			res, errInsert := collection.InsertOne(context.Background(), assetItem)
+			if errInsert != nil {
+				return nil, errInsert
+			}
+
+			return res.InsertedID, nil
+		} else {
+			// Some other error
 			return nil, err
 		}
-
-		assetItem.Status = 1
-		assetItem.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
-		assetItem.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
-
-		assetItem.AssetCode = newAssetCode
-		_, errLast := collection.InsertOne(context.Background(), assetItem)
-		return assetItem, errLast
 	}
+
+	// If we get here, asset already exists
+	return "This asset name already exists! Please check again!", nil
 }
 
 func formatNumber(num int, digits int) string {
@@ -152,6 +163,13 @@ func UpdateAssetItem(updateData *models.AssetLists) (interface{}, error) {
 
 		updateData.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
 
+		if updateData.PlaceId != existingAsset.PlaceId {
+			_, err := CreateInvRecord(existingAsset.AssetCode, existingAsset.PlaceId, updateData.PlaceId)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		res, err2 := collection.UpdateOne(context.Background(), bson.M{"_id": updateData.ID}, bson.M{"$set": updateData})
 		if err2 != nil {
 			return nil, err2
@@ -166,12 +184,14 @@ func ListAssetItems(req *dto.ListAssetReqDto) (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
 	//var assetItems []models.AssetLists
 
-	filters := bson.M{}
+	filters := bson.M{
+		"status": 1,
+	}
 	if req.AssetCode != "" {
 		filters["asset_code"] = req.AssetCode
 	}
 	if req.AssetName != "" {
-		filters["asset_name"] = req.AssetName
+		filters["asset_name"] = bson.M{"$regex": req.AssetName, "$options": "i"}
 	}
 	if len(req.TypeIds) > 0 {
 		filters["type_ids"] = bson.M{"$in": req.TypeIds}

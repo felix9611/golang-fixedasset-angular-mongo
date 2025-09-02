@@ -10,3 +10,10 @@ type ListAssetReqDto struct {
 	DeptIds   []string `json:"deptIds"`
 	PurchaseDates []string `json:"purchaseDates"`
 }
+
+type ListRecordReqDto struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+	AssetCode string `json:"assetCode"`
+	DateRange []string `json:"dateRange"`
+}
