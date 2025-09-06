@@ -38,12 +38,12 @@ func GetOneAssetItemByAssetCode(assetCode string) (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
 	var assetItem models.AssetLists
 
-	err := collection.FindOne(context.Background(), bson.M{"asset_code": assetCode}).Decode(&assetItem)
+	err := collection.FindOne(context.Background(), bson.M{"assetCode": assetCode}).Decode(&assetItem)
 	if err != nil {
 		return nil, err
 	}
 	if assetItem.Status == 0 {
-		return "This Asset item is write off", nil
+		return "This Asset item was write off", nil
 	} else {
 		return &assetItem, nil
 	}

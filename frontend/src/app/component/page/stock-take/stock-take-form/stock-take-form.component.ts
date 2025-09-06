@@ -44,15 +44,15 @@ import { Subscription } from 'rxjs'
     styleUrl: './stock-take-form.component.css',
 })
 export class StockTakeFormComponent implements OnInit {
-    private rightSubscription: Subscription
+    //private rightSubscription: Subscription
     constructor(
         private route: ActivatedRoute, 
         private routeTo: Router,
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
+      //  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+         /*   const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -61,21 +61,21 @@ export class StockTakeFormComponent implements OnInit {
                 upload: answer.upload ?? false
                  // keep default value
             }
-        })
+        }) */
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+      //  if (this.userStoreService.menuRole$) {
+   //         this.rightSubscription.unsubscribe()
+    //    }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false,
-        upload: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true,
+        upload: true,
     }
 
     theId: any = ''
@@ -88,7 +88,7 @@ export class StockTakeFormComponent implements OnInit {
         createdTime: '',
         finishTime: '',
         createBy: '',
-        _id: '',
+        id: '',
         status: 0
       }
 
@@ -118,7 +118,8 @@ export class StockTakeFormComponent implements OnInit {
 
     placeLists: any[] = []
     async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+        const data = await getApiWithAuth('/base/location/all')
+        this.placeLists = data.data
     }
 
     async updateForm() {
@@ -133,7 +134,7 @@ export class StockTakeFormComponent implements OnInit {
     async assetCodeChanged(event: any) {
         if (event) {
             const data = await getApiWithAuth(`/asset/asset-list/code/${event}`)
-            this.itemForm.assetId = data._id
+            this.itemForm.assetId = data.id
             this.itemForm.assetName = data.assetName
             this.itemForm.placeId = data.placeId
             this.placeCheckStatus(data.placeId)
@@ -152,7 +153,7 @@ export class StockTakeFormComponent implements OnInit {
 
     async submitItem() {
         const finalData = {
-            stockTakeId: this.editForm._id,
+            stockTakeId: this.editForm.id,
             assetId: this.itemForm.assetId,
             assetCode: this.itemForm.assetCode,
             placeId: this.itemForm.placeId,
@@ -162,7 +163,7 @@ export class StockTakeFormComponent implements OnInit {
 
         const res = await postApiWithAuth('/asset/stock-take/item-submit', finalData)
 
-        if (res._id) {
+        if (res.InsertedID) {
             this.message.success('Added!')
             this.getOne()
         } else {

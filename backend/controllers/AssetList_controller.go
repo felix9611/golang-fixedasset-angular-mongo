@@ -54,6 +54,16 @@ func GetOneAssetItem(c *gin.Context) {
 	c.JSON(http.StatusOK, assetItem)
 }
 
+func GetOneAssetItemByAssetCode(c *gin.Context) {
+	id := c.Param("code")
+	assetItem, err := services.GetOneAssetItemByAssetCode(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, assetItem)
+}
+
 func UpdateAssetItem(c *gin.Context) {
 	var updateData models.AssetLists
 	if err := c.ShouldBindJSON(&updateData); err != nil {
@@ -78,6 +88,6 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		assetListGroup.POST("/list", ListAssetItems)
 		assetListGroup.GET("/one/:id", GetOneAssetItem)
 		assetListGroup.POST("/update", UpdateAssetItem)
-
+		assetListGroup.GET("/code/:code", GetOneAssetItemByAssetCode)
 	}
 }

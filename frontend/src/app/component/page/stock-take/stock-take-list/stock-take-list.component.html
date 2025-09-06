@@ -13,7 +13,7 @@
                     nzMode="multiple" nzAllowClear nzShowArrow
                      nzPlaceHolder="Location">
                     @for (option of placeLists; track option) {
-                      <nz-option [nzLabel]="option.placeName" [nzValue]="option._id"></nz-option>
+                      <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
                     }
                 </nz-select>
             </div>
@@ -43,8 +43,8 @@
             <tbody>
                 <tr *ngFor="let data of dataTable.data">
                     <td>{{data.actionName}}</td>
-                    <td>{{data.location.placeCode}}</td>
-                    <td>{{data.location.placeName}}</td>
+                    <td>{{data.location?.placeCode}}</td>
+                    <td>{{data.location?.placeName}}</td>
                     <td>{{ dateFormat(data.createdTime)}}</td>
                     <td>{{data.createBy}}</td>
                     <td>
@@ -113,12 +113,12 @@
                         <nz-form-control [nzSpan]="14">
                             <nz-select
                                 class="w-full h-full" 
-                                name="actionPlaceId" 
+                                name="actionPlaceId2" 
                                 [(ngModel)]="editForm.actionPlaceId"  
                                 nzAllowClear nzShowArrow
                                 nzPlaceHolder="Please Select">
                                 @for (option of placeLists; track option) {
-                                <nz-option [nzLabel]="option.placeName" [nzValue]="option._id"></nz-option>
+                                <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
                                 }
                             </nz-select>
                         </nz-form-control>
