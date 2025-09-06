@@ -42,8 +42,8 @@ func GetStockTakeById(c *gin.Context) {
 	id := c.Param("id")
 	data, err := services.GetOneStockTakeFormByID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get stock take form"})
-		return
+		//c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get stock take form"})
+		c.JSON(http.StatusOK, err.Error())
 	}
 	c.JSON(http.StatusOK, data)
 }
@@ -62,6 +62,27 @@ func StockTakeItemSubmit(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+
+func FinishStockTake(c *gin.Context) {
+	id := c.Param("id")
+	data, err := services.FinishOrVoidStockTakeForm(id, 2, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to finish stock take form"})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+}
+
+func VoidStockTake(c *gin.Context) {
+	id := c.Param("id")
+	data, err := services.FinishOrVoidStockTakeForm(id, 0, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to finish stock take form"})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+}
+
 func RegisterStockTakeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	stockTakeGroup := rg.Group("/asset/stock-take", handle.MiddlewareFunc())
 	{
@@ -69,5 +90,7 @@ func RegisterStockTakeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		stockTakeGroup.POST("/list", ListPageStockTake)
 		stockTakeGroup.GET("/one/:id", GetStockTakeById)
 		stockTakeGroup.POST("/item-submit", StockTakeItemSubmit)
+		stockTakeGroup.DELETE("/finish/:id", FinishStockTake)
+		stockTakeGroup.DELETE("/void/:id", VoidStockTake)
 	}
 }

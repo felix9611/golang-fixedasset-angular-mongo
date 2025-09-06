@@ -176,42 +176,6 @@ func UpdateStockTakeForm(updateData *models.StockTakes) (interface{}, error) {
 	}
 }
 
-func InactiveStockTakeFormByID(id string) (interface{}, error) {
-	collection := config.GetCollection("stock_takes")
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.M{"_id": objectID, "status": 1}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	var existingStockTake models.StockTakes
-	err = collection.FindOne(ctx, filter).Decode(&existingStockTake)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if existingStockTake.Status == 1 {
-		_, err := collection.UpdateOne(ctx, filter, bson.M{
-			"$set": bson.M{
-				"status":    0,
-				"finishTime": time.Now(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-		return "Stock Take form inactivated successfully", nil
-	} else {
-		return "Ooooops! This stock take form no longer active! Please create a new form!", nil
-	}
-}
-
-
 func GetStockTakeItem(stockTakeId string) (interface{}, error) {
 	collection := config.GetCollection("stock_take_items")
 

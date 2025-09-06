@@ -12,7 +12,7 @@ type StockTakes struct {
 	Remark				  string             `bson:"remark" json:"remark"`
 	Status                int                `bson:"status" json:"status"`
 	CreatedTime            time.Time          `bson:"createdTime" json:"createdTime"`
-	FinishTime             string             `bson:"finishTime" json:"finishTime"`
+	FinishTime             *time.Time            `bson:"finishTime" json:"finishTime"`
 	CreatedBy           string          `bson:"createdBy" json:"createdBy"`
 	FinishBy            string         `bson:"finishBy" json:"finishBy"`
 }
