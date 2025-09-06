@@ -180,6 +180,128 @@ func UpdateAssetItem(updateData *models.AssetLists) (interface{}, error) {
 	}
 }
 
+func ListAllAssetItems() (interface{}, error) {
+	collection := config.GetCollection("asset_lists")
+
+	pipeline := mongo.Pipeline{
+		// $lookup locations
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "locations"},
+				{Key: "let", Value: bson.D{
+					{Key: "placeIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$placeId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "location"},
+			},
+		}},
+
+		// $lookup departments
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "departments"},
+				{Key: "let", Value: bson.D{
+					{Key: "deptIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$deptId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "department"},
+			},
+		}},
+
+		// $lookup assettypes
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "asset_types"},
+				{Key: "let", Value: bson.D{
+					{Key: "typeIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$typeId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "assettype"},
+			},
+		}},
+
+
+		// $addFields assetCodeInt
+		{{
+			Key: "$addFields", Value: bson.D{
+				{Key: "assetCodeInt", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$assetCode"},
+						{Key: "to", Value: "int"},
+						{Key: "onError", Value: 0}, // 防止 "" 出錯
+						{Key: "onNull", Value: 0},
+					}},
+				}},
+			},
+		}},
+
+		// unwind
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$location"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$department"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$assettype"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+
+		// sort
+		{{Key: "$sort", Value: bson.D{{Key: "assetCodeInt", Value: 1}}}},
+	}
+
+
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
 func ListAssetItems(req *dto.ListAssetReqDto) (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
 	//var assetItems []models.AssetLists

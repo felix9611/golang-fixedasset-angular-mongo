@@ -44,6 +44,18 @@ func ListAssetItems(c *gin.Context) {
 	c.JSON(http.StatusOK, assetItems)
 }
 
+func ListAllAssetItems(c *gin.Context) {
+
+	// Call the service to list the asset items
+	assetItems, err := services.ListAllAssetItems()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, assetItems)
+}
+
 func GetOneAssetItem(c *gin.Context) {
 	id := c.Param("id")
 	assetItem, err := services.GetOneAssetItemByID(id)
@@ -86,6 +98,7 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 	{
 		assetListGroup.POST("/create", CreateAssetList)
 		assetListGroup.POST("/list", ListAssetItems)
+		assetListGroup.GET("/list-all", ListAllAssetItems)
 		assetListGroup.GET("/one/:id", GetOneAssetItem)
 		assetListGroup.POST("/update", UpdateAssetItem)
 		assetListGroup.GET("/code/:code", GetOneAssetItemByAssetCode)
