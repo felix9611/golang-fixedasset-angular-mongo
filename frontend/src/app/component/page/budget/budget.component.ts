@@ -1,7 +1,7 @@
 import { Component, OnChanges } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { getApiWithAuth, postApiWithAuth } from '../../../../tool/httpRequest-auth'
+import { deleteApiWithAuth, getApiWithAuth, postApiWithAuth } from '../../../../tool/httpRequest-auth'
 import { NzTableModule } from 'ng-zorro-antd/table'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal'
@@ -43,12 +43,12 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
     styleUrl: './budget.component.css',
 })
 export class BudgetComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+     /*   this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Budget', 'budget')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -59,23 +59,23 @@ export class BudgetComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting()
-        })
+            this.preLoadExcelSetting()*/
+       // })
                 
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+       // if (this.userStoreService.menuRole$) {
+       //     this.rightSubscription.unsubscribe()
+      //  }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false,
-        upload: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true,
+        upload: true,
     }
 
     searchForm: any = {
@@ -85,7 +85,7 @@ export class BudgetComponent {
     }
 
     editForm: BudgetForm =  {
-        _id: '',
+        id: '',
         deptId: '',
         placeId: '',
         budgetNo: '',
@@ -117,17 +117,19 @@ export class BudgetComponent {
 
     ngOnInit() {
         this.loadBudgetLists()
-        this.loadDeptLists()
-        this.loadPlaceLists()
+        this.loadDeptList()
+        this.loadLocationList()
         this.tests()
     }
 
-    async loadPlaceLists() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+    async loadDeptList() {
+        const res = await getApiWithAuth('/sys/department/all')
+        this.deptLists = res.data
     }
 
-    async loadDeptLists() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
+    async loadLocationList() {
+        const res = await getApiWithAuth('/base/location/all')
+        this.placeLists = res.data
     }
 
     async tests() {
@@ -135,20 +137,20 @@ export class BudgetComponent {
     }
 
     async submitForm() {
-        const url = this.editForm._id === '' ? '/base/budget/create' : `/base/budget/update`
+        const url = this.editForm.id === '' ? '/base/budget/create' : `/base/budget/update`
 
         console.log(this.editForm)
         const res = await postApiWithAuth(url, this.editForm)
 
         if (res.msg) {
             this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+        } else if (res.ModifiedCount === 1 || res.insertedId) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadBudgetLists()
 
             this.editForm = {
-                _id: '',
+                id: '',
                 deptId: '',
                 placeId: '',
                 budgetNo: '',
@@ -188,11 +190,11 @@ export class BudgetComponent {
     }
 
     async handleRemove() {
-        const url = `/base/budget/remove/${this.handleRemoveId}`
+        const url = `/base/budget/void/${this.handleRemoveId}`
 
-        const res: any = await getApiWithAuth(url)
+        const res: any = await deleteApiWithAuth(url)
 
-        this.message.info(res.msg)
+        this.message.info(res.message)
         this.loadBudgetLists()
         this.closeRemoveDialog()
         

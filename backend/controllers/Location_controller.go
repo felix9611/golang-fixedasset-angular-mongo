@@ -77,6 +77,16 @@ func ListLocations(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func GetAllLocations(c *gin.Context) {
+	locations, err := services.ListAllLocation()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get locations"})
+		return
+	}
+	c.JSON(http.StatusOK, locations)
+}
+
+
 func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	locationGroup := rg.Group("/base/location", handle.MiddlewareFunc())
 	{
@@ -85,5 +95,6 @@ func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		locationGroup.POST("/update", UpdateLocationById)
 		locationGroup.DELETE("/void/:id", InactiveLocationByID)
 		locationGroup.POST("/list", ListLocations)
+		locationGroup.GET("/all", GetAllLocations)
 	}
 }

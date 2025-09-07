@@ -104,8 +104,8 @@
                         <td>{{data.assetName}}</td>
                         <td>{{ dateFormat(data.purchaseDate) }}</td>
                         <td>{{data.assettype.typeName}}</td>
-                        <td>{{data.department.deptName}}</td>
-                        <td>{{data.location.placeName}}</td>
+                        <td>{{data.department && data.department.deptName}}</td>
+                        <td>{{data.location?.placeName}}</td>
                         <td>{{  dateFormat(data.createdAt)  }}</td>
                         <td>{{  dateFormat(data.updatedAt)  }}</td>
                         <td>

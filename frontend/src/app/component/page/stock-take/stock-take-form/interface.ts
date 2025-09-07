@@ -1,5 +1,5 @@
 export interface StockTakeItemDto {
-    _id?: string
+    id?: string
     stockTakeId: string
     assetId: string
     assetCode: string
@@ -26,7 +26,7 @@ export interface StockTakeFormEdit {
     stockTakeItems: any
     createdTime: string
     finishTime?: string
-    _id: string
+    id: string
     createBy: string
     status: number
 }

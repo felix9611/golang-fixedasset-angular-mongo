@@ -1,5 +1,5 @@
 export interface BudgetForm {
-    _id?: string,
+    id?: string,
     deptId: string
     placeId: string
     budgetNo?: string

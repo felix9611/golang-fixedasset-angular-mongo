@@ -36,27 +36,21 @@ import { Subscription } from 'rxjs'
     styleUrl: './inventory-record.component.css',
 })
 export class InventoryRecordListComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Inventory Record', 'inventory-record')
-            this.userRightInside = {
-                read: answer?.read ?? false
-                 // keep default value
-            }
-        })
+
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+     //   if (this.userStoreService.menuRole$) {
+     //       this.rightSubscription.unsubscribe()
+     //   }
     }
 
     userRightInside: any = {
-        read: false
+        read: true
     }
 
     searchForm: any = {
@@ -79,7 +73,7 @@ export class InventoryRecordListComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
 

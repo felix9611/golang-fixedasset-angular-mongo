@@ -34,12 +34,12 @@ import { Subscription } from 'rxjs'
     styleUrl: './asset-list-all.component.css',
 })
 export class AssetListAllComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private userStoreService: UserStoreService,
         private routeTo: Router
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+        /*this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Asset List Report', 'asset-list-all')
             this.userRightInside = {
                 read: answer?.read ?? false
@@ -52,17 +52,17 @@ export class AssetListAllComponent {
             this.userRightInside = {
                 read: answer.read
             }
-        })
+        }) */
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+    //    if (this.userStoreService.menuRole$) {
+     //       this.rightSubscription.unsubscribe()
+     //   }
     }
 
     userRightInside: any = {
-        read: false
+        read: true
     }
 
     searchForm: any = {
@@ -80,9 +80,9 @@ export class AssetListAllComponent {
 
     ngOnInit() {
         this.loadAssetListLists()
-        this.loadTypeList()
-        this.loadDeptList()
-        this.loadLocationList()
+      //  this.loadTypeList()
+      //  this.loadDeptList()
+      //  this.loadLocationList()
     }
 
     typeLists: any[] = []

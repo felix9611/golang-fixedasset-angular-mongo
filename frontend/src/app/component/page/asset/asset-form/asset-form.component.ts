@@ -93,7 +93,7 @@ export class AssetFormComponent implements OnInit {
     private changeEvent$ = new Subject<NzUploadChangeParam>()
 
     editForm: AssetFormDto = {
-        _id: '',
+        id: '',
         assetCode: '',
         assetName: '',
         unit: '',
@@ -209,27 +209,30 @@ export class AssetFormComponent implements OnInit {
 
     typeLists: any[] = []
     async loadTypeList() {
-        this.typeLists = await getApiWithAuth('/asset/type/getAll')
+        const res = await getApiWithAuth('/asset/type/all')
+        this.typeLists = res.datas
     }
 
     deptLists: any[] = []
     async loadDeptList() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
+        const res = await getApiWithAuth('/sys/department/all')
+        this.deptLists = res.data
     }
 
     placeLists: any[] = []
     async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+        const res = await getApiWithAuth('/base/location/all')
+        this.placeLists = res.data
     }
 
     vendorLists: any[] = []
     async loadVendorList() {
-        this.vendorLists = await getApiWithAuth('/base/vendor/getAll')
+        this.vendorLists = await getApiWithAuth('/base/vendor/all')
     }
 
     taxLists: any[] = []
     async loadTaxInfoList() {
-        const results = await getApiWithAuth('/base/tax-information/getAll')
+        const results = await getApiWithAuth('/base/tax-information/all')
         const updates = results.map((x: any)=> {
             return {
               ...x,
@@ -264,7 +267,7 @@ export class AssetFormComponent implements OnInit {
     }
 
     async submitForm() {
-        const url = this.editForm._id ? '/asset/asset-list/update' : '/asset/asset-list/create'
+        const url = this.editForm.id ? '/asset/asset-list/update' : '/asset/asset-list/create'
         this.editForm.uploadAssetListFiles = this.finalFileList
 
         const res = await postApiWithAuth(url, this.editForm)
@@ -279,7 +282,7 @@ export class AssetFormComponent implements OnInit {
 
     resetForm() {
         this.editForm = {
-            _id: '',
+            id: '',
             assetCode: '',
             assetName: '',
             unit: '',
