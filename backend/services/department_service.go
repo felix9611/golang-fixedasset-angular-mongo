@@ -49,8 +49,12 @@ func CreateDepartment(department *models.Department) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		CreateActionRecord("Department Create", "POST", "Department", department, "Success")
+
 		return result, nil
 	} else {
+		CreateActionRecord("Department Create", "POST", "Department", department, "Failed")
 		return "Department with the same name already exists", nil
 	}
 }
@@ -131,18 +135,22 @@ func VoidDepartmentById(id string) (interface{}, error) {
 
 	if dept.Status == 1 {
 
+		dept.Status = 0
+		dept.UpdatedAt = time.Now()
+
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
-            "$set": bson.M{
-                "status": 0,
-                "updated_at": time.Now(),
-            },
+            "$set": dept,
         })
 
         if err != nil {
             return nil, err
         }
+
+		CreateActionRecord("Department Void", "DELETE", "Department", dept, "Success")
+
         return result.ModifiedCount, nil
 	} else {
+		CreateActionRecord("Department Void", "DELETE", "Department", dept, "Failed")
 		return "Department is already voided", nil
 	}
 }
@@ -176,8 +184,11 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 			return nil, err
 		}
 
+		CreateActionRecord("Department Update", "POST", "Department", updateData, "Success")
+
 		return result, nil
 	} else {
+		CreateActionRecord("Department Update", "POST", "Department", updateData, "Failed")
 		return "Department is already voided", nil
 	}
 }

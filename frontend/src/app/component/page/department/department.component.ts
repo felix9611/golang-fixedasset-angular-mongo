@@ -106,7 +106,7 @@ export class DepartmentComponent {
 
         if (res.msg) {
             this.message.error(res.msg)
-        } else if (res.data.matchedCount === 1 || !res.msg || res.id) {
+        } else if (res.data.matchedCount === 1 || !res.msg || res.id?.InsertedID) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadDepartmentLists()

@@ -37,12 +37,16 @@ func  CreateCodeType(codeType *models.CodeTypes) (interface{}, error) {
 		}
 
 		result, err := collection.InsertOne(context.Background(), codeType)
+
+		CreateActionRecord("Code Type Create", "POST", "Code Type", codeType, "Success")
+
 		if err != nil {
 			return nil, err
 		}
 
 		return result, nil
 	} else {
+		CreateActionRecord("Code Type Create", "POST", "Code Type", codeType, "Failed")
 		return "CodeType with the same name already exists", nil
 	}
 }
@@ -107,8 +111,10 @@ func VoidOneCodeType(id string) (interface{}, error) {
         if err != nil {
             return nil, err
         }
+		CreateActionRecord("Code Type Void", "DELETE", "Code Type", codeType, "Success")
         return result, nil
 	} else {
+		CreateActionRecord("Code Type Void", "DELETE", "Code Type", codeType, "Failed")
 		return "This Code Type is already voided", nil
 	}
 }
@@ -133,12 +139,14 @@ func UpdateCodeType(updateData *models.CodeTypes) (interface{}, error) {
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
 			"$set": updateData,
 		})
+		CreateActionRecord("Code Type Update", "POST", "Code Type", updateData, "Success")
 		if err != nil {
 			return nil, err
 		}
 
 		return result, nil
 	} else {
+		CreateActionRecord("Code Type Update", "POST", "Code Type", updateData, "Failed")
 		return "This Code Type is already voided", nil
 	}
 }

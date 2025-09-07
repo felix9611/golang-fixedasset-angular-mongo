@@ -98,7 +98,10 @@ func VoidOneAssetType(id string) (interface{}, error) {
 		CreateActionRecord("Asset Type Void", "DELETE", "Asset Type", assetType, "Failed")
 		return "This Asset Type is inactive", nil
 	} else {
-		_, err := collection.UpdateOne(ctx, filter, bson.M{"$set": bson.M{"status": 0, "updatedAt": time.Now()}})
+		assetType.Status = 0
+		assetType.UpdatedAt = time.Now()
+
+		_, err := collection.UpdateOne(ctx, filter, assetType)
 		if err != nil {
 			return nil, err
 		}
@@ -127,10 +130,10 @@ func UpdateAssetType(updateData *models.AssetTypes) (interface{}, error) {
 	} else {
 		updateData.UpdatedAt = time.Now()
 
+		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
+		
 		CreateActionRecord("Asset Type Update", "POST", "Asset Type", updateData, "Success")
 
-
-		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
 		if err != nil {
 			return nil, err
 		}
