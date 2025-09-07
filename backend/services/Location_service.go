@@ -49,9 +49,12 @@ func CreateLocation(location *models.Locations) (interface{}, error) {
 			return nil, err
 		}
 
+		CreateActionRecord("Location Create", "POST", "Location", location, "Success")
+
 		return location, nil
 
 	} else {
+		CreateActionRecord("Location Create", "POST", "Location", location, "Failed")
 		return "Location with the same name already exists", nil
 	}
 }
@@ -102,8 +105,12 @@ func UpdateLocationById(updateData *models.Locations) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		CreateActionRecord("Location Update", "POST", "Location", updateData, "Success")
+
 		return result, nil
 	} else {
+		CreateActionRecord("Location Update", "POST", "Location", updateData, "Failed")
 		return "Location is inactive", nil
 	}
 }
@@ -128,18 +135,21 @@ func InactiveLocationByID(id string) (interface{}, error) {
 	}
 
 	if existingLocation.Status == 1 {
+		existingLocation.Status = 0
+		existingLocation.UpdatedAt = time.Now()
 		_, err := collection.UpdateOne(ctx, filter, bson.M{
-			"$set": bson.M{
-				"status":    0,
-				"updatedAt": time.Now(),
-			},
+			"$set": existingLocation,
 		})
 
 		if err != nil {
 			return nil, err
 		}
+
+		CreateActionRecord("Location Inactive", "DELETE", "Location", existingLocation, "Success")
+
 		return "Location deactivated successfully", nil
 	} else {
+		CreateActionRecord("Location Inactive", "DELETE", "Location", existingLocation, "Failed")
 		return "Location is already inactive", nil
 	}
 }
