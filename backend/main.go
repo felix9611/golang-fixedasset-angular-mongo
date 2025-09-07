@@ -47,6 +47,7 @@ func main() {
 	controllers.RegisterAssetListRoutes(api, authServiceMiddleware)
 	controllers.RegisterStockTakeRoutes(api, authServiceMiddleware)
 	controllers.RegisterBudgetRoutes(api, authServiceMiddleware)
+	controllers.RegisterActionRecordsRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }

@@ -35,6 +35,8 @@ func CreateAssetType(assetType *models.AssetTypes) (interface{}, error) {
 			assetType.UpdatedAt = time.Now()
 		}
 
+		CreateActionRecord("Asset Type Create", "POST", "Asset Type", assetType, "Success")
+
 		result, err := collection.InsertOne(context.Background(), assetType)
 		if err != nil {
 			return nil, err
@@ -42,6 +44,7 @@ func CreateAssetType(assetType *models.AssetTypes) (interface{}, error) {
 
 		return result, nil
 	} else {
+		CreateActionRecord("Asset Type Create", "POST", "Asset Type", assetType, "Failed")
 		return "This Asset Type with the same name already exists", nil
 	}
 }
@@ -92,12 +95,14 @@ func VoidOneAssetType(id string) (interface{}, error) {
 	}
 
 	if assetType.Status == 0 {
+		CreateActionRecord("Asset Type Void", "DELETE", "Asset Type", assetType, "Failed")
 		return "This Asset Type is inactive", nil
 	} else {
 		_, err := collection.UpdateOne(ctx, filter, bson.M{"$set": bson.M{"status": 0, "updatedAt": time.Now()}})
 		if err != nil {
 			return nil, err
 		}
+		CreateActionRecord("Asset Type Void", "DELETE", "Asset Type", assetType, "Success")
 		return "This Asset Type has been voided just now", nil
 	}
 }
@@ -117,9 +122,14 @@ func UpdateAssetType(updateData *models.AssetTypes) (interface{}, error) {
 	}
 
 	if assetType.Status == 0 {
+		CreateActionRecord("Asset Type Update", "POST", "Asset Type", updateData, "Failed")
 		return "This Asset Type is inactive", nil
 	} else {
 		updateData.UpdatedAt = time.Now()
+
+		CreateActionRecord("Asset Type Update", "POST", "Asset Type", updateData, "Success")
+
+
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
 		if err != nil {
 			return nil, err

@@ -23,26 +23,26 @@ import { Subscription } from 'rxjs'
 })
 
 export class ActionRecordComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private userStoreService: UserStoreService
     ) {
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Action Log', 'action-record')
-            this.userRightInside = {
-                read: answer?.read ?? false // keep default value
-            }
-        })
+    //    this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+     //       const answer = findMenuItem(data, 'Action Log', 'action-record')
+    //        this.userRightInside = {
+    //            read: answer?.read ?? false // keep default value
+    //        }
+    //    })
     }
 
     ngOnDestroy() {
-        if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
-        }
+      //  if (this.userStoreService.menuRole$) {
+      //      this.rightSubscription.unsubscribe()
+      //  }
     }
 
     userRightInside: any = {
-        read: false
+        read: true
     }
 
     searchForm: any = {
@@ -83,7 +83,7 @@ export class ActionRecordComponent {
     }
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
 }
