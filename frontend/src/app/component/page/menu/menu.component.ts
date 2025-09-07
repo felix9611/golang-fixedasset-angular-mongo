@@ -127,7 +127,7 @@ export class MenuListComponent implements OnInit {
     async loadMainItemLists() {
         const res = await getApiWithAuth('/sys/menu/main-item')
         this.mainItem = res
-        this.mainItem.push({ _id: '', name: 'None under Main Menu', mainId: ''})
+        this.mainItem.push({ id: '', name: 'None under Main Menu', mainId: ''})
     }
 
     expandSet = new Set<String>()

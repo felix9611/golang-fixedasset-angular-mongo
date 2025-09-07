@@ -71,6 +71,15 @@ func UpdateMenuItemById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func GetAllMenuItems(c *gin.Context) {
+	result, err := services.GetAllMenuItems()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch menu items"})
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterSysMenuRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	sysMenuRoute := rg.Group("/sys/menu", handle.MiddlewareFunc())
 	{
@@ -79,5 +88,6 @@ func RegisterSysMenuRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		sysMenuRoute.GET("/main-item", GetSysMenuMainIdList)
 		sysMenuRoute.GET("/one/:id", GetMenuItemById)
 		sysMenuRoute.POST("/update", UpdateMenuItemById)
+		sysMenuRoute.GET("/all-menu", GetAllMenuItems)
 	}
 }

@@ -83,6 +83,20 @@ func ListPageRoles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }	
 
+func HandleMeunPermission(c *gin.Context) {
+	var menuPermissionDto dto.MenuItemPermissionBody
+	if err := c.ShouldBindJSON(&menuPermissionDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	result, err := services.HandleMenuPermission(&menuPermissionDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update menu permissions"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Menu permissions updated successfully", "data": result})
+}
+
 func RegisterSysRoleRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	roleGroup := rg.Group("/sys/role", handle.MiddlewareFunc())
 	{
@@ -91,6 +105,7 @@ func RegisterSysRoleRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		roleGroup.POST("/update", UpdateSysRole)
 		roleGroup.DELETE("/void/:id", InactiveSysRoleByID)
 		roleGroup.POST("/list", ListPageRoles)
+		roleGroup.POST("/update-permission", HandleMeunPermission)
 		roleGroup.GET("/all", GetAllRoles)
 	}
 }

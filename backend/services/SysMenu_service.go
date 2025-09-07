@@ -193,6 +193,31 @@ func ListAllMainIdMenu() (interface{}, error) {
 	return results, nil
 }
 
+func GetAllMenuItems() (interface{}, error) {
+	collection := config.GetCollection("sys_menus")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{"status": 1}}},
+		{{Key: "$sort", Value: bson.M{"sort": 1}}},
+	}
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var menus []models.SysMenus
+	if err := cursor.All(ctx, &menus); err != nil {
+		return nil, err
+	}
+
+	return menus, nil
+
+}
+
 // ListAllMenu fetch menus by name and build hierarchical tree
 func ListAllMenu(query *dto.SysMenuList) (interface{}, error) {
 	collection := config.GetCollection("sys_menus")
@@ -272,18 +297,3 @@ func BuildSortedTree(data []dto.SysMenuChildrens) []*dto.SysMenuChildrens {
 
 	return tree
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

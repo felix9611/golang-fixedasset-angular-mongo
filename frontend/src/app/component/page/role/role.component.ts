@@ -189,7 +189,7 @@ export class RoleComponent implements OnInit{
         this.showDialog()
     }
 
-    selectedMenusIds: any = []
+    selectedMenusIds: string[] = [];
     defaultMenusIds: any = []
     menusIdsExpandedKeys: any = []
 
@@ -209,7 +209,7 @@ export class RoleComponent implements OnInit{
 
         const res: any = await getApiWithAuth(url)
 
-        this.selectedMenusIds = res.menuIds
+        this.selectedMenusIds = res.data.menuIds
      //   this.defaultMenusIds = res.menuIds
     }
 
@@ -223,8 +223,8 @@ export class RoleComponent implements OnInit{
             menuIds: this.selectedMenusIds
         })
         if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+            this.message.error(res.message)
+        } else if (res.data.MatchedCount === 1 || !res.message) {
             this.handleMenuItemsIds = []
             this.handleId = ''
 
@@ -240,11 +240,17 @@ export class RoleComponent implements OnInit{
     }
 
     menuItemCheck(event: NzFormatEmitEvent) {
-        console.log(event)
+        if (!this.selectedMenusIds) {
+            this.selectedMenusIds = [];
+        }
+        
         if (event.node?.isChecked === false) {
             this.selectedMenusIds = this.selectedMenusIds.filter((item: string) => item !== event.node?.key)
         } else {
-            this.selectedMenusIds.push(event.node?.key)
+            const key = event.node?.key
+            if (typeof key === 'string') {
+                this.selectedMenusIds.push(key)
+            }
         }
     }
 

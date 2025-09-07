@@ -259,3 +259,44 @@ func findRoleListByUser(ids []primitive.ObjectID) ([]models.SysRoles, error) {
 
 	return roles, nil
 }
+
+func HandleMenuPermission(data *dto.MenuItemPermissionBody) (interface{}, error) {
+	collection := config.GetCollection("sys_roles")
+
+	objectID, err := primitive.ObjectIDFromHex(data.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID, "status": 1}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var checkSysRole models.SysRoles
+	err = collection.FindOne(ctx, filter).Decode(&checkSysRole)
+
+	if checkSysRole.Status == 1 {
+
+		checkSysRole.MenuIds = data.MenuIds
+		checkSysRole.UpdatedAt = time.Now()
+
+		update := bson.M{"$set": checkSysRole}
+
+		result, err := collection.UpdateOne(ctx, filter, update)
+
+		if err != nil {
+			return nil, err
+		}
+
+		CreateActionRecord("Menu Update", "UPDATE", "System Role", checkSysRole, "Success")
+
+		return result, nil
+	} else {
+
+		CreateActionRecord("Menu Update", "UPDATE", "System Role", checkSysRole, "Failed")
+		return "Role is already voided", nil
+	}
+
+	
+}
