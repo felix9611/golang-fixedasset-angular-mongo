@@ -332,7 +332,7 @@ func ListAssetItems(req *dto.ListAssetReqDto) (interface{}, error) {
 	limit := int64(req.Limit)
 
 	pipeline := mongo.Pipeline{
-		{{Key: "$match", Value: filters}}, // filters 必須係 bson.D or bson.M
+		{{Key: "$match", Value: filters}}, // filters must be bson.D or bson.M
 
 		// $lookup locations
 		{{

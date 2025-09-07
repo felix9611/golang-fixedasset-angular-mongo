@@ -64,7 +64,7 @@ func UpdateAssetType(c *gin.Context) {
 func GetAssetTypes(c *gin.Context) {
 	assetTypes, err := services.ListAllAssetType()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get departments"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get asset types"})
 		return
 	}
 	c.JSON(http.StatusOK, assetTypes)
@@ -78,7 +78,7 @@ func ListPageAssetTypes(c *gin.Context) {
 	}
 	assetTypes, err := services.ListAssetType(&assetTypePageDto)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list departments"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
 		return
 	}
 	c.JSON(http.StatusOK, assetTypes)

@@ -80,9 +80,9 @@ export class AssetListAllComponent {
 
     ngOnInit() {
         this.loadAssetListLists()
-        this.loadTypeList()
-        this.loadDeptList()
-        this.loadLocationList()
+      //  this.loadTypeList()
+      //  this.loadDeptList()
+      //  this.loadLocationList()
     }
 
     typeLists: any[] = []
