@@ -36,9 +36,9 @@ export class MenuComponent implements OnInit{
 
 
     ngOnInit() {
-      /*  this.userService.menu$.subscribe(menuItems => {
+        this.userService.menu$.subscribe(menuItems => {
             this.menuItems = menuItems
-        }) */
+        })
     }
 
     year: number = new Date().getFullYear()

@@ -32,3 +32,7 @@ type SysMenuMainId struct {
 	MainId string             `bson:"mainId" json:"mainId"`
 	Name   string             `bson:"name" json:"name"`
 }
+
+type GetMenusByIds struct {
+	IDS               []any    `bson:"ids" json:"ids"`
+}

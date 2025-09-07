@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 	"fmt"
@@ -297,3 +298,113 @@ func BuildSortedTree(data []dto.SysMenuChildrens) []*dto.SysMenuChildrens {
 
 	return tree
 }
+
+func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
+	collection := config.GetCollection("sys_menus")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// 1️⃣ 初始 ID slice
+	initialIds := []interface{}{}  // ✅ 正確初始化
+
+	oids := []primitive.ObjectID{}
+
+	for _, id := range initialIds {
+		strId, ok := id.(string) // interface{} -> string
+		if !ok {
+			continue
+		}
+
+		oid, err := primitive.ObjectIDFromHex(strId)
+		if err != nil {
+			continue
+		}
+
+		oids = append(oids, oid)
+	}
+
+	// 2️⃣ 第一輪查詢
+	filter1 := bson.M{
+		"status": 1,
+		"$or": []bson.M{
+			{"_id": bson.M{"$in": oids}}, // ✅ 使用 oids
+			{"mainId": bson.M{"$in": query.IDS}},
+		},
+	}
+
+	cursor1, err := collection.Find(ctx, filter1)
+	if err != nil {
+		return nil, err
+	}
+	var result1 []models.SysMenus
+	if err := cursor1.All(ctx, &result1); err != nil {
+		return nil, err
+	}
+
+	// 3️⃣ 拿第一輪的 mainId 去第二輪查詢
+	mainIdSet := make(map[string]struct{})
+	for _, r := range result1 {
+		if r.MainId != "" {
+			mainIdSet[r.MainId] = struct{}{}
+		}
+	}
+
+	mainIds := []string{} // ✅ 不與上面 initialIds 衝突
+	for k := range mainIdSet {
+		mainIds = append(mainIds, k)
+	}
+
+	filter2 := bson.M{
+		"status": 1,
+		"_id": bson.M{"$in": func() []primitive.ObjectID {
+			var oids2 []primitive.ObjectID
+			for _, id := range mainIds {
+				if oid, err := primitive.ObjectIDFromHex(id); err == nil {
+					oids2 = append(oids2, oid)
+				}
+			}
+			return oids2
+		}()},
+	}
+
+	cursor2, err := collection.Find(ctx, filter2)
+	if err != nil {
+		return nil, err
+	}
+	var result2 []models.SysMenus
+	if err := cursor2.All(ctx, &result2); err != nil {
+		return nil, err
+	}
+
+	// 4️⃣ 合併去重
+	mergedMap := make(map[string]models.SysMenus)
+	for _, r := range append(result1, result2...) {
+		mergedMap[r.ID.Hex()] = r
+	}
+
+	var merged []dto.SysMenuChildrens
+	for _, v := range mergedMap {
+		merged = append(merged, dto.SysMenuChildrens{
+			ID:                v.ID,
+			MainId:            v.MainId,
+			Name:              v.Name,
+			Icon:              v.Icon,
+			Path:              v.Path,
+			Sort:              v.Sort,
+			Type:              v.Type,
+			ExcelFunctionCode: v.ExcelFunctionCode,
+			ExcelFunctionName: v.ExcelFunctionName,
+			Status:            v.Status,
+			CreatedAt:         v.CreatedAt,
+			UpdatedAt:         v.UpdatedAt,
+			Childrens:         []dto.SysMenuChildrens{},
+		})
+	}
+
+	// 5️⃣ Build tree
+	finalTree := BuildSortedTree(merged)
+
+	return finalTree, nil
+}
+

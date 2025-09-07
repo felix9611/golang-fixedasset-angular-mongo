@@ -80,6 +80,22 @@ func GetAllMenuItems(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func GetMenusByIds(c *gin.Context) {
+	var query dto.GetMenusByIds
+	if err := c.ShouldBindJSON(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.GetMenusByIds(&query)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch menu items"})
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterSysMenuRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	sysMenuRoute := rg.Group("/sys/menu", handle.MiddlewareFunc())
 	{
@@ -89,5 +105,6 @@ func RegisterSysMenuRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		sysMenuRoute.GET("/one/:id", GetMenuItemById)
 		sysMenuRoute.POST("/update", UpdateMenuItemById)
 		sysMenuRoute.GET("/all-menu", GetAllMenuItems)
+		sysMenuRoute.POST("/user/tree-menu", GetMenusByIds)
 	}
 }
