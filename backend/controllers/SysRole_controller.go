@@ -97,6 +97,21 @@ func HandleMeunPermission(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Menu permissions updated successfully", "data": result})
 }
 
+func LoadRoleWithMenu(c *gin.Context) {
+	var roleIdsDto dto.RoleIdsBody
+	if err := c.ShouldBindJSON(&roleIdsDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	result, err := services.LoadRoleWithMenu(&roleIdsDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load roles with menus"})
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+
 func RegisterSysRoleRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	roleGroup := rg.Group("/sys/role", handle.MiddlewareFunc())
 	{
@@ -107,5 +122,6 @@ func RegisterSysRoleRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		roleGroup.POST("/list", ListPageRoles)
 		roleGroup.POST("/update-permission", HandleMeunPermission)
 		roleGroup.GET("/all", GetAllRoles)
+		roleGroup.POST("/list-permission", LoadRoleWithMenu)
 	}
 }

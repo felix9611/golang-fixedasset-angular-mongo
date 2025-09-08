@@ -41,7 +41,7 @@ export class MenuListComponent implements OnInit {
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-       /* this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+       /*this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Menu', 'menu')
             this.userRightInside = {
                 read: answer?.read ?? false,

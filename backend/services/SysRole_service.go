@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/gin-gonic/gin"
 )
 
@@ -299,4 +300,101 @@ func HandleMenuPermission(data *dto.MenuItemPermissionBody) (interface{}, error)
 	}
 
 	
+}
+
+func LoadRoleWithMenu(data *dto.RoleIdsBody) (interface{}, error) {
+	collection := config.GetCollection("sys_roles")
+
+	var objectIDs []primitive.ObjectID
+
+	for _, id := range data.RoleIds {
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return nil, err
+		}
+		objectIDs = append(objectIDs, objectID)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter :=  bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: objectIDs}}}}
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: filter}},
+		{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "sys_menus"}, // menu collection
+			{Key: "let", Value: bson.D{
+				{Key: "menuIds", Value: bson.D{
+					{Key: "$map", Value: bson.D{
+						{Key: "input", Value: "$menuIds"},
+						{Key: "as", Value: "menuId"},
+						{Key: "in", Value: bson.D{
+							{Key: "$cond", Value: bson.A{
+								bson.D{{Key: "$ne", Value: bson.A{"$$menuId", ""}}},
+								bson.D{{Key: "$toObjectId", Value: "$$menuId"}},
+								nil,
+							}},
+						}},
+					}},
+				}},
+			}},
+			{Key: "pipeline", Value: mongo.Pipeline{
+				{{Key: "$match", Value: bson.D{
+					{Key: "$expr", Value: bson.D{
+						{Key: "$or", Value: bson.A{
+							bson.D{{Key: "$in", Value: bson.A{"$_id", "$$menuIds"}}},
+							bson.D{{Key: "$and", Value: bson.A{
+								bson.D{{Key: "$ne", Value: bson.A{"$mainId", ""}}},
+								bson.D{{Key: "$in", Value: bson.A{
+									bson.D{{Key: "$toObjectId", Value: "$mainId"}},
+									"$$menuIds",
+								}}},
+							}}},
+						}},
+					}},
+				}}},
+			}},
+			{Key: "as", Value: "menuLists"},
+		}}},
+		{{Key: "$addFields", Value: bson.D{
+			{Key: "menuLists", Value: bson.D{
+				{Key: "$cond", Value: bson.D{
+					{Key: "if", Value: bson.D{{Key: "$eq", Value: bson.A{"$menuLists", bson.A{}}}}},
+					{Key: "then", Value: bson.A{}},
+					{Key: "else", Value: bson.D{
+						{Key: "$map", Value: bson.D{
+							{Key: "input", Value: "$menuLists"},
+							{Key: "as", Value: "menu"},
+							{Key: "in", Value: bson.D{
+								{Key: "$mergeObjects", Value: bson.A{
+									"$$menu",
+									bson.D{
+										{Key: "read", Value: "$read"},
+										{Key: "write", Value: "$write"},
+										{Key: "delete", Value: "$delete"},
+										{Key: "update", Value: "$update"},
+										{Key: "upload", Value: "$upload"},
+									},
+								}},
+							}},
+						}},
+					}},
+				}},
+			}},
+		}}},
+	}
+	
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }

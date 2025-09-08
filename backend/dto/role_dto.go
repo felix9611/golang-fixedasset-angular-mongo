@@ -11,3 +11,7 @@ type MenuItemPermissionBody struct {
 	MenuIds []any `json:"menuIds"`
 	ID      string `json:"id"`
 }
+
+type RoleIdsBody struct {
+	RoleIds []string `json:"roleIds"`
+}

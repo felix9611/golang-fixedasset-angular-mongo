@@ -43,13 +43,14 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
     styleUrl: './budget.component.css',
 })
 export class BudgetComponent {
-   // private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-     /*   this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Budget', 'budget')
+            console.log(answer)
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -59,23 +60,23 @@ export class BudgetComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting()*/
-       // })
+        //    this.preLoadExcelSetting()*/
+        })
                 
     }
 
     ngOnDestroy() {
-       // if (this.userStoreService.menuRole$) {
-       //     this.rightSubscription.unsubscribe()
-      //  }
+        if (this.userStoreService.menuRole$) {
+            this.rightSubscription.unsubscribe()
+        }
     }
 
     userRightInside: any = {
-        read: true,
-        write: true,
-        update: true,
-        delete: true,
-        upload: true,
+        read: false,
+        write: false,
+        update: false,
+        delete: false,
+        upload: false,
     }
 
     searchForm: any = {
@@ -119,7 +120,6 @@ export class BudgetComponent {
         this.loadBudgetLists()
         this.loadDeptList()
         this.loadLocationList()
-        this.tests()
     }
 
     async loadDeptList() {
@@ -132,9 +132,6 @@ export class BudgetComponent {
         this.placeLists = res.data
     }
 
-    async tests() {
-        await getApiWithAuth('/sys/department/getAll')
-    }
 
     async submitForm() {
         const url = this.editForm.id === '' ? '/base/budget/create' : `/base/budget/update`
