@@ -282,10 +282,7 @@ func BuildSortedTree(data []dto.SysMenuChildrens) []*dto.SysMenuChildrens {
 			return nodes[i].Sort < nodes[j].Sort
 		})
 		for _, node := range nodes {
-			if node.Childrens == nil {
-				node.Childrens = []dto.SysMenuChildrens{}
-			}
-			// 將子節點轉 pointer 方便遞迴
+			// fix: 遞迴時一定要走 pointer
 			childPtrs := make([]*dto.SysMenuChildrens, len(node.Childrens))
 			for i := range node.Childrens {
 				childPtrs[i] = &node.Childrens[i]

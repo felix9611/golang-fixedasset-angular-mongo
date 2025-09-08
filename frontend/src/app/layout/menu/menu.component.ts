@@ -37,7 +37,8 @@ export class MenuComponent implements OnInit{
 
     ngOnInit() {
         this.userService.menu$.subscribe(menuItems => {
-            this.menuItems = menuItems
+            const finalData = this.sortMenusRecursive(menuItems)
+            this.menuItems = finalData
         })
     }
 
@@ -47,6 +48,19 @@ export class MenuComponent implements OnInit{
     activeChild: any = null
     expandedMenus: any[] = []
 
+    sortMenusRecursive(menus: any[]): any[] {
+    // 先排序本層
+        menus.sort((a, b) => a.sort - b.sort);
+
+        // 再遞歸排序 childrens
+        for (const menu of menus) {
+            if (menu.childrens && menu.childrens.length > 0) {
+            menu.childrens = this.sortMenusRecursive(menu.childrens)
+            }
+        }
+
+        return menus
+    }
 
     toggleMenu(item: any) {
         if (this.expandedMenus.includes(item)) {

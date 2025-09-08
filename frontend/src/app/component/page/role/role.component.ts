@@ -41,12 +41,12 @@ import { Subscription } from 'rxjs'
 })
 export class RoleComponent implements OnInit{
     @ViewChild('nzTreeComponent', { static: false }) nzTreeComponent!: NzTreeComponent
-//    private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Role', 'role')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -55,13 +55,13 @@ export class RoleComponent implements OnInit{
                 delete: answer.delete ?? false
                  // keep default value
             }
-        })   */      
+        })     
     }
     
     ngOnDestroy() {
-       // if (this.userStoreService.menuRole$) {
-     //           this.rightSubscription.unsubscribe()
-      //  }
+        if (this.userStoreService.menuRole$) {
+            this.rightSubscription.unsubscribe()
+        }
     }
     
 

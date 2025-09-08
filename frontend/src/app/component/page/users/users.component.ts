@@ -37,13 +37,13 @@ import { UserStoreService } from '../../../../state/user.service'
     styleUrl: './users.component.css',
 })
 export class UsersComponent {
-   // private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
 
-      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'User', 'users')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -52,12 +52,12 @@ export class UsersComponent {
                 delete: answer.delete ?? false
                  // keep default value
             }
-        }) */
+        })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
-     //       this.rightSubscription.unsubscribe()
+           this.rightSubscription.unsubscribe()
         }
     }
 
