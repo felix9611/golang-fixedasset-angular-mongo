@@ -87,6 +87,7 @@ func GetAllLocations(c *gin.Context) {
 }
 
 
+
 func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	locationGroup := rg.Group("/base/location", handle.MiddlewareFunc())
 	{

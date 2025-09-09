@@ -50,7 +50,7 @@ export class RepairRecordCreateComponent implements OnInit {
     ) {}
 
     editForm: AssetFormDto = {
-        _id: '',
+        id: '',
         assetCode: '',
         assetName: '',
         unit: '',
@@ -118,7 +118,7 @@ export class RepairRecordCreateComponent implements OnInit {
 
     async goToSave() {
         const finalForm = {
-            assetId: this.editForm._id,
+            assetId: this.editForm.id,
             repairReason: this.editForm.repairReason,
             maintenanceReriod: this.editForm.maintenanceReriod,
             maintenanceName: this.editForm.maintenanceName,

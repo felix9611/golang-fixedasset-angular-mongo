@@ -49,6 +49,7 @@ func main() {
 	controllers.RegisterBudgetRoutes(api, authServiceMiddleware)
 	controllers.RegisterActionRecordsRoutes(api, authServiceMiddleware)
 	controllers.RegisterSysMenuRoutes(api, authServiceMiddleware)
+	controllers.RegisterRepairRecordRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }
