@@ -15,42 +15,26 @@ import (
 
 func CreateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 	collection := config.GetCollection("repair_records")
-	// assetCollection := config.GetCollection("asset_lists")
-
-//	filters := bson.M{"_id": record.AssetId}
+	assetCollection := config.GetCollection("asset_lists")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if record.Status == 0 {
-			record.Status = 1
-		}
-
-		if record.CreatedAt.IsZero() {
-			record.CreatedAt = time.Now()
-		}
-
-		if record.UpdatedAt.IsZero() {
-			record.UpdatedAt = time.Now()
-		}
-
-		result, err := collection.InsertOne(ctx, record)
+	objectAssetID, err := primitive.ObjectIDFromHex(record.AssetId)
 	if err != nil {
 		return nil, err
 	}
 
-	CreateActionRecord("Repair Record Create", "POST", "Repair Record", record, "Success")
+	filters := bson.M{"_id": objectAssetID, "status": 1}
 
-	return result, nil
+//	var asset *models.AssetLists
 
-/*	var asset *models.AssetLists
-
-	err := assetCollection.FindOne(ctx, filters).Decode(&asset)
+	count, err := assetCollection.CountDocuments(ctx, filters)
 	if err != nil {
 		return nil, err
 	}
 
-	if asset.Status == 0 {
+	if count == 0 {
 		CreateActionRecord("Repair Record Create", "POST", "Repair Record", record, "Failed")
 		return "This asset item is already written off", nil
 	} else {
@@ -74,7 +58,7 @@ func CreateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 		CreateActionRecord("Repair Record Create", "POST", "Repair Record", record, "Success")
 
 		return result, nil
-	} */
+	}
 
 }
 
@@ -113,22 +97,26 @@ func UpdateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 
 	filter := bson.M{"_id": record.ID}
 
-	err := collection.FindOne(ctx, filter).Decode(&record)
+	var existingRecord models.RepairRecords
+
+	err := collection.FindOne(ctx, filter).Decode(&existingRecord)
 	if err != nil {
 		return nil, err
 	}
 
-	if record.Status == 0 {
+	if existingRecord.Status == 0 {
 		CreateActionRecord("Repair Record Update", "POST", "Repair Record", record, "Failed")
 		return "Oooops! This record has been removed!", nil
 	} else {
 		record.UpdatedAt = time.Now()
-		_, err := collection.ReplaceOne(ctx, filter, record)
+		res, err := collection.UpdateOne(ctx, filter, bson.M{
+			"$set": record,
+		})
 		if err != nil {
 			return nil, err	
 		}
 		CreateActionRecord("Repair Record Update", "POST", "Repair Record", record, "Success")
-		return record, nil
+		return res, nil
 	}
 }
 
@@ -248,8 +236,52 @@ func ListRepairRecords(dataReq *dto.RepairRecordPageReqDTO) (interface{}, error)
 					}},
 				}},
 				{Key: "pipeline", Value: mongo.Pipeline{
-					bson.D{{Key: "$match", Value: assetMatch}},
+					bson.D{{Key: "$lookup", Value: bson.D{
+						{Key: "from", Value: "locations"},
+						{Key: "let", Value: bson.D{
+							{Key: "placeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$placeId"}}},
+						}},
+						{Key: "pipeline", Value: mongo.Pipeline{
+							bson.D{{Key: "$match", Value: bson.D{
+								{Key: "$expr", Value: bson.D{
+									{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
+								}},
+							}}},
+						}},
+						{Key: "as", Value: "location"},
+					}}},
+					bson.D{{Key: "$lookup", Value: bson.D{
+							{Key: "from", Value: "departments"},
+							{Key: "let", Value: bson.D{
+								{Key: "deptIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$deptId"}}},
+							}},
+							{Key: "pipeline", Value: mongo.Pipeline{
+								bson.D{{Key: "$match", Value: bson.D{
+									{Key: "$expr", Value: bson.D{
+										{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
+									}},
+								}}},
+							}},
+							{Key: "as", Value: "department"},
+					}}},
+					bson.D{{Key: "$lookup", Value: bson.D{
+							{Key: "from", Value: "asset_types"},
+							{Key: "let", Value: bson.D{
+								{Key: "typeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$typeId"}}},
+							}},
+							{Key: "pipeline", Value: mongo.Pipeline{
+								bson.D{{Key: "$match", Value: bson.D{
+									{Key: "$expr", Value: bson.D{
+										{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
+									}},
+								}}},
+							}},
+							{Key: "as", Value: "assettype"},
+					}}},
+					bson.D{{Key: "$unwind", Value: bson.M{"path": "$department", "preserveNullAndEmptyArrays": true}}},
+					bson.D{{Key: "$unwind", Value: bson.M{"path": "$assettype", "preserveNullAndEmptyArrays": true}}},
 					bson.D{{Key: "$unwind", Value: bson.M{"path": "$location", "preserveNullAndEmptyArrays": true}}},
+					bson.D{{Key: "$match", Value: assetMatch}},
 				}},
 				{Key: "as", Value: "assetlist"},
 			}}},

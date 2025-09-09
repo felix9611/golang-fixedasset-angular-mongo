@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { getApiWithAuth, postApiWithAuth } from '../../../../../tool/httpRequest-auth'
+import { deleteApiWithAuth, getApiWithAuth, postApiWithAuth } from '../../../../../tool/httpRequest-auth'
 import { NzTableModule } from 'ng-zorro-antd/table'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal'
@@ -156,7 +156,7 @@ export class RepairRecordListComponent {
             
         const res = await postApiWithAuth('/asset/repair-record/update', this.editForm)
             
-        if (res.acknowledged === true) {
+        if (res.ModifiedCount === 1) {
             this.message.info('Update successfully!')
             this.loadRepairRecordLists()
             this.closeEditDialog()
@@ -170,9 +170,9 @@ export class RepairRecordListComponent {
     }
 
     async goToWriteOff() {
-        const res = await getApiWithAuth(`/asset/repair-record/void/${this.handleId}`)
+        const res = await deleteApiWithAuth(`/asset/repair-record/void/${this.handleId}`)
 
-        this.message.info(res.msg)
+        this.message.info("Voided successfully!")
 
         this.closeRemoveDialog()
         this.loadRepairRecordLists()
