@@ -93,7 +93,7 @@ func GetOneDepartment(id string) (interface{}, error) {
 		return nil, err
 	}
 
-	filter := bson.M{ "_id": objectID, "status": 1 }
+	filter := bson.M{ "_id": objectID }
 
 	var department models.Department
 
