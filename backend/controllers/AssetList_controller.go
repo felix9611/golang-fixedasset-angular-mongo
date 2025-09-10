@@ -93,6 +93,23 @@ func UpdateAssetItem(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedAsset)
 }
 
+func QueryAssetDataByDataType(c *gin.Context) {
+	var req dto.DashboardReqDto
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Call the service to query asset data
+	assetData, err := services.QueryMakerForData(&req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, assetData)
+}
+
 func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	assetListGroup := rg.Group("/asset/asset-list", handle.MiddlewareFunc())
 	{
@@ -101,6 +118,8 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		assetListGroup.GET("/list-all", ListAllAssetItems)
 		assetListGroup.GET("/one/:id", GetOneAssetItem)
 		assetListGroup.POST("/update", UpdateAssetItem)
-		assetListGroup.GET("/code/:code", GetOneAssetItemByAssetCode)
+		assetListGroup.POST("/chart-query-date", QueryAssetDataByDataType)
+		assetListGroup.POST("/chart-query-data", QueryAssetDataByDataType)
+
 	}
 }

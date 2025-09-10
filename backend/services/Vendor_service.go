@@ -47,8 +47,11 @@ func CreateVendor(vendor *models.Vendors) (interface{}, error) {
 			return nil, err
 		}
 
+		CreateActionRecord("Vendor Create", "POST", "Vendor", vendor, "Success")
+
 		return vendor, nil
 	} else {
+		CreateActionRecord("Vendor Create", "POST", "Vendor", vendor, "Failed")
 		return "Vendor with the same name already exists", nil
 	}
 
@@ -103,8 +106,12 @@ func UpdateVendorById(updateData *models.Vendors) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		CreateActionRecord("Vendor Update", "POST", "Vendor", updateData, "Success")
+
 		return result, nil
 	} else {
+		CreateActionRecord("Vendor Update", "POST", "Vendor", updateData, "Failed")
 		return "Vendor is inactive", nil
 	}
 }
@@ -129,11 +136,11 @@ func InactiveVendorByID(id string) (interface{}, error) {
 	}
 
 	if vendor.Status == 1 {
+		vendor.Status = 0
+		vendor.UpdatedAt = time.Now()
+		
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
-			"$set": bson.M{
-				"status":    0,
-				"updatedAt": time.Now(),
-			},
+			"$set": vendor,
 		})
 
 		if err != nil {

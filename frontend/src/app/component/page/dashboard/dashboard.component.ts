@@ -84,17 +84,20 @@ export class DashboardComponent implements OnInit {
 
     typeLists: any[] = []
     async loadTypeList() {
-        this.typeLists = await getApiWithAuth('/asset/type/getAll')
+        const res = await getApiWithAuth('/asset/type/all')
+        this.typeLists = res.datas
     }
 
     deptLists: any[] = []
     async loadDeptList() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
+        const res = await getApiWithAuth('/sys/department/all')
+        this.deptLists = res.data
     }
 
     placeLists: any[] = []
     async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+        const data = await getApiWithAuth('/base/location/all')
+        this.placeLists = data.data
     }
 
     async runSearch() {
@@ -131,7 +134,7 @@ export class DashboardComponent implements OnInit {
         const res = await this.runQueryDate(dataQuery)
         
         this.deptAndDateInCost = {
-            data: transformData(res, 'stackedColumn', true, 'deptName', 'costs', ['year', 'monthString']),
+            data: res && res.length > 0 ? transformData(res, 'stackedColumn', true, 'deptName', 'costs', ['year', 'monthString']) : [],
             animationEnabled: true,
             axisY: {
                 title: "Amount (HKD)"
@@ -162,7 +165,7 @@ export class DashboardComponent implements OnInit {
 
         const res = await this.runQueryDate(dataQuery)
         this.deptAndDateInCount = {
-            data: transformData(res, 'stackedColumn', true, 'deptName', 'count', ['year', 'monthString']),
+            data: res.length > 0 ? transformData(res, 'stackedColumn', true, 'deptName', 'count', ['year', 'monthString']) : [],
             animationEnabled: true,
             axisY: {
                 title: "Counts"
@@ -192,7 +195,7 @@ export class DashboardComponent implements OnInit {
         }
 
         const res = await this.runQueryDate(dataQuery)
-        const finalData = transformData(res, 'stackedColumn', true, 'typeName', 'costs', ['year', 'monthString'])
+        const finalData = res.length > 0 ? transformData(res, 'stackedColumn', true, 'typeName', 'costs', ['year', 'monthString']) : []
         console.log(finalData, 'type scost')
         this.typeAndDateInCost = {
             animationEnabled: true,
@@ -227,7 +230,7 @@ export class DashboardComponent implements OnInit {
         const res = await this.runQueryDate(dataQuery)
         this.typeAndDateInCount = {
             animationEnabled: true,
-            data: transformData(res, 'stackedColumn', true, 'typeName', 'count', ['year', 'monthString']),
+            data: res.length > 0 ? transformData(res, 'stackedColumn', true, 'typeName', 'count', ['year', 'monthString']) : [],
             axisY: {
                 title: "Counts"
             },
@@ -258,7 +261,7 @@ export class DashboardComponent implements OnInit {
         const res = await this.runQueryDate(dataQuery)
         this.placeAndDateInCount = {
             animationEnabled: true,
-            data: transformData(res, 'stackedColumn', true, 'placeName', 'count', ['year', 'monthString']),
+            data: res && res.length > 0 ? transformData(res, 'stackedColumn', true, 'placeName', 'count', ['year', 'monthString']) : [],
             axisY: {
                 title: "Counts"
             },

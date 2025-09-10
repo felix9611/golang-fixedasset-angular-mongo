@@ -6,3 +6,12 @@ type RolesPageDto struct {
 	Page  int64  `json:"page"`
 	Limit int64  `json:"limit"`
 }
+
+type MenuItemPermissionBody struct {
+	MenuIds []any `json:"menuIds"`
+	ID      string `json:"id"`
+}
+
+type RoleIdsBody struct {
+	RoleIds []string `json:"roleIds"`
+}
