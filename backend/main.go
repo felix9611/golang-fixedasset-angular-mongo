@@ -1,14 +1,17 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/controllers"
+
+	"github.com/gin-contrib/cors"
+
 	//"golang-fixedasset-mongo-backend/backend/example"
 	"golang-fixedasset-mongo-backend/backend/auth"
-	"github.com/gin-gonic/gin"
 	"time"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -22,7 +25,6 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
 
 	config.ConnectDatabase()
 
@@ -50,6 +52,7 @@ func main() {
 	controllers.RegisterActionRecordsRoutes(api, authServiceMiddleware)
 	controllers.RegisterSysMenuRoutes(api, authServiceMiddleware)
 	controllers.RegisterRepairRecordRoutes(api, authServiceMiddleware)
+	controllers.RegisterExcelFieldMatchRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }

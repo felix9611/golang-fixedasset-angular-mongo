@@ -1,8 +1,9 @@
 package models
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ExcelFieldMatchs struct {
@@ -10,8 +11,14 @@ type ExcelFieldMatchs struct {
 	FunctionCode string             `bson:"functionCode" json:"functionCode"`
 	FunctionName string             `bson:"functionName" json:"functionName"`
 	FunctionType string             `bson:"functionType" json:"functionType"`
-	FieldLists   []any              `bson:"fieldLists" json:"fieldLists"`
+	FieldLists   []FieldListsModel  `bson:"fieldLists" json:"fieldLists"`
 	Status       int                `bson:"status" json:"status"`
 	CreatedAt    time.Time          `bson:"createdAt,omitempty" json:"createdAt"`
 	UpdatedAt    time.Time          `bson:"updatedAt,omitempty" json:"updatedAt"`
+}
+
+type FieldListsModel struct {
+	DbFieldName    string `bson:"dbFieldName" json:"dbFieldName"`
+	ExcelFieldName string `bson:"excelFieldName" json:"excelFieldName"`
+	Sort           int    `bson:"sort" json:"sort"`
 }
