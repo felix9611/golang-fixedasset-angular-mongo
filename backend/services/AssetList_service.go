@@ -2,15 +2,16 @@ package services
 
 import (
 	"context"
-	"golang-fixedasset-mongo-backend/backend/models"
-	"golang-fixedasset-mongo-backend/backend/dto"
-	"golang-fixedasset-mongo-backend/backend/config"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"fmt"
+	"golang-fixedasset-mongo-backend/backend/config"
+	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
+
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetOneAssetItemByID(id string) (interface{}, error) {
@@ -22,7 +23,6 @@ func GetOneAssetItemByID(id string) (interface{}, error) {
 		return nil, err
 	}
 
-
 	err2 := collection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&assetItem)
 	if err2 != nil {
 		return nil, err2
@@ -30,6 +30,7 @@ func GetOneAssetItemByID(id string) (interface{}, error) {
 	if assetItem.Status == 0 {
 		return "This Asset item is write off", nil
 	} else {
+
 		return &assetItem, nil
 	}
 }
@@ -74,12 +75,22 @@ func CreateAssetItem(assetItem *models.AssetLists) (interface{}, error) {
 				return nil, errInv
 			}
 
+			updateFiles := assetItem.UploadAssetListFiles
+			assetItem.UploadAssetListFiles = nil
+
 			res, errInsert := collection.InsertOne(context.Background(), assetItem)
 			if errInsert != nil {
 				return nil, errInsert
 			}
 
-			return res.InsertedID, nil
+			if len(updateFiles) > 0 {
+				_, errFile := UploadAssetFile(updateFiles, res.InsertedID.(primitive.ObjectID).Hex())
+				if errFile != nil {
+					return nil, errFile
+				}
+			}
+
+			return res, nil
 		} else {
 			// Some other error
 			return nil, err
@@ -170,10 +181,21 @@ func UpdateAssetItem(updateData *models.AssetLists) (interface{}, error) {
 			}
 		}
 
+		updateFiles := updateData.UploadAssetListFiles
+		updateData.UploadAssetListFiles = nil
+
 		res, err2 := collection.UpdateOne(context.Background(), bson.M{"_id": updateData.ID}, bson.M{"$set": updateData})
 		if err2 != nil {
 			return nil, err2
 		}
+
+		if len(updateFiles) > 0 {
+			_, errFile := UploadAssetFile(updateFiles, updateData.ID.Hex())
+			if errFile != nil {
+				return nil, errFile
+			}
+		}
+
 		return res, nil
 	} else {
 		return "This asset item may be invalidated or not exist! Please contact admin!", nil
@@ -259,7 +281,6 @@ func ListAllAssetItems() (interface{}, error) {
 			},
 		}},
 
-
 		// $addFields assetCodeInt
 		{{
 			Key: "$addFields", Value: bson.D{
@@ -282,8 +303,6 @@ func ListAllAssetItems() (interface{}, error) {
 		// sort
 		{{Key: "$sort", Value: bson.D{{Key: "assetCodeInt", Value: 1}}}},
 	}
-
-
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -409,7 +428,6 @@ func ListAssetItems(req *dto.ListAssetReqDto) (interface{}, error) {
 			},
 		}},
 
-
 		// $addFields assetCodeInt
 		{{
 			Key: "$addFields", Value: bson.D{
@@ -437,8 +455,6 @@ func ListAssetItems(req *dto.ListAssetReqDto) (interface{}, error) {
 		{{Key: "$limit", Value: limit}},
 	}
 
-
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -459,4 +475,95 @@ func ListAssetItems(req *dto.ListAssetReqDto) (interface{}, error) {
 	}
 
 	return gin.H{"lists": results, "total": count, "page": req.Page, "limit": req.Limit}, nil
+}
+
+func UploadAssetFile(files []models.AssetListFiles, assetId string) (interface{}, error) {
+
+	collectionFiles := config.GetCollection("asset_list_files")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var itemsData []interface{}
+	now := time.Now()
+
+	for _, item := range files {
+		doc := bson.M{
+			"assetId":   assetId,
+			"fileName":  item.FileName,
+			"fileTyp":   item.FileType,
+			"base64":    item.Base64,
+			"status":    1,
+			"createdAt": now,
+			"updatedAt": now,
+		}
+		itemsData = append(itemsData, doc)
+	}
+
+	res, err := collectionFiles.InsertMany(ctx, itemsData)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func GetListAssetFiles(assetId string) (interface{}, error) {
+
+	collectionFiles := config.GetCollection("asset_list_files")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collectionFiles.Find(ctx, bson.M{"assetId": assetId, "status": 1})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func DeleteAssetFile(fileId string) (interface{}, error) {
+
+	objectID, err := primitive.ObjectIDFromHex(fileId)
+
+	collectionFiles := config.GetCollection("asset_list_files")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": objectID}
+
+	count, err := collectionFiles.CountDocuments(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	if count > 0 {
+
+		updateRes, err := collectionFiles.UpdateOne(
+			ctx,
+			filter,
+			bson.M{
+				"$set": bson.M{
+					"status":    0,
+					"updatedAt": time.Now(),
+				},
+			},
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return updateRes, nil
+	} else {
+		return "File not found", nil
+	}
+
 }
