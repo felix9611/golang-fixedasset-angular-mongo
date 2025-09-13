@@ -73,7 +73,7 @@ export class ExcelFieldMatchComponent {
     }
 
     editForm: ExcelFieldListForm = {
-        _id: '',
+        id: '',
         functionCode: '',
         functionName: '',
         functionType: '',
@@ -94,12 +94,12 @@ export class ExcelFieldMatchComponent {
     }
 
     async submitForm() {
-        const url = this.editForm._id === '' ? '/sys/excel-field-match/create' : `/sys/excel-field-match/update`
+        const url = this.editForm.id === '' ? '/sys/excel-field-match/create' : `/sys/excel-field-match/update`
 
         const res = await postApiWithAuth(url, {
             
             ...this.editForm,
-            ...this.editForm._id ? { _id: this.editForm._id} : {},
+            ...this.editForm.id ? { _id: this.editForm.id} : {},
         })
 
         if (res.msg) {
@@ -110,7 +110,7 @@ export class ExcelFieldMatchComponent {
             this.loadRecordLists()
 
             this.editForm = {
-                _id: '',
+                id: '',
                 functionCode: '',
                 functionName: '',
                 functionType: '',
@@ -143,9 +143,9 @@ export class ExcelFieldMatchComponent {
     }
 
     async handleRemove() {
-        const url = `/sys/excel-field-match/remove/${this.handleRemoveId}`
+        const url = `/sys/excel-field-match/void/${this.handleRemoveId}`
 
-        const res: any = await getApiWithAuth(url)
+        const res: any = await deleteApiWithAuth(url)
 
         this.message.info(res.msg)
 
@@ -155,7 +155,7 @@ export class ExcelFieldMatchComponent {
 
 
     dateFormat(data: string) {
-        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
+        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     async getOneData(id:string) {
@@ -167,8 +167,10 @@ export class ExcelFieldMatchComponent {
 
     codeTypeLists: any[] = []
     async loadCodeType() {
-        this.codeTypeLists = await getApiWithAuth('/base/code-type/get-type/ExcelFieldMatch')
+        const res = await getApiWithAuth('/base/code-type/get-type/ExcelFieldMatch')
+        this.codeTypeLists = res.datas
     }
+
 
     fieldAddRow(): void {
         this.editForm.fieldLists = [...this.editForm.fieldLists, { ...this.fieldForm }]

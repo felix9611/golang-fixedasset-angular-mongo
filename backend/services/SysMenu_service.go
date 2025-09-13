@@ -2,17 +2,16 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
+	"sort"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	
-
 	"go.mongodb.org/mongo-driver/mongo"
-	"time"
-	"fmt"
-	"sort"
 )
 
 func CreateSysMenu(data *models.SysMenus) (interface{}, error) {
@@ -40,7 +39,7 @@ func CreateSysMenu(data *models.SysMenus) (interface{}, error) {
 			data.CreatedAt = time.Now()
 		}
 
-		if data.UpdatedAt.IsZero() {		
+		if data.UpdatedAt.IsZero() {
 			data.UpdatedAt = time.Now()
 		}
 		result, err := collection.InsertOne(ctx, data)
@@ -55,7 +54,7 @@ func CreateSysMenu(data *models.SysMenus) (interface{}, error) {
 		CreateActionRecord("Menu Item Create", "POST", "System Menu", data, "Failed")
 		return "Menu with the same name already exists", nil
 	}
-	
+
 }
 
 func GetOneMenuItemById(id string) (interface{}, error) {
@@ -67,7 +66,7 @@ func GetOneMenuItemById(id string) (interface{}, error) {
 		return menuItem, err
 	}
 
-	filter := bson.M{"_id": objectID, "status": 1}
+	filter := bson.M{"_id": objectID}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -76,7 +75,11 @@ func GetOneMenuItemById(id string) (interface{}, error) {
 		return nil, err
 	}
 
-	return menuItem, nil
+	if menuItem.Status == 0 {
+		return "Menu item inactive", nil
+	} else {
+		return menuItem, nil
+	}
 }
 
 func VoidMenuItemById(id string) (interface{}, error) {
@@ -118,7 +121,7 @@ func VoidMenuItemById(id string) (interface{}, error) {
 		}
 
 		CreateActionRecord("Menu Item Void", "DELETE", "System Menu", menuItem, "Success")
-		
+
 		return result, nil
 	}
 }
@@ -303,7 +306,7 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 	defer cancel()
 
 	// 1️⃣ 初始 ID slice
-	initialIds := []interface{}{}  // ✅ 正確初始化
+	initialIds := []interface{}{} // ✅ 正確初始化
 
 	oids := []primitive.ObjectID{}
 
@@ -404,4 +407,3 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 
 	return finalTree, nil
 }
-
