@@ -1,14 +1,14 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
-	jwt "github.com/appleboy/gin-jwt/v2"
-)
 
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
+)
 
 func CreateAssetList(c *gin.Context) {
 	var assetItem models.AssetLists
@@ -110,6 +110,26 @@ func QueryAssetDataByDataType(c *gin.Context) {
 	c.JSON(http.StatusOK, assetData)
 }
 
+func LoadFilesByAssetId(c *gin.Context) {
+	id := c.Param("id")
+	assetFiles, err := services.GetListAssetFiles(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, assetFiles)
+}
+
+func RemoveAssetFile(c *gin.Context) {
+	id := c.Param("id")
+	res, err := services.DeleteAssetFile(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
 func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	assetListGroup := rg.Group("/asset/asset-list", handle.MiddlewareFunc())
 	{
@@ -118,6 +138,9 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		assetListGroup.GET("/list-all", ListAllAssetItems)
 		assetListGroup.GET("/one/:id", GetOneAssetItem)
 		assetListGroup.POST("/update", UpdateAssetItem)
+		assetListGroup.GET("/load-file/:id", LoadFilesByAssetId)
+		assetListGroup.GET("/code/:code", GetOneAssetItemByAssetCode)
+		assetListGroup.DELETE("/file-remove/:id", RemoveAssetFile)
 		assetListGroup.POST("/chart-query-date", QueryAssetDataByDataType)
 		assetListGroup.POST("/chart-query-data", QueryAssetDataByDataType)
 

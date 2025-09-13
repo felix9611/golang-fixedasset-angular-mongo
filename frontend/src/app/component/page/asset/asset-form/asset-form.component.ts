@@ -204,7 +204,8 @@ export class AssetFormComponent implements OnInit {
 
     async getOne() {
         this.editForm = await getApiWithAuth(`/asset/asset-list/one/${ this.theId}`)
-        console.log(this.editForm, 'k')
+        
+        this.editForm.assetListFiles = await getApiWithAuth(`/asset/asset-list/load-file/${this.theId}`)
     }
 
     typeLists: any[] = []
