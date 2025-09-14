@@ -24,7 +24,7 @@
                 <nz-form-control>
                     <nz-select name="typeId" [(ngModel)]="editForm.typeId"  nzPlaceHolder="Please select" [disabled]="true">
                         @for (option of typeLists; track option) {
-                          <nz-option [nzLabel]="option.typeName" [nzValue]="option._id"></nz-option>
+                          <nz-option [nzLabel]="option.typeName" [nzValue]="option.id"></nz-option>
                         }
                     </nz-select>
                 </nz-form-control>
@@ -34,7 +34,7 @@
                 <nz-form-control>
                     <nz-select name="placeId" [(ngModel)]="editForm.placeId"  nzPlaceHolder="Please select" [disabled]="true">
                         @for (option of placeLists; track option) {
-                          <nz-option [nzLabel]="option.placeName" [nzValue]="option._id"></nz-option>
+                          <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
                         }
                       </nz-select>
                 </nz-form-control>
@@ -44,7 +44,7 @@
                 <nz-form-control>
                     <nz-select name="deptId" [(ngModel)]="editForm.deptId"  nzPlaceHolder="Please select" [disabled]="true">
                         @for (option of deptLists; track option) {
-                          <nz-option [nzLabel]="option.deptName" [nzValue]="option._id"></nz-option>
+                          <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
                         }
                       </nz-select>
                 </nz-form-control>
@@ -74,7 +74,7 @@
             <nz-form-control>
                 <nz-select name="vendorId" [(ngModel)]="editForm.vendorId"  nzPlaceHolder="Please select" [disabled]="true">
                     @for (option of vendorLists; track option) {
-                      <nz-option [nzLabel]="option.vendorName" [nzValue]="option._id"></nz-option>
+                      <nz-option [nzLabel]="option.vendorName" [nzValue]="option.id"></nz-option>
                     }
                   </nz-select>
             </nz-form-control>

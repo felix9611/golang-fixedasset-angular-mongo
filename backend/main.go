@@ -53,6 +53,7 @@ func main() {
 	controllers.RegisterSysMenuRoutes(api, authServiceMiddleware)
 	controllers.RegisterRepairRecordRoutes(api, authServiceMiddleware)
 	controllers.RegisterExcelFieldMatchRoutes(api, authServiceMiddleware)
+	controllers.RegisterWriteOffsRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }

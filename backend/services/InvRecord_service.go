@@ -3,12 +3,13 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-    "go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateInvRecord(assetCode string, placeFrom string, placeTo string) (interface{}, error) {
@@ -23,8 +24,11 @@ func CreateInvRecord(assetCode string, placeFrom string, placeTo string) (interf
 
 	_, err := collection.InsertOne(context.Background(), body)
 	if err != nil {
+		CreateActionRecord("Inventory Record Create", "POST", "Inventory Record", body, "Failed")
 		return nil, err
 	}
+
+	CreateActionRecord("Inventory Record Create", "POST", "Inventory Record", body, "Success")
 
 	return body, nil
 }

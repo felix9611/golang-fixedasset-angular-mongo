@@ -36,37 +36,37 @@ import { Subscription } from 'rxjs'
     styleUrl: './write-off-list.component.css',
 })
 export class WriteOffListComponent {
-    private rightSubscription: Subscription
+   // private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService,
         private routeTo: Router
      ) {
     
-        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Write Off Record', 'write-off-list')
-            this.userRightInside = {
+      //  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+      //      const answer = findMenuItem(data, 'Write Off Record', 'write-off-list')
+          /*  this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
                 update: answer.update ?? false,
                 delete: answer.delete ?? false,
                 upload: answer.upload ?? false
                 // keep default value
-            }
-        })
+            } */
+     //   })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
-            this.rightSubscription.unsubscribe()
+     //       this.rightSubscription.unsubscribe()
         }
     }
 
     userRightInside: any = {
-        read: false,
-        write: false,
-        update: false,
-        delete: false
+        read: true,
+        write: true,
+        update: true,
+        delete: true,
     }
 
     searchForm: any = {
@@ -95,12 +95,14 @@ export class WriteOffListComponent {
 
     placeLists: any[] = []
     async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+        const res = await getApiWithAuth('/base/location/all')
+        this.placeLists = res.data
     }
 
 
     async loadWriteOffLists() {
         const res = await postApiWithAuth('/asset/write-off/list', this.searchForm)
+        console.log(res.lists)
         this.dataLists = res.lists
         this.totals = res.total
     }

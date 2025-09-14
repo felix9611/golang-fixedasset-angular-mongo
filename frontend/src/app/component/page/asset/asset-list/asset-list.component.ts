@@ -43,13 +43,13 @@ import { DownloadExcelTemplateComponent } from '../../../components/download-tem
     styleUrl: './asset-list.component.css',
 })
 export class AssetListComponent {
-   // private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private routeTo: Router,
         private userStoreService: UserStoreService
     ) {
-       /* this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Tax Information', 'tax-information')
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+            const answer = findMenuItem(data, 'Asset List', 'asset-lists')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -60,13 +60,13 @@ export class AssetListComponent {
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
-        }) */
+        })
     }
 
     ngOnDestroy() {
-   //     if (this.userStoreService.menuRole$) {
-   //        this.rightSubscription.unsubscribe()
-       // }
+        if (this.userStoreService.menuRole$) {
+           this.rightSubscription.unsubscribe()
+     }
     }
 
     searchForm: any = {

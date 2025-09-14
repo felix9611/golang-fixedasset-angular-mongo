@@ -567,3 +567,38 @@ func DeleteAssetFile(fileId string) (interface{}, error) {
 	}
 
 }
+
+func WriteOffInactiveAsset(assetId string) (interface{}, error) {
+
+	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objectID, err := primitive.ObjectIDFromHex(assetId)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID}
+
+	res := collection.FindOne(ctx, filter)
+
+	var asset models.AssetLists
+	err = res.Decode(&asset)
+	if err != nil {
+		return nil, err
+	}
+
+	if asset.Status == 0 {
+		return "This asset have been written off", nil
+	} else {
+		asset.Status = 0
+		asset.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
+
+		_, err := collection.UpdateOne(ctx, filter, asset)
+		if err != nil {
+			return nil, err
+		}
+		return asset, nil
+	}
+}

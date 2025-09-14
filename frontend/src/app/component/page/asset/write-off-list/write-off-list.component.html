@@ -19,7 +19,7 @@
                     nzMode="multiple" nzAllowClear  nzShowArrow
                      nzPlaceHolder="Please select Location">
                     @for (option of placeLists; track option) {
-                      <nz-option [nzLabel]="option.placeName" [nzValue]="option._id"></nz-option>
+                      <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
                     }
                 </nz-select>
             </div>
@@ -51,7 +51,7 @@
                     <tr *ngFor="let data of dataTable.data">
                         <td>{{data.assetlist.assetCode}}</td>
                         <td>{{data.assetlist.assetName}}</td>
-                        <td>{{data.location.placeName}}</td>
+                        <td>{{data.location?.placeName}}</td>
                         <td>{{ dateFormat(data.assetlist.purchaseDate) }}</td>
                         <td>{{ dateFormat(data.lastDay)}}</td>
                         <td>{{data.disposalMethod}}</td>
