@@ -1,14 +1,23 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
-	"github.com/gin-gonic/gin"
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"net/http"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Get one vender record by id
+// @Description  Get one vender record by id
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Vendor ID"
+// @Success      200      {object}  models.Vendors
+// @Router       /base/vendor/one/{id} [get]
 func GetOneVendorByIdGet(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -49,7 +58,7 @@ func DeleteVendorById(c *gin.Context) {
 	}
 
 	result, err := services.InactiveVendorByID(id)
-	
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete vendor"})
 		return
@@ -110,4 +119,3 @@ func RegisterVendorRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		vendorGroup.GET("/all", GetAllVendors)
 	}
 }
-
