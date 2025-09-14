@@ -1,0 +1,225 @@
+definitions:
+  dto.ActionReocrdList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.ActionRecords'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.ListActionRecordReqDto:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+    type: object
+  dto.ListAllSysRoleDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.SysRoles'
+        type: array
+    type: object
+  models.ActionRecords:
+    properties:
+      actionData: {}
+      actionFrom:
+        type: string
+      actionMethod:
+        type: string
+      actionName:
+        type: string
+      actionSuccess:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+    type: object
+  models.SysRoles:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      delete:
+        type: boolean
+      id:
+        type: string
+      menuIds:
+        items: {}
+        type: array
+      name:
+        type: string
+      read:
+        type: boolean
+      remark:
+        type: string
+      status:
+        type: integer
+      update:
+        type: boolean
+      updatedAt:
+        type: string
+      upload:
+        type: boolean
+      write:
+        type: boolean
+    type: object
+  models.Vendors:
+    properties:
+      address:
+        type: string
+      contactPerson:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      fax:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+      vendorCode:
+        type: string
+      vendorName:
+        type: string
+      vendorOtherName:
+        description: v
+        type: string
+      website:
+        type: string
+    type: object
+host: localhost:6500
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is an API server for asset management system.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Asset Management API
+  version: "1.0"
+paths:
+  /action-records/list:
+    post:
+      consumes:
+      - application/json
+      description: List Action Records
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListActionRecordReqDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ActionReocrdList'
+      summary: List Action Records
+      tags:
+      - Action Records
+  /base/vendor/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one vender record by id
+      parameters:
+      - description: Vendor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Vendors'
+      summary: Get one vender record by id
+      tags:
+      - Vendor
+  /sys/role/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all sys role
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ListAllSysRoleDto'
+            type: array
+      summary: Get all sys role
+      tags:
+      - Sys Role
+  /sys/role/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one sys role record by id
+      parameters:
+      - description: sys role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysRoles'
+      summary: Get one sys role record by id
+      tags:
+      - Sys Role
+    post:
+      consumes:
+      - application/json
+      description: Create one sys role
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysRoles'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysRoles'
+      summary: Create one sys role
+      tags:
+      - Sys Role
+swagger: "2.0"

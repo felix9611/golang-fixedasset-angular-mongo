@@ -1,5 +1,7 @@
 package dto
 
+import "golang-fixedasset-mongo-backend/backend/models"
+
 type RolesPageDto struct {
 	Name  string `json:"name"`
 	Code  string `json:"code"`
@@ -8,10 +10,14 @@ type RolesPageDto struct {
 }
 
 type MenuItemPermissionBody struct {
-	MenuIds []any `json:"menuIds"`
+	MenuIds []any  `json:"menuIds"`
 	ID      string `json:"id"`
 }
 
 type RoleIdsBody struct {
 	RoleIds []string `json:"roleIds"`
+}
+
+type ListAllSysRoleDto struct {
+	Data []models.SysRoles `json:"data"`
 }

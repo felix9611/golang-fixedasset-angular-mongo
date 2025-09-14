@@ -1,13 +1,23 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"golang-fixedasset-mongo-backend/backend/services"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/services"
 	"net/http"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// PingExample godoc
+// @Summary      List Action Records
+// @Description  List Action Records
+// @Tags         Action Records
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.ListActionRecordReqDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.ActionReocrdList
+// @Router       /action-records/list [post]
 func ListPageActionRecords(c *gin.Context) {
 	var pageDto dto.ListActionRecordReqDto
 	if err := c.ShouldBindJSON(&pageDto); err != nil {

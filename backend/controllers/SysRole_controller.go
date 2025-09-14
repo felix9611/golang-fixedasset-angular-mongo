@@ -1,14 +1,23 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create one sys role
+// @Description  Create one sys role
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.SysRoles  true  "List Action Record Request Body"
+// @Success      200      {object}  models.SysRoles
+// @Router       /sys/role/create [post]
 func CreateSysRoleApi(c *gin.Context) {
 	var role models.SysRoles
 	if err := c.ShouldBindJSON(&role); err != nil {
@@ -24,6 +33,14 @@ func CreateSysRoleApi(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
+// @Summary      Get one sys role record by id
+// @Description  Get one sys role record by id
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "sys role ID"
+// @Success      200      {object}  models.SysRoles
+// @Router       /sys/role/one/{id} [get]
 func GetRoleById(c *gin.Context) {
 	id := c.Param("id")
 	role, err := services.GetOneSysRoleById(id)
@@ -34,6 +51,13 @@ func GetRoleById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": role})
 }
 
+// @Summary      Get all sys role
+// @Description  Get all sys role
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Success      200      {object}  []dto.ListAllSysRoleDto
+// @Router       /sys/role/all [get]
 func GetAllRoles(c *gin.Context) {
 	roles, err := services.GetAllRoles()
 	if err != nil {
@@ -81,7 +105,7 @@ func ListPageRoles(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": result})
-}	
+}
 
 func HandleMeunPermission(c *gin.Context) {
 	var menuPermissionDto dto.MenuItemPermissionBody
@@ -110,7 +134,6 @@ func LoadRoleWithMenu(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result)
 }
-
 
 func RegisterSysRoleRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	roleGroup := rg.Group("/sys/role", handle.MiddlewareFunc())

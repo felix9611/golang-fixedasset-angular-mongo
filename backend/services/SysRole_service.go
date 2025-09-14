@@ -1,19 +1,18 @@
 package services
 
 import (
-	"golang-fixedasset-mongo-backend/backend/models"
+	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-	"context"
+
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo"
-	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-
 
 func CreateSysRole(role *models.SysRoles) (interface{}, error) {
 	collection := config.GetCollection("sys_roles")
@@ -45,12 +44,12 @@ func CreateSysRole(role *models.SysRoles) (interface{}, error) {
 			role.UpdatedAt = time.Now()
 		}
 
-		result, err := collection.InsertOne(ctx, role)
+		_, err := collection.InsertOne(ctx, role)
 		if err != nil {
 			return nil, err
 		}
 
-		return result, nil
+		return role, nil
 	} else {
 		return "Role with the same name already exists", nil
 	}
@@ -108,7 +107,6 @@ func GetOneSysRoleById(id string) (interface{}, error) {
 func UpdateRoleById(updateData *models.SysRoles) (interface{}, error) {
 	collection := config.GetCollection("sys_roles")
 	//objectID, err := primitive.ObjectIDFromHex(updateData.ID)
-	
 
 	filter := bson.M{"_id": updateData.ID, "status": 1}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -161,7 +159,7 @@ func VoidRoleById(id string) (interface{}, error) {
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
 			"$set": bson.M{
-				"status": 0,
+				"status":     0,
 				"updated_at": time.Now(),
 			},
 		})
@@ -223,11 +221,10 @@ func RolesList(pageDto *dto.RolesPageDto) (interface{}, error) {
 	}
 
 	if err := cursor.Err(); err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
-
-	return gin.H{"lists": roles, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+	return gin.H{"lists": roles, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 }
 
 func findRoleListByUser(ids []primitive.ObjectID) ([]models.SysRoles, error) {
@@ -299,7 +296,6 @@ func HandleMenuPermission(data *dto.MenuItemPermissionBody) (interface{}, error)
 		return "Role is already voided", nil
 	}
 
-	
 }
 
 func LoadRoleWithMenu(data *dto.RoleIdsBody) (interface{}, error) {
@@ -318,7 +314,7 @@ func LoadRoleWithMenu(data *dto.RoleIdsBody) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	filter :=  bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: objectIDs}}}}
+	filter := bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: objectIDs}}}}
 
 	pipeline := mongo.Pipeline{
 		{{Key: "$match", Value: filter}},
@@ -384,7 +380,7 @@ func LoadRoleWithMenu(data *dto.RoleIdsBody) (interface{}, error) {
 			}},
 		}}},
 	}
-	
+
 	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err

@@ -1,0 +1,341 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an API server for asset management system.",
+        "title": "Asset Management API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:6500",
+    "paths": {
+        "/action-records/list": {
+            "post": {
+                "description": "List Action Records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Action Records"
+                ],
+                "summary": "List Action Records",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListActionRecordReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ActionReocrdList"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/vendor/one/{id}": {
+            "get": {
+                "description": "Get one vender record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vendor"
+                ],
+                "summary": "Get one vender record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vendor ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Vendors"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/all": {
+            "get": {
+                "description": "Get all sys role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Get all sys role",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ListAllSysRoleDto"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/one/{id}": {
+            "get": {
+                "description": "Get one sys role record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Get one sys role record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sys role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create one sys role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Create one sys role",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ActionReocrdList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ActionRecords"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ListActionRecordReqDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ListAllSysRoleDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SysRoles"
+                    }
+                }
+            }
+        },
+        "models.ActionRecords": {
+            "type": "object",
+            "properties": {
+                "actionData": {},
+                "actionFrom": {
+                    "type": "string"
+                },
+                "actionMethod": {
+                    "type": "string"
+                },
+                "actionName": {
+                    "type": "string"
+                },
+                "actionSuccess": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SysRoles": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "delete": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "menuIds": {
+                    "type": "array",
+                    "items": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "update": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "boolean"
+                },
+                "write": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Vendors": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contactPerson": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "fax": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vendorCode": {
+                    "type": "string"
+                },
+                "vendorName": {
+                    "type": "string"
+                },
+                "vendorOtherName": {
+                    "description": "v",
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

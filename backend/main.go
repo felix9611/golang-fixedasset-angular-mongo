@@ -1,19 +1,33 @@
 package main
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/controllers"
-
-	"github.com/gin-contrib/cors"
-
-	//"golang-fixedasset-mongo-backend/backend/example"
-	"golang-fixedasset-mongo-backend/backend/auth"
 	"time"
 
+	_ "golang-fixedasset-mongo-backend/backend/docs"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           Asset Management API
+// @version         1.0
+// @description     This is an API server for asset management system.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@example.com
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:6500
 func main() {
 	router := gin.Default()
 
@@ -32,6 +46,8 @@ func main() {
 	if errAuthService != nil {
 		panic("JWT Middleware initialization failed: " + errAuthService.Error())
 	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/")
 	controllers.RegisterTongsRoutes(api)
