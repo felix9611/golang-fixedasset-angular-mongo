@@ -1,0 +1,112 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an API server for asset management system.",
+        "title": "Asset Management API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:6500",
+    "paths": {
+        "/action-records/list": {
+            "post": {
+                "description": "List Action Records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Action Records"
+                ],
+                "summary": "List Action Records",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListActionRecordReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ActionReocrdList"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ActionReocrdList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ActionRecords"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ListActionRecordReqDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ActionRecords": {
+            "type": "object",
+            "properties": {
+                "actionData": {},
+                "actionFrom": {
+                    "type": "string"
+                },
+                "actionMethod": {
+                    "type": "string"
+                },
+                "actionName": {
+                    "type": "string"
+                },
+                "actionSuccess": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,74 @@
+definitions:
+  dto.ActionReocrdList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.ActionRecords'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.ListActionRecordReqDto:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+    type: object
+  models.ActionRecords:
+    properties:
+      actionData: {}
+      actionFrom:
+        type: string
+      actionMethod:
+        type: string
+      actionName:
+        type: string
+      actionSuccess:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+    type: object
+host: localhost:6500
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is an API server for asset management system.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Asset Management API
+  version: "1.0"
+paths:
+  /action-records/list:
+    post:
+      consumes:
+      - application/json
+      description: List Action Records
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListActionRecordReqDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ActionReocrdList'
+      summary: List Action Records
+      tags:
+      - Action Records
+swagger: "2.0"
