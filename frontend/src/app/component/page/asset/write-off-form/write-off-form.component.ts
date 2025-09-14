@@ -79,7 +79,7 @@ export class WriteOffFormComponent implements OnInit {
     }
 
     editForm: AssetFormDto = {
-        _id: '',
+        id: '',
         assetCode: '',
         assetName: '',
         unit: '',
@@ -163,28 +163,31 @@ export class WriteOffFormComponent implements OnInit {
 
     typeLists: any[] = []
     async loadTypeList() {
-        this.typeLists = await getApiWithAuth('/asset/type/getAll')
-        this.dataCal()
+        const res = await getApiWithAuth('/asset/type/all')
+        this.typeLists = res.datas
     }
 
     deptLists: any[] = []
     async loadDeptList() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
+        const res = await getApiWithAuth('/sys/department/all')
+        this.deptLists = res.data
     }
 
     placeLists: any[] = []
     async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+        const res = await getApiWithAuth('/base/location/all')
+        this.placeLists = res.data
     }
 
     vendorLists: any[] = []
     async loadVendorList() {
-        this.vendorLists = await getApiWithAuth('/base/vendor/getAll')
+        this.vendorLists = await getApiWithAuth('/base/vendor/all')
     }
 
     typeCodeList: any[] = []
     async loadCodeTypeList() {
-        this.typeCodeList = await getApiWithAuth('/base/code-type/get-type/WriteOff')
+        const res = await getApiWithAuth('/base/code-type/get-type/WriteOff')
+        this.typeCodeList = res.datas
     }
 
     backTo() {
@@ -196,7 +199,7 @@ export class WriteOffFormComponent implements OnInit {
 
     async goToWriteOff() {
         const finalForm = {
-            assetId: this.editForm._id,
+            assetId: this.editForm.id,
             lastPlaceId: this.editForm.placeId,
             reason: this.editForm.reason,
             lastDay: this.editForm.lastDay,
@@ -206,13 +209,13 @@ export class WriteOffFormComponent implements OnInit {
 
         const res = await postApiWithAuth('/asset/write-off/create', finalForm)
         
-        if (res.finish) {
-            this.message.info(res.msg)
+        if (res.InsertedID) {
+            this.message.info("Voided successfully!")
             timer(2500).subscribe(() => {
                 this.backTo()
             })
         } else {
-            this.message.error(res.msg)
+            this.message.error(res)
         }
     }
 
