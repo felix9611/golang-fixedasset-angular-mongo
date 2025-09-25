@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func CreateLocation(c *gin.Context) {
@@ -25,6 +26,14 @@ func CreateLocation(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one location record by id
+// @Description  Get one location record by id
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Location ID"
+// @Success      200      {object}  models.Locations
+// @Router       /base/location/one/{id} [get]
 func GetLocationById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.GetOneLocationById(id)
@@ -77,6 +86,12 @@ func ListLocations(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get all location record
+// @Description  Get all location record
+// @Tags         Location
+// @Produce      json
+// @Success      200      {object}  []models.Locations
+// @Router       /base/location/all [get]
 func GetAllLocations(c *gin.Context) {
 	locations, err := services.ListAllLocation()
 	if err != nil {
@@ -85,8 +100,6 @@ func GetAllLocations(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, locations)
 }
-
-
 
 func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	locationGroup := rg.Group("/base/location", handle.MiddlewareFunc())

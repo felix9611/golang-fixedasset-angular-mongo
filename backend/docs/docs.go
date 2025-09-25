@@ -58,6 +58,93 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/code-type/one/{id}": {
+            "get": {
+                "description": "Get one code type record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Get one code type record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sys role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/all": {
+            "get": {
+                "description": "Get all location record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get all location record",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Locations"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/one/{id}": {
+            "get": {
+                "description": "Get one location record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get one location record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                }
+            }
+        },
         "/base/vendor/one/{id}": {
             "get": {
                 "description": "Get one vender record by id",
@@ -90,6 +177,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/sys/department/all": {
+            "get": {
+                "description": "Get all Department record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get all Department record",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Department"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/department/{id}": {
+            "get": {
+                "description": "Get one Department record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get one Department record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    }
+                }
+            }
+        },
         "/sys/role/all": {
             "get": {
                 "description": "Get all sys role",
@@ -116,37 +258,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/sys/role/one/{id}": {
-            "get": {
-                "description": "Get one sys role record by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Sys Role"
-                ],
-                "summary": "Get one sys role record by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "sys role ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.SysRoles"
-                        }
-                    }
-                }
-            },
+        "/sys/role/create": {
             "post": {
                 "description": "Create one sys role",
                 "consumes": [
@@ -168,6 +280,38 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.SysRoles"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/one/{id}": {
+            "get": {
+                "description": "Get one sys role record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Get one sys role record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sys role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -244,6 +388,84 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CodeTypes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "valueCode": {
+                    "type": "string"
+                },
+                "valueName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Department": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deptCode": {
+                    "type": "string"
+                },
+                "deptName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Locations": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "placeCode": {
+                    "type": "string"
+                },
+                "placeName": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

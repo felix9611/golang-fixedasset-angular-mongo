@@ -42,6 +42,57 @@ definitions:
       id:
         type: string
     type: object
+  models.CodeTypes:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+      valueCode:
+        type: string
+      valueName:
+        type: string
+    type: object
+  models.Department:
+    properties:
+      createdAt:
+        type: string
+      deptCode:
+        type: string
+      deptName:
+        type: string
+      id:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.Locations:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      placeCode:
+        type: string
+      placeName:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   models.SysRoles:
     properties:
       code:
@@ -142,6 +193,63 @@ paths:
       summary: List Action Records
       tags:
       - Action Records
+  /base/code-type/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one code type record by id
+      parameters:
+      - description: sys role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CodeTypes'
+      summary: Get one code type record by id
+      tags:
+      - Code Type
+  /base/location/all:
+    get:
+      description: Get all location record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Locations'
+            type: array
+      summary: Get all location record
+      tags:
+      - Location
+  /base/location/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one location record by id
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Locations'
+      summary: Get one location record by id
+      tags:
+      - Location
   /base/vendor/one/{id}:
     get:
       consumes:
@@ -163,6 +271,42 @@ paths:
       summary: Get one vender record by id
       tags:
       - Vendor
+  /sys/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Department record by id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+      summary: Get one Department record by id
+      tags:
+      - Department
+  /sys/department/all:
+    get:
+      description: Get all Department record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Department'
+            type: array
+      summary: Get all Department record
+      tags:
+      - Department
   /sys/role/all:
     get:
       consumes:
@@ -178,6 +322,28 @@ paths:
               $ref: '#/definitions/dto.ListAllSysRoleDto'
             type: array
       summary: Get all sys role
+      tags:
+      - Sys Role
+  /sys/role/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one sys role
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysRoles'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysRoles'
+      summary: Create one sys role
       tags:
       - Sys Role
   /sys/role/one/{id}:
@@ -199,27 +365,6 @@ paths:
           schema:
             $ref: '#/definitions/models.SysRoles'
       summary: Get one sys role record by id
-      tags:
-      - Sys Role
-    post:
-      consumes:
-      - application/json
-      description: Create one sys role
-      parameters:
-      - description: List Action Record Request Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.SysRoles'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.SysRoles'
-      summary: Create one sys role
       tags:
       - Sys Role
 swagger: "2.0"

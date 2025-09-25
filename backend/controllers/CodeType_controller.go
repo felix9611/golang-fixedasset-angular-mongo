@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func CreateCodeType(c *gin.Context) {
@@ -25,6 +26,14 @@ func CreateCodeType(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one code type record by id
+// @Description  Get one code type record by id
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "sys role ID"
+// @Success      200      {object}  models.CodeTypes
+// @Router       /base/code-type/one/{id} [get]
 func GetCodeTypeById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.GetOneCodeType(id)
@@ -37,12 +46,12 @@ func GetCodeTypeById(c *gin.Context) {
 
 func InactiveCodeTypeByID(c *gin.Context) {
 	id := c.Param("id")
-	result,err := services.VoidOneCodeType(id)
+	result, err := services.VoidOneCodeType(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "CodeType inactivated successfully", "data": result })
+	c.JSON(http.StatusOK, gin.H{"message": "CodeType inactivated successfully", "data": result})
 }
 
 func ListCodeType(c *gin.Context) {

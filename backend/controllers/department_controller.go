@@ -1,21 +1,30 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-//	"time"
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
+
+	//	"time"
 	"log"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 // var tongsCollection = config.GetCollection("tongs")
 
 var d models.Department
 
+// @Summary      Get one Department record by id
+// @Description  Get one Department record by id
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Department ID"
+// @Success      200      {object}  models.Department
+// @Router       /sys/department/{id} [get]
 func GetOneDepartmentById(c *gin.Context) {
 	id := c.Param("id")
 	department, err := services.GetOneDepartment(id)
@@ -23,9 +32,15 @@ func GetOneDepartmentById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get department"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": department })
+	c.JSON(http.StatusOK, gin.H{"data": department})
 }
 
+// @Summary      Get all Department record
+// @Description  Get all Department record
+// @Tags         Department
+// @Produce      json
+// @Success      200      {object}  []models.Department
+// @Router       /sys/department/all [get]
 func GetAllDepartments(c *gin.Context) {
 	departments, err := services.GetAllDepartments()
 	if err != nil {
