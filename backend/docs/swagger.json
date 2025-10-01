@@ -51,6 +51,109 @@
                 }
             }
         },
+        "/base/code-type/create": {
+            "post": {
+                "description": "Create one Code Type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Create one Code Type record",
+                "parameters": [
+                    {
+                        "description": "Code Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/get-type/{type}": {
+            "get": {
+                "description": "Get one code type record by type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Get one code type record by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "code type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CodeTypes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/list": {
+            "post": {
+                "description": "List Code Types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "List Code Types",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/code-type/one/{id}": {
             "get": {
                 "description": "Get one code type record by id",
@@ -67,7 +170,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "sys role ID",
+                        "description": "code type ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -78,6 +181,72 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/update": {
+            "post": {
+                "description": "Update one Code Type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Update one Code Type record",
+                "parameters": [
+                    {
+                        "description": "Code Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/void/{id}": {
+            "delete": {
+                "description": "Delete one code type record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Delete one code type record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Code Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
                         }
                     }
                 }
@@ -635,6 +804,40 @@
                     "type": "integer"
                 },
                 "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CodeTypeList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CodeTypes"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CodeTypeListDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
                     "type": "integer"
                 }
             }

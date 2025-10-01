@@ -12,6 +12,28 @@ definitions:
       total:
         type: integer
     type: object
+  dto.CodeTypeList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.CodeTypes'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.CodeTypeListDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
   dto.DepartmentList:
     properties:
       limit:
@@ -287,13 +309,80 @@ paths:
       summary: List Action Records
       tags:
       - Action Records
+  /base/code-type/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Code Type record
+      parameters:
+      - description: Code Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CodeTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Code Type record
+      tags:
+      - Code Type
+  /base/code-type/get-type/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Get one code type record by type
+      parameters:
+      - description: code type
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CodeTypes'
+            type: array
+      summary: Get one code type record by type
+      tags:
+      - Code Type
+  /base/code-type/list:
+    post:
+      consumes:
+      - application/json
+      description: List Code Types
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CodeTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CodeTypeList'
+      summary: List Code Types
+      tags:
+      - Code Type
   /base/code-type/one/{id}:
     get:
       consumes:
       - application/json
       description: Get one code type record by id
       parameters:
-      - description: sys role ID
+      - description: code type ID
         in: path
         name: id
         required: true
@@ -306,6 +395,49 @@ paths:
           schema:
             $ref: '#/definitions/models.CodeTypes'
       summary: Get one code type record by id
+      tags:
+      - Code Type
+  /base/code-type/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one Code Type record
+      parameters:
+      - description: Code Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CodeTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
+      summary: Update one Code Type record
+      tags:
+      - Code Type
+  /base/code-type/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one code type record by id
+      parameters:
+      - description: Code Type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one code type record by id
       tags:
       - Code Type
   /base/location/all:
