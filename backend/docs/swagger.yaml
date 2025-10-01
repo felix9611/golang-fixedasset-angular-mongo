@@ -12,6 +12,53 @@ definitions:
       total:
         type: integer
     type: object
+  dto.DepartmentList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Department'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.DepartmentPageDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.GeneralCreateResponseBody:
+    properties:
+      id:
+        type: string
+    type: object
+  dto.GeneralUpdateInactiveResponseBody:
+    properties:
+      data:
+        $ref: '#/definitions/dto.GeneralUpdateResponse'
+      id:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.GeneralUpdateResponse:
+    properties:
+      MatchedCount:
+        type: integer
+      ModifiedCount:
+        type: integer
+      UpsertedCount:
+        type: integer
+      UpsertedID:
+        type: string
+    type: object
   dto.ListActionRecordReqDto:
     properties:
       limit:
@@ -122,6 +169,31 @@ definitions:
         type: boolean
       write:
         type: boolean
+    type: object
+  models.SysUsers:
+    properties:
+      avatarBase64:
+        type: string
+      createdAt:
+        type: string
+      deptId:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      status:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
     type: object
   models.Vendors:
     properties:
@@ -250,6 +322,27 @@ paths:
       summary: Get one location record by id
       tags:
       - Location
+  /base/location/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one location record by id
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one location record by id
+      tags:
+      - Location
   /base/vendor/one/{id}:
     get:
       consumes:
@@ -305,6 +398,93 @@ paths:
               $ref: '#/definitions/models.Department'
             type: array
       summary: Get all Department record
+      tags:
+      - Department
+  /sys/department/list:
+    post:
+      consumes:
+      - application/json
+      description: List Departments
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepartmentPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DepartmentList'
+      summary: List Departments
+      tags:
+      - Department
+  /sys/dpartment/create/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Create one dpartment record
+      parameters:
+      - description: Department Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one dpartment record
+      tags:
+      - Department
+  /sys/dpartment/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update one dpartment record
+      parameters:
+      - description: Department Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one dpartment record
+      tags:
+      - Department
+  /sys/dpartment/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one dpartment record by id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one dpartment record by id
       tags:
       - Department
   /sys/role/all:
@@ -367,4 +547,25 @@ paths:
       summary: Get one sys role record by id
       tags:
       - Sys Role
+  /sys/user/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Sys User record by id
+      parameters:
+      - description: Sys User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysUsers'
+      summary: Get one Sys User record by id
+      tags:
+      - Sys User
 swagger: "2.0"

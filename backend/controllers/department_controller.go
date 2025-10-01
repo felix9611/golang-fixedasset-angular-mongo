@@ -50,6 +50,14 @@ func GetAllDepartments(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": departments})
 }
 
+// @Summary      Create one dpartment record
+// @Description  Create one dpartment record
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Department  true  "Department Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router      /sys/dpartment/create/{id} [post]
 func CreateDepartment(c *gin.Context) {
 	var department models.Department
 	if err := c.ShouldBindJSON(&department); err != nil {
@@ -65,6 +73,14 @@ func CreateDepartment(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
+// @Summary      Update one dpartment record
+// @Description  Update one dpartment record
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Department  true  "Department Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /sys/dpartment/update/{id} [post]
 func UpdateDepartment(c *gin.Context) {
 	id := c.Param("id")
 	log.Println("UpdateDepartment ID:", id)
@@ -83,6 +99,14 @@ func UpdateDepartment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Update Tongs by ID", "id": id, "data": result})
 }
 
+// @Summary      Delete one dpartment record by id
+// @Description  Delete one dpartment record by id
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Department ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /sys/dpartment/void/{id} [delete]
 func VoidDepartmentById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.VoidDepartmentById(id)
@@ -93,6 +117,14 @@ func VoidDepartmentById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Department voided successfully", "data": result})
 }
 
+// @Summary      List Departments
+// @Description  List Departments
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.DepartmentPageDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.DepartmentList
+// @Router       /sys/department/list [post]
 func ListPageDepartment(c *gin.Context) {
 	var deptPageDto dto.DepartmentPageDto
 	if err := c.ShouldBindJSON(&deptPageDto); err != nil {

@@ -44,6 +44,14 @@ func GetLocationById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Delete one location record by id
+// @Description  Delete one location record by id
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Location ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router       /base/location/void/{id} [delete]
 func InactiveLocationByID(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.InactiveLocationByID(id)
