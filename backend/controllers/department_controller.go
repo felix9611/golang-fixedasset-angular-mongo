@@ -57,7 +57,7 @@ func GetAllDepartments(c *gin.Context) {
 // @Produce      json
 // @Param        request  body      models.Department  true  "Department Request Body"
 // @Success      200      {object}  dto.GeneralCreateResponseBody
-// @Router      /sys/dpartment/create/{id} [post]
+// @Router      /sys/dpartment/create [post]
 func CreateDepartment(c *gin.Context) {
 	var department models.Department
 	if err := c.ShouldBindJSON(&department); err != nil {

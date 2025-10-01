@@ -73,6 +73,28 @@ definitions:
           $ref: '#/definitions/models.SysRoles'
         type: array
     type: object
+  dto.LocationList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Locations'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.LocationPageDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
   models.ActionRecords:
     properties:
       actionData: {}
@@ -301,6 +323,50 @@ paths:
       summary: Get all location record
       tags:
       - Location
+  /base/location/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Location record
+      parameters:
+      - description: Location Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Locations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Location record
+      tags:
+      - Location
+  /base/location/list:
+    post:
+      consumes:
+      - application/json
+      description: List Locations
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LocationPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LocationList'
+      summary: List Locations
+      tags:
+      - Location
   /base/location/one/{id}:
     get:
       consumes:
@@ -320,6 +386,28 @@ paths:
           schema:
             $ref: '#/definitions/models.Locations'
       summary: Get one location record by id
+      tags:
+      - Location
+  /base/location/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update one Location record
+      parameters:
+      - description: Location Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Locations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one Location record
       tags:
       - Location
   /base/location/void/{id}:
@@ -422,7 +510,7 @@ paths:
       summary: List Departments
       tags:
       - Department
-  /sys/dpartment/create/{id}:
+  /sys/dpartment/create:
     post:
       consumes:
       - application/json

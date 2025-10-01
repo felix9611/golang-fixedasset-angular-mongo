@@ -113,6 +113,74 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/location/create": {
+            "post": {
+                "description": "Create one Location record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Create one Location record",
+                "parameters": [
+                    {
+                        "description": "Location Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/list": {
+            "post": {
+                "description": "List Locations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "List Locations",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LocationPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LocationList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/location/one/{id}": {
             "get": {
                 "description": "Get one location record by id",
@@ -140,6 +208,40 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/update/{id}": {
+            "post": {
+                "description": "Update one Location record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Update one Location record",
+                "parameters": [
+                    {
+                        "description": "Location Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
                         }
                     }
                 }
@@ -298,7 +400,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/sys/dpartment/create/{id}": {
+        "/sys/dpartment/create": {
             "post": {
                 "description": "Create one dpartment record",
                 "consumes": [
@@ -636,6 +738,40 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.SysRoles"
                     }
+                }
+            }
+        },
+        "dto.LocationList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Locations"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.LocationPageDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
                 }
             }
         },
