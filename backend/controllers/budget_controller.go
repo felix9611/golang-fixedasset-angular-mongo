@@ -1,14 +1,23 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	jwt "github.com/appleboy/gin-jwt/v2"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create one Budget record
+// @Description  Create one Budget record
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Budgets  true  "Budget Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router      /base/budget/create [post]
 func CreateBudgetRecord(c *gin.Context) {
 	var budgetDto models.Budgets
 	if err := c.ShouldBindJSON(&budgetDto); err != nil {
@@ -25,6 +34,14 @@ func CreateBudgetRecord(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one budget record by id
+// @Description  Get one budget record by id
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "budget ID"
+// @Success      200      {object}  models.Budgets
+// @Router       /base/budget/one/{id} [get]
 func GetBudgetRecordById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.GetOneBudgetRecord(id)
@@ -35,6 +52,14 @@ func GetBudgetRecordById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      List Budgets
+// @Description  List Budgets
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.ListBudgetRecordsDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.BudgetList
+// @Router       /sys/budget/list [post]
 func ListPageBudgetRecords(c *gin.Context) {
 	var budgetPageDto dto.ListBudgetRecordsDto
 	if err := c.ShouldBindJSON(&budgetPageDto); err != nil {
@@ -49,7 +74,13 @@ func ListPageBudgetRecords(c *gin.Context) {
 	c.JSON(http.StatusOK, budgets)
 }
 
-
+// @Summary      Get budget summary
+// @Description  Get budget summary
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Success      200      {object}  dto.BudgetSummary
+// @Router      /base/budget/getBudgetSummary [get]
 func GetBudgetSummary(c *gin.Context) {
 	result, err := services.GetBudgetSummary()
 	if err != nil {
@@ -59,6 +90,14 @@ func GetBudgetSummary(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Update one budget record
+// @Description  Update one budget record
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Budgets  true  "Budget Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /base/budget/update [post]
 func UpdateBudgetRecord(c *gin.Context) {
 	var budgetDto models.Budgets
 	if err := c.ShouldBindJSON(&budgetDto); err != nil {
@@ -74,6 +113,14 @@ func UpdateBudgetRecord(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Delete one budget record by id
+// @Description  Delete one budget record by id
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Budget ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /base/budget/void/{id} [delete]
 func InactiveBudgetRecord(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.VoidBudgetRecord(id)

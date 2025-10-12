@@ -1,14 +1,23 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create one Code Type record
+// @Description  Create one Code Type record
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.CodeTypes  true  "Code Type Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router      /base/code-type/create [post]
 func CreateCodeType(c *gin.Context) {
 	var codeType models.CodeTypes
 	if err := c.ShouldBindJSON(&codeType); err != nil {
@@ -25,6 +34,14 @@ func CreateCodeType(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one code type record by id
+// @Description  Get one code type record by id
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "code type ID"
+// @Success      200      {object}  models.CodeTypes
+// @Router       /base/code-type/one/{id} [get]
 func GetCodeTypeById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.GetOneCodeType(id)
@@ -35,16 +52,32 @@ func GetCodeTypeById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Delete one code type record by id
+// @Description  Delete one code type record by id
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Code Type ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /base/code-type/void/{id} [delete]
 func InactiveCodeTypeByID(c *gin.Context) {
 	id := c.Param("id")
-	result,err := services.VoidOneCodeType(id)
+	result, err := services.VoidOneCodeType(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "CodeType inactivated successfully", "data": result })
+	c.JSON(http.StatusOK, gin.H{"message": "CodeType inactivated successfully", "data": result})
 }
 
+// @Summary      List Code Types
+// @Description  List Code Types
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.CodeTypeListDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.CodeTypeList
+// @Router       /base/code-type/list [post]
 func ListCodeType(c *gin.Context) {
 	var codeTypePageDto dto.CodeTypeListDto
 	if err := c.ShouldBindJSON(&codeTypePageDto); err != nil {
@@ -61,6 +94,14 @@ func ListCodeType(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Update one Code Type record
+// @Description  Update one Code Type record
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.CodeTypes  true  "Code Type Request Body"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router      /base/code-type/update [post]
 func UpdateCodeTypeById(c *gin.Context) {
 	var codeType models.CodeTypes
 	if err := c.ShouldBindJSON(&codeType); err != nil {
@@ -77,6 +118,14 @@ func UpdateCodeTypeById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one code type record by type
+// @Description  Get one code type record by type
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        type   path      string  true  "code type"
+// @Success      200      {object}  []models.CodeTypes
+// @Router       /base/code-type/get-type/{type} [get]
 func ListCodeTypeByType(c *gin.Context) {
 	typeString := c.Param("type")
 

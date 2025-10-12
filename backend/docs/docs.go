@@ -58,6 +58,834 @@ const docTemplate = `{
                 }
             }
         },
+        "/asset/type/all": {
+            "get": {
+                "description": "Get one Asset Type records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "Get one Asset Type records",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetTypes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/type/create": {
+            "post": {
+                "description": "Create one Asset Type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "Create one Asset Type record",
+                "parameters": [
+                    {
+                        "description": "Asset Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AssetTypes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/type/list": {
+            "post": {
+                "description": "List Asset Types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "List Asset Types",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AssetTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AssetTypeList"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/type/one/{id}": {
+            "get": {
+                "description": "Get one Asset Type record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "Get one Asset Type record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Asset Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AssetTypes"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/type/update": {
+            "post": {
+                "description": "Update one Asset Type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "Update one Asset Type record",
+                "parameters": [
+                    {
+                        "description": "Asset Type Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AssetTypes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/type/void/{id}": {
+            "delete": {
+                "description": "Delete one Asset Type record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "Delete one Asset Type record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Asset Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/budget/create": {
+            "post": {
+                "description": "Create one Budget record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "Create one Budget record",
+                "parameters": [
+                    {
+                        "description": "Budget Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Budgets"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/budget/getBudgetSummary": {
+            "get": {
+                "description": "Get budget summary",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "Get budget summary",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BudgetSummary"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/budget/one/{id}": {
+            "get": {
+                "description": "Get one budget record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "Get one budget record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Budgets"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/budget/update": {
+            "post": {
+                "description": "Update one budget record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "Update one budget record",
+                "parameters": [
+                    {
+                        "description": "Budget Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Budgets"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/budget/void/{id}": {
+            "delete": {
+                "description": "Delete one budget record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "Delete one budget record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/create": {
+            "post": {
+                "description": "Create one Code Type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Create one Code Type record",
+                "parameters": [
+                    {
+                        "description": "Code Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/get-type/{type}": {
+            "get": {
+                "description": "Get one code type record by type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Get one code type record by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "code type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CodeTypes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/list": {
+            "post": {
+                "description": "List Code Types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "List Code Types",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeList"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/one/{id}": {
+            "get": {
+                "description": "Get one code type record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Get one code type record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "code type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/update": {
+            "post": {
+                "description": "Update one Code Type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Update one Code Type record",
+                "parameters": [
+                    {
+                        "description": "Code Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CodeTypes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/void/{id}": {
+            "delete": {
+                "description": "Delete one code type record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Delete one code type record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Code Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/all": {
+            "get": {
+                "description": "Get all location record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get all location record",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Locations"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/create": {
+            "post": {
+                "description": "Create one Location record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Create one Location record",
+                "parameters": [
+                    {
+                        "description": "Location Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/list": {
+            "post": {
+                "description": "List Locations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "List Locations",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LocationPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LocationList"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/one/{id}": {
+            "get": {
+                "description": "Get one location record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get one location record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/update/{id}": {
+            "post": {
+                "description": "Update one Location record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Update one Location record",
+                "parameters": [
+                    {
+                        "description": "Location Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Locations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/void/{id}": {
+            "delete": {
+                "description": "Delete one location record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Delete one location record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/vendor/all": {
+            "get": {
+                "description": "Get all Vendor record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vendor"
+                ],
+                "summary": "Get all Vendor record",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Vendors"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/base/vendor/create": {
+            "post": {
+                "description": "Create one vendor record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vendor"
+                ],
+                "summary": "Create one vendor record",
+                "parameters": [
+                    {
+                        "description": "Vendor Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Vendors"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/vendor/list": {
+            "post": {
+                "description": "List Vendors",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vendor"
+                ],
+                "summary": "List Vendors",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.VendorPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.VendorList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/vendor/one/{id}": {
             "get": {
                 "description": "Get one vender record by id",
@@ -90,6 +918,295 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/vendor/update/{id}": {
+            "post": {
+                "description": "Update one vendor record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vendor"
+                ],
+                "summary": "Update one vendor record",
+                "parameters": [
+                    {
+                        "description": "Vendor Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Vendors"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/vendor/void/{id}": {
+            "delete": {
+                "description": "Delete one vendor record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vendor"
+                ],
+                "summary": "Delete one vendor record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vendor ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/budget/list": {
+            "post": {
+                "description": "List Budgets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "List Budgets",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListBudgetRecordsDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BudgetList"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/department/all": {
+            "get": {
+                "description": "Get all Department record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get all Department record",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Department"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/department/list": {
+            "post": {
+                "description": "List Departments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "List Departments",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DepartmentPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DepartmentList"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/department/{id}": {
+            "get": {
+                "description": "Get one Department record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get one Department record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/dpartment/create": {
+            "post": {
+                "description": "Create one dpartment record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Create one dpartment record",
+                "parameters": [
+                    {
+                        "description": "Department Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/dpartment/update/{id}": {
+            "post": {
+                "description": "Update one dpartment record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Update one dpartment record",
+                "parameters": [
+                    {
+                        "description": "Department Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/dpartment/void/{id}": {
+            "delete": {
+                "description": "Delete one dpartment record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Delete one dpartment record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
         "/sys/role/all": {
             "get": {
                 "description": "Get all sys role",
@@ -111,6 +1228,40 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/dto.ListAllSysRoleDto"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/create": {
+            "post": {
+                "description": "Create one sys role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Create one sys role",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
                         }
                     }
                 }
@@ -146,9 +1297,11 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Create one sys role",
+            }
+        },
+        "/sys/user/one/{id}": {
+            "get": {
+                "description": "Get one Sys User record by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -156,25 +1309,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Sys Role"
+                    "Sys User"
                 ],
-                "summary": "Create one sys role",
+                "summary": "Get one Sys User record by id",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.SysRoles"
-                        }
+                        "type": "string",
+                        "description": "Sys User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SysRoles"
+                            "$ref": "#/definitions/models.SysUsers"
                         }
                     }
                 }
@@ -202,6 +1353,184 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AssetTypeList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AssetTypes"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AssetTypeListDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.BudgetList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Budgets"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.BudgetSummary": {
+            "type": "object",
+            "properties": {
+                "budgetAmount": {
+                    "type": "number"
+                },
+                "month": {
+                    "type": "integer"
+                },
+                "year": {
+                    "type": "integer"
+                },
+                "yearMonth": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CodeTypeList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CodeTypes"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CodeTypeListDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.DepartmentList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Department"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.DepartmentPageDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.GeneralCreateResponseBody": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GeneralUpdateInactiveResponseBody": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GeneralUpdateResponse": {
+            "type": "object",
+            "properties": {
+                "MatchedCount": {
+                    "type": "integer"
+                },
+                "ModifiedCount": {
+                    "type": "integer"
+                },
+                "UpsertedCount": {
+                    "type": "integer"
+                },
+                "UpsertedID": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ListActionRecordReqDto": {
             "type": "object",
             "properties": {
@@ -221,6 +1550,94 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.SysRoles"
                     }
+                }
+            }
+        },
+        "dto.ListBudgetRecordsDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.LocationList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Locations"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.LocationPageDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.VendorList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Vendors"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.VendorPageDto": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "place": {
+                    "type": "string"
                 }
             }
         },
@@ -244,6 +1661,163 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AssetTypes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "depreciationRate": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "typeCode": {
+                    "type": "string"
+                },
+                "typeName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Budgets": {
+            "type": "object",
+            "properties": {
+                "budgetAmount": {
+                    "type": "number"
+                },
+                "budgetFrom": {
+                    "type": "string"
+                },
+                "budgetName": {
+                    "type": "string"
+                },
+                "budgetNo": {
+                    "type": "string"
+                },
+                "budgetStatus": {
+                    "type": "string"
+                },
+                "budgetTo": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deptId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "placeId": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CodeTypes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "valueCode": {
+                    "type": "string"
+                },
+                "valueName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Department": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deptCode": {
+                    "type": "string"
+                },
+                "deptName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Locations": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "placeCode": {
+                    "type": "string"
+                },
+                "placeName": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -290,6 +1864,44 @@ const docTemplate = `{
                 },
                 "write": {
                     "type": "boolean"
+                }
+            }
+        },
+        "models.SysUsers": {
+            "type": "object",
+            "properties": {
+                "avatarBase64": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deptId": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

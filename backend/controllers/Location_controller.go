@@ -1,14 +1,23 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create one Location record
+// @Description  Create one Location record
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Locations  true  "Location Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router      /base/location/create [post]
 func CreateLocation(c *gin.Context) {
 	var location models.Locations
 	if err := c.ShouldBindJSON(&location); err != nil {
@@ -25,6 +34,14 @@ func CreateLocation(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one location record by id
+// @Description  Get one location record by id
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Location ID"
+// @Success      200      {object}  models.Locations
+// @Router       /base/location/one/{id} [get]
 func GetLocationById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.GetOneLocationById(id)
@@ -35,6 +52,14 @@ func GetLocationById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Delete one location record by id
+// @Description  Delete one location record by id
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Location ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router       /base/location/void/{id} [delete]
 func InactiveLocationByID(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.InactiveLocationByID(id)
@@ -45,6 +70,14 @@ func InactiveLocationByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Role deactivated successfully", "id": id, "data": result})
 }
 
+// @Summary      Update one Location record
+// @Description  Update one Location record
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Locations  true  "Location Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /base/location/update/{id} [post]
 func UpdateLocationById(c *gin.Context) {
 	var location models.Locations
 	if err := c.ShouldBindJSON(&location); err != nil {
@@ -61,6 +94,14 @@ func UpdateLocationById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      List Locations
+// @Description  List Locations
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.LocationPageDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.LocationList
+// @Router       /base/location/list [post]
 func ListLocations(c *gin.Context) {
 	var locationPageDto dto.LocationPageDto
 	if err := c.ShouldBindJSON(&locationPageDto); err != nil {
@@ -77,6 +118,12 @@ func ListLocations(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get all location record
+// @Description  Get all location record
+// @Tags         Location
+// @Produce      json
+// @Success      200      {object}  []models.Locations
+// @Router       /base/location/all [get]
 func GetAllLocations(c *gin.Context) {
 	locations, err := services.ListAllLocation()
 	if err != nil {
@@ -85,8 +132,6 @@ func GetAllLocations(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, locations)
 }
-
-
 
 func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	locationGroup := rg.Group("/base/location", handle.MiddlewareFunc())

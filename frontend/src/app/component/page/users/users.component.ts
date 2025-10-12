@@ -212,7 +212,7 @@ export class UsersComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/sys/user/one/${id}`)
-        this.editForm = res.data
+        this.editForm = res
         this.department = res.department
         this.okText = 'Update'
         this.showDialog()

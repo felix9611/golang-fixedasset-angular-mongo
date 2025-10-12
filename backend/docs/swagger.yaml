@@ -12,6 +12,121 @@ definitions:
       total:
         type: integer
     type: object
+  dto.AssetTypeList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.AssetTypes'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.AssetTypeListDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.BudgetList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Budgets'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.BudgetSummary:
+    properties:
+      budgetAmount:
+        type: number
+      month:
+        type: integer
+      year:
+        type: integer
+      yearMonth:
+        type: string
+    type: object
+  dto.CodeTypeList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.CodeTypes'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.CodeTypeListDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.DepartmentList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Department'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.DepartmentPageDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.GeneralCreateResponseBody:
+    properties:
+      id:
+        type: string
+    type: object
+  dto.GeneralUpdateInactiveResponseBody:
+    properties:
+      data:
+        $ref: '#/definitions/dto.GeneralUpdateResponse'
+      id:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.GeneralUpdateResponse:
+    properties:
+      MatchedCount:
+        type: integer
+      ModifiedCount:
+        type: integer
+      UpsertedCount:
+        type: integer
+      UpsertedID:
+        type: string
+    type: object
   dto.ListActionRecordReqDto:
     properties:
       limit:
@@ -25,6 +140,63 @@ definitions:
         items:
           $ref: '#/definitions/models.SysRoles'
         type: array
+    type: object
+  dto.ListBudgetRecordsDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.LocationList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Locations'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.LocationPageDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.VendorList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Vendors'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.VendorPageDto:
+    properties:
+      contact:
+        type: string
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+      place:
+        type: string
     type: object
   models.ActionRecords:
     properties:
@@ -40,6 +212,109 @@ definitions:
       createdAt:
         type: string
       id:
+        type: string
+    type: object
+  models.AssetTypes:
+    properties:
+      createdAt:
+        type: string
+      depreciationRate:
+        type: number
+      id:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      typeCode:
+        type: string
+      typeName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Budgets:
+    properties:
+      budgetAmount:
+        type: number
+      budgetFrom:
+        type: string
+      budgetName:
+        type: string
+      budgetNo:
+        type: string
+      budgetStatus:
+        type: string
+      budgetTo:
+        type: string
+      createdAt:
+        type: string
+      deptId:
+        type: string
+      id:
+        type: string
+      month:
+        type: string
+      placeId:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      updatedAt:
+        type: string
+      year:
+        type: string
+    type: object
+  models.CodeTypes:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+      valueCode:
+        type: string
+      valueName:
+        type: string
+    type: object
+  models.Department:
+    properties:
+      createdAt:
+        type: string
+      deptCode:
+        type: string
+      deptName:
+        type: string
+      id:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.Locations:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      placeCode:
+        type: string
+      placeName:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      updatedAt:
         type: string
     type: object
   models.SysRoles:
@@ -71,6 +346,31 @@ definitions:
         type: boolean
       write:
         type: boolean
+    type: object
+  models.SysUsers:
+    properties:
+      avatarBase64:
+        type: string
+      createdAt:
+        type: string
+      deptId:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      status:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
     type: object
   models.Vendors:
     properties:
@@ -142,6 +442,545 @@ paths:
       summary: List Action Records
       tags:
       - Action Records
+  /asset/type/all:
+    get:
+      consumes:
+      - application/json
+      description: Get one Asset Type records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssetTypes'
+            type: array
+      summary: Get one Asset Type records
+      tags:
+      - Asset Type
+  /asset/type/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Asset Type record
+      parameters:
+      - description: Asset Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssetTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Asset Type record
+      tags:
+      - Asset Type
+  /asset/type/list:
+    post:
+      consumes:
+      - application/json
+      description: List Asset Types
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssetTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AssetTypeList'
+      summary: List Asset Types
+      tags:
+      - Asset Type
+  /asset/type/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Asset Type record by id
+      parameters:
+      - description: Asset Type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AssetTypes'
+      summary: Get one Asset Type record by id
+      tags:
+      - Asset Type
+  /asset/type/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one Asset Type record
+      parameters:
+      - description: Asset Type Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssetTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one Asset Type record
+      tags:
+      - Asset Type
+  /asset/type/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one Asset Type record by id
+      parameters:
+      - description: Asset Type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one Asset Type record by id
+      tags:
+      - Asset Type
+  /base/budget/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Budget record
+      parameters:
+      - description: Budget Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Budgets'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Budget record
+      tags:
+      - Budget
+  /base/budget/getBudgetSummary:
+    get:
+      consumes:
+      - application/json
+      description: Get budget summary
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BudgetSummary'
+      summary: Get budget summary
+      tags:
+      - Budget
+  /base/budget/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one budget record by id
+      parameters:
+      - description: budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Budgets'
+      summary: Get one budget record by id
+      tags:
+      - Budget
+  /base/budget/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one budget record
+      parameters:
+      - description: Budget Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Budgets'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one budget record
+      tags:
+      - Budget
+  /base/budget/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one budget record by id
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one budget record by id
+      tags:
+      - Budget
+  /base/code-type/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Code Type record
+      parameters:
+      - description: Code Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CodeTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Code Type record
+      tags:
+      - Code Type
+  /base/code-type/get-type/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Get one code type record by type
+      parameters:
+      - description: code type
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CodeTypes'
+            type: array
+      summary: Get one code type record by type
+      tags:
+      - Code Type
+  /base/code-type/list:
+    post:
+      consumes:
+      - application/json
+      description: List Code Types
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CodeTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CodeTypeList'
+      summary: List Code Types
+      tags:
+      - Code Type
+  /base/code-type/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one code type record by id
+      parameters:
+      - description: code type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CodeTypes'
+      summary: Get one code type record by id
+      tags:
+      - Code Type
+  /base/code-type/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one Code Type record
+      parameters:
+      - description: Code Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CodeTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
+      summary: Update one Code Type record
+      tags:
+      - Code Type
+  /base/code-type/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one code type record by id
+      parameters:
+      - description: Code Type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one code type record by id
+      tags:
+      - Code Type
+  /base/location/all:
+    get:
+      description: Get all location record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Locations'
+            type: array
+      summary: Get all location record
+      tags:
+      - Location
+  /base/location/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Location record
+      parameters:
+      - description: Location Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Locations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Location record
+      tags:
+      - Location
+  /base/location/list:
+    post:
+      consumes:
+      - application/json
+      description: List Locations
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LocationPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LocationList'
+      summary: List Locations
+      tags:
+      - Location
+  /base/location/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one location record by id
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Locations'
+      summary: Get one location record by id
+      tags:
+      - Location
+  /base/location/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update one Location record
+      parameters:
+      - description: Location Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Locations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one Location record
+      tags:
+      - Location
+  /base/location/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one location record by id
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one location record by id
+      tags:
+      - Location
+  /base/vendor/all:
+    get:
+      description: Get all Vendor record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Vendors'
+            type: array
+      summary: Get all Vendor record
+      tags:
+      - Vendor
+  /base/vendor/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one vendor record
+      parameters:
+      - description: Vendor Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Vendors'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one vendor record
+      tags:
+      - Vendor
+  /base/vendor/list:
+    post:
+      consumes:
+      - application/json
+      description: List Vendors
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VendorPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VendorList'
+      summary: List Vendors
+      tags:
+      - Vendor
   /base/vendor/one/{id}:
     get:
       consumes:
@@ -163,6 +1002,194 @@ paths:
       summary: Get one vender record by id
       tags:
       - Vendor
+  /base/vendor/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update one vendor record
+      parameters:
+      - description: Vendor Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Vendors'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one vendor record
+      tags:
+      - Vendor
+  /base/vendor/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one vendor record by id
+      parameters:
+      - description: Vendor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one vendor record by id
+      tags:
+      - Vendor
+  /sys/budget/list:
+    post:
+      consumes:
+      - application/json
+      description: List Budgets
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListBudgetRecordsDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BudgetList'
+      summary: List Budgets
+      tags:
+      - Budget
+  /sys/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Department record by id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+      summary: Get one Department record by id
+      tags:
+      - Department
+  /sys/department/all:
+    get:
+      description: Get all Department record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Department'
+            type: array
+      summary: Get all Department record
+      tags:
+      - Department
+  /sys/department/list:
+    post:
+      consumes:
+      - application/json
+      description: List Departments
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepartmentPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DepartmentList'
+      summary: List Departments
+      tags:
+      - Department
+  /sys/dpartment/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one dpartment record
+      parameters:
+      - description: Department Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one dpartment record
+      tags:
+      - Department
+  /sys/dpartment/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update one dpartment record
+      parameters:
+      - description: Department Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one dpartment record
+      tags:
+      - Department
+  /sys/dpartment/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one dpartment record by id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one dpartment record by id
+      tags:
+      - Department
   /sys/role/all:
     get:
       consumes:
@@ -178,6 +1205,28 @@ paths:
               $ref: '#/definitions/dto.ListAllSysRoleDto'
             type: array
       summary: Get all sys role
+      tags:
+      - Sys Role
+  /sys/role/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one sys role
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysRoles'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysRoles'
+      summary: Create one sys role
       tags:
       - Sys Role
   /sys/role/one/{id}:
@@ -201,25 +1250,25 @@ paths:
       summary: Get one sys role record by id
       tags:
       - Sys Role
-    post:
+  /sys/user/one/{id}:
+    get:
       consumes:
       - application/json
-      description: Create one sys role
+      description: Get one Sys User record by id
       parameters:
-      - description: List Action Record Request Body
-        in: body
-        name: request
+      - description: Sys User ID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/models.SysRoles'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SysRoles'
-      summary: Create one sys role
+            $ref: '#/definitions/models.SysUsers'
+      summary: Get one Sys User record by id
       tags:
-      - Sys Role
+      - Sys User
 swagger: "2.0"

@@ -1,15 +1,15 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-//	"time"
+
+	//	"time"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
-
 
 func CreateSysUser(c *gin.Context) {
 	var user models.SysUsers
@@ -42,6 +42,14 @@ func UpdateSysUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+// @Summary      Get one Sys User record by id
+// @Description  Get one Sys User record by id
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Sys User ID"
+// @Success      200      {object}  models.SysUsers
+// @Router       /sys/user/one/{id} [get]
 func GetSysUsersById(c *gin.Context) {
 	id := c.Param("id")
 	user, err := services.GetOneSysUserById(id)
@@ -49,7 +57,7 @@ func GetSysUsersById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func InactiveUserByID(c *gin.Context) {
