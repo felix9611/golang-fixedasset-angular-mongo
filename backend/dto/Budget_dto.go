@@ -1,5 +1,7 @@
 package dto
 
+import "golang-fixedasset-mongo-backend/backend/models"
+
 type ListBudgetRecordsDto struct {
 	Name  string `json:"name"`
 	Page  int64  `json:"page"`
@@ -11,4 +13,11 @@ type BudgetSummary struct {
 	YearMonth    string  `bson:"yearMonth" json:"yearMonth"`
 	Year         int     `bson:"year" json:"year"`
 	Month        int     `bson:"month" json:"month"`
+}
+
+type BudgetList struct {
+	Lists []models.Budgets `json:"lists"`
+	Total int64            `json:"total"`
+	Page  int              `json:"page"`
+	Limit int              `json:"limit"`
 }

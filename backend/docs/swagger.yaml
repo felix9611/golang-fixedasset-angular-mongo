@@ -12,6 +12,52 @@ definitions:
       total:
         type: integer
     type: object
+  dto.AssetTypeList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.AssetTypes'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.AssetTypeListDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.BudgetList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Budgets'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.BudgetSummary:
+    properties:
+      budgetAmount:
+        type: number
+      month:
+        type: integer
+      year:
+        type: integer
+      yearMonth:
+        type: string
+    type: object
   dto.CodeTypeList:
     properties:
       limit:
@@ -95,6 +141,15 @@ definitions:
           $ref: '#/definitions/models.SysRoles'
         type: array
     type: object
+  dto.ListBudgetRecordsDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
   dto.LocationList:
     properties:
       limit:
@@ -131,6 +186,58 @@ definitions:
       createdAt:
         type: string
       id:
+        type: string
+    type: object
+  models.AssetTypes:
+    properties:
+      createdAt:
+        type: string
+      depreciationRate:
+        type: number
+      id:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      typeCode:
+        type: string
+      typeName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Budgets:
+    properties:
+      budgetAmount:
+        type: number
+      budgetFrom:
+        type: string
+      budgetName:
+        type: string
+      budgetNo:
+        type: string
+      budgetStatus:
+        type: string
+      budgetTo:
+        type: string
+      createdAt:
+        type: string
+      deptId:
+        type: string
+      id:
+        type: string
+      month:
+        type: string
+      placeId:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      updatedAt:
+        type: string
+      year:
         type: string
     type: object
   models.CodeTypes:
@@ -309,6 +416,232 @@ paths:
       summary: List Action Records
       tags:
       - Action Records
+  /asset/type/all:
+    get:
+      consumes:
+      - application/json
+      description: Get one Asset Type records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssetTypes'
+            type: array
+      summary: Get one Asset Type records
+      tags:
+      - Asset Type
+  /asset/type/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Asset Type record
+      parameters:
+      - description: Asset Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssetTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Asset Type record
+      tags:
+      - Asset Type
+  /asset/type/list:
+    post:
+      consumes:
+      - application/json
+      description: List Asset Types
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssetTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AssetTypeList'
+      summary: List Asset Types
+      tags:
+      - Asset Type
+  /asset/type/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Asset Type record by id
+      parameters:
+      - description: Asset Type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AssetTypes'
+      summary: Get one Asset Type record by id
+      tags:
+      - Asset Type
+  /asset/type/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one Asset Type record
+      parameters:
+      - description: Asset Type Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssetTypes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one Asset Type record
+      tags:
+      - Asset Type
+  /asset/type/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one Asset Type record by id
+      parameters:
+      - description: Asset Type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one Asset Type record by id
+      tags:
+      - Asset Type
+  /base/budget/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Budget record
+      parameters:
+      - description: Budget Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Budgets'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Budget record
+      tags:
+      - Budget
+  /base/budget/getBudgetSummary:
+    get:
+      consumes:
+      - application/json
+      description: Get budget summary
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BudgetSummary'
+      summary: Get budget summary
+      tags:
+      - Budget
+  /base/budget/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one budget record by id
+      parameters:
+      - description: budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Budgets'
+      summary: Get one budget record by id
+      tags:
+      - Budget
+  /base/budget/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one budget record
+      parameters:
+      - description: Budget Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Budgets'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one budget record
+      tags:
+      - Budget
+  /base/budget/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one budget record by id
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one budget record by id
+      tags:
+      - Budget
   /base/code-type/create:
     post:
       consumes:
@@ -584,6 +917,28 @@ paths:
       summary: Get one vender record by id
       tags:
       - Vendor
+  /sys/budget/list:
+    post:
+      consumes:
+      - application/json
+      description: List Budgets
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListBudgetRecordsDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BudgetList'
+      summary: List Budgets
+      tags:
+      - Budget
   /sys/department/{id}:
     get:
       consumes:
