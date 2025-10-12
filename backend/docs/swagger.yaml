@@ -172,6 +172,32 @@ definitions:
       page:
         type: integer
     type: object
+  dto.VendorList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.Vendors'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.VendorPageDto:
+    properties:
+      contact:
+        type: string
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+      place:
+        type: string
+    type: object
   models.ActionRecords:
     properties:
       actionData: {}
@@ -896,6 +922,65 @@ paths:
       summary: Delete one location record by id
       tags:
       - Location
+  /base/vendor/all:
+    get:
+      description: Get all Vendor record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Vendors'
+            type: array
+      summary: Get all Vendor record
+      tags:
+      - Vendor
+  /base/vendor/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one vendor record
+      parameters:
+      - description: Vendor Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Vendors'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one vendor record
+      tags:
+      - Vendor
+  /base/vendor/list:
+    post:
+      consumes:
+      - application/json
+      description: List Vendors
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VendorPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VendorList'
+      summary: List Vendors
+      tags:
+      - Vendor
   /base/vendor/one/{id}:
     get:
       consumes:
@@ -915,6 +1000,49 @@ paths:
           schema:
             $ref: '#/definitions/models.Vendors'
       summary: Get one vender record by id
+      tags:
+      - Vendor
+  /base/vendor/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update one vendor record
+      parameters:
+      - description: Vendor Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Vendors'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one vendor record
+      tags:
+      - Vendor
+  /base/vendor/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one vendor record by id
+      parameters:
+      - description: Vendor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one vendor record by id
       tags:
       - Vendor
   /sys/budget/list:

@@ -34,6 +34,14 @@ func GetOneVendorByIdGet(c *gin.Context) {
 	c.JSON(http.StatusOK, vendor)
 }
 
+// @Summary      Create one vendor record
+// @Description  Create one vendor record
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Vendors  true  "Vendor Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router      /base/vendor/create [post]
 func CreateVendorPost(c *gin.Context) {
 	var vendor models.Vendors
 	if err := c.ShouldBindJSON(&vendor); err != nil {
@@ -50,6 +58,14 @@ func CreateVendorPost(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": result})
 }
 
+// @Summary      Delete one vendor record by id
+// @Description  Delete one vendor record by id
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Vendor ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /base/vendor/void/{id} [delete]
 func DeleteVendorById(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -67,6 +83,14 @@ func DeleteVendorById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+// @Summary      List Vendors
+// @Description  List Vendors
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.VendorPageDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.VendorList
+// @Router       /base/vendor/list [post]
 func VendorList(c *gin.Context) {
 	var pageDto dto.VendorPageDto
 	if err := c.ShouldBindJSON(&pageDto); err != nil {
@@ -83,6 +107,14 @@ func VendorList(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Update one vendor record
+// @Description  Update one vendor record
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.Vendors  true  "Vendor Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /base/vendor/update/{id} [post]
 func UpdateVendor(c *gin.Context) {
 	var vendor models.Vendors
 	if err := c.ShouldBindJSON(&vendor); err != nil {
@@ -99,6 +131,12 @@ func UpdateVendor(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+// @Summary      Get all Vendor record
+// @Description  Get all Vendor record
+// @Tags         Vendor
+// @Produce      json
+// @Success      200      {object}  []models.Vendors
+// @Router       /base/vendor/all [get]
 func GetAllVendors(c *gin.Context) {
 	vendors, err := services.GetAllVendors()
 	if err != nil {
