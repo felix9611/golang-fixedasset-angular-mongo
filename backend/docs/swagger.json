@@ -51,6 +51,112 @@
                 }
             }
         },
+        "/asset/asset-list/create": {
+            "post": {
+                "description": "Create Asset Item record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Create Asset Item record",
+                "parameters": [
+                    {
+                        "description": "Asset List Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetLists"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetLists"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/asset-list/list": {
+            "post": {
+                "description": "List Asset Items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "List Asset Items",
+                "parameters": [
+                    {
+                        "description": "Asset List Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ListAssetReqDto"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.AssetListList"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/asset-list/list-all": {
+            "get": {
+                "description": "List All Asset Items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "List All Asset Items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetLists"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/asset/type/all": {
             "get": {
                 "description": "Get one Asset Type records",
@@ -243,6 +349,38 @@
                 }
             }
         },
+        "/base/asset-list/one/{id}": {
+            "get": {
+                "description": "Get one asset record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Get one asset record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "asset list ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AssetLists"
+                        }
+                    }
+                }
+            }
+        },
         "/base/budget/create": {
             "post": {
                 "description": "Create one Budget record",
@@ -393,6 +531,46 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/code-type/batch-upload": {
+            "post": {
+                "description": "Batch upload code type record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "Batch upload code type record",
+                "parameters": [
+                    {
+                        "description": "Code Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CodeTypes"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CodeTypes"
+                            }
                         }
                     }
                 }
@@ -783,6 +961,72 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/tax-information/create": {
+            "post": {
+                "description": "Create one Tax Information record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tax Information"
+                ],
+                "summary": "Create one Tax Information record",
+                "parameters": [
+                    {
+                        "description": "Tax Information Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TaxInformations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/tax-information/one/{id}": {
+            "get": {
+                "description": "Get one tax information record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tax Information"
+                ],
+                "summary": "Get one tax information record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "tax information ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TaxInformations"
                         }
                     }
                 }
@@ -1292,6 +1536,72 @@
                 }
             }
         },
+        "/sys/role/update": {
+            "post": {
+                "description": "Update sys role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Update sys role",
+                "parameters": [
+                    {
+                        "description": "Update Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/void/{id}": {
+            "delete": {
+                "description": "Delete one sys role record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Delete one sys role record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sys Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
         "/sys/user/one/{id}": {
             "get": {
                 "description": "Get one Sys User record by id",
@@ -1336,6 +1646,26 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ActionRecords"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AssetListList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AssetLists"
                     }
                 },
                 "page": {
@@ -1546,6 +1876,47 @@
                 }
             }
         },
+        "dto.ListAssetReqDto": {
+            "type": "object",
+            "properties": {
+                "assetCode": {
+                    "type": "string"
+                },
+                "assetName": {
+                    "type": "string"
+                },
+                "deptIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "placeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "purchaseDates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "typeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.ListBudgetRecordsDto": {
             "type": "object",
             "properties": {
@@ -1654,6 +2025,158 @@
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AssetListFiles": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "type": "string"
+                },
+                "base64": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "fileName": {
+                    "type": "string"
+                },
+                "fileType": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AssetLists": {
+            "type": "object",
+            "properties": {
+                "accountCode": {
+                    "type": "string"
+                },
+                "accountName": {
+                    "type": "string"
+                },
+                "afterBeforeTax": {
+                    "type": "number"
+                },
+                "assetCode": {
+                    "type": "string"
+                },
+                "assetName": {
+                    "type": "string"
+                },
+                "brandCode": {
+                    "type": "string"
+                },
+                "brandName": {
+                    "type": "string"
+                },
+                "chequeNo": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deptId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "includeTax": {
+                    "type": "boolean"
+                },
+                "invoiceDate": {
+                    "type": "string"
+                },
+                "invoiceNo": {
+                    "type": "string"
+                },
+                "invoiceRemark": {
+                    "description": "I",
+                    "type": "string"
+                },
+                "maintenancePeriodEnd": {
+                    "type": "string"
+                },
+                "maintenancePeriodStart": {
+                    "type": "string"
+                },
+                "placeId": {
+                    "type": "string"
+                },
+                "purchaseDate": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "serialNo": {
+                    "type": "string"
+                },
+                "sponsor": {
+                    "type": "boolean"
+                },
+                "sponsorName": {
+                    "type": "string"
+                },
+                "staffName": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "taxCode": {
+                    "type": "string"
+                },
+                "taxCountryCode": {
+                    "type": "string"
+                },
+                "taxInfoId": {
+                    "type": "string"
+                },
+                "taxRate": {
+                    "type": "number"
+                },
+                "typeId": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "uploadAssetListFiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AssetListFiles"
+                    }
+                },
+                "vendorId": {
+                    "type": "string"
+                },
+                "voucherNo": {
+                    "type": "string"
+                },
+                "voucherUsedDate": {
                     "type": "string"
                 }
             }
@@ -1894,6 +2417,53 @@
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TaxInformations": {
+            "type": "object",
+            "properties": {
+                "countryCode": {
+                    "type": "string"
+                },
+                "countryName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "importRate": {
+                    "type": "number"
+                },
+                "nationCode": {
+                    "type": "string"
+                },
+                "nationName": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "taxCode": {
+                    "type": "string"
+                },
+                "taxName": {
+                    "type": "string"
+                },
+                "taxRate": {
+                    "type": "number"
+                },
+                "taxType": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

@@ -138,6 +138,30 @@ func ListCodeTypeByType(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Batch upload code type record
+// @Description  Batch upload code type record
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.CodeTypes true  "Code Type Request Body"
+// @Success      200      {object}  []models.CodeTypes
+// @Router       /base/code-type/batch-upload [post]
+func BatchUploadCodeTypes(c *gin.Context) {
+	var codeTypes []models.CodeTypes
+	if err := c.ShouldBindJSON(&codeTypes); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchInsertCodeTypes(codeTypes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterCodeTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	codeTypeGroup := rg.Group("/base/code-type", handle.MiddlewareFunc())
 	{
@@ -147,5 +171,6 @@ func RegisterCodeTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		codeTypeGroup.POST("/list", ListCodeType)
 		codeTypeGroup.POST("/update", UpdateCodeTypeById)
 		codeTypeGroup.GET("/get-type/:type", ListCodeTypeByType)
+		codeTypeGroup.POST("/batch-upload", BatchUploadCodeTypes)
 	}
 }

@@ -67,6 +67,14 @@ func GetAllRoles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": roles})
 }
 
+// @Summary      Update sys role
+// @Description  Update sys role
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.SysRoles  true  "Update Request Body"
+// @Success      200      {object}  models.SysRoles
+// @Router       /sys/role/update [post]
 func UpdateSysRole(c *gin.Context) {
 	// id := c.Param("id")
 	var role models.SysRoles
@@ -83,6 +91,14 @@ func UpdateSysRole(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Role updated successfully", "id": role.ID, "data": result})
 }
 
+// @Summary      Delete one sys role record by id
+// @Description  Delete one sys role record by id
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Sys Role ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router       /sys/role/void/{id} [delete]
 func InactiveSysRoleByID(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.VoidRoleById(id)

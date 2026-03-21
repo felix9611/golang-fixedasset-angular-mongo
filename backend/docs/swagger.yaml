@@ -12,6 +12,19 @@ definitions:
       total:
         type: integer
     type: object
+  dto.AssetListList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.AssetLists'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
   dto.AssetTypeList:
     properties:
       limit:
@@ -141,6 +154,33 @@ definitions:
           $ref: '#/definitions/models.SysRoles'
         type: array
     type: object
+  dto.ListAssetReqDto:
+    properties:
+      assetCode:
+        type: string
+      assetName:
+        type: string
+      deptIds:
+        items:
+          type: string
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      placeIds:
+        items:
+          type: string
+        type: array
+      purchaseDates:
+        items:
+          type: string
+        type: array
+      typeIds:
+        items:
+          type: string
+        type: array
+    type: object
   dto.ListBudgetRecordsDto:
     properties:
       limit:
@@ -212,6 +252,107 @@ definitions:
       createdAt:
         type: string
       id:
+        type: string
+    type: object
+  models.AssetListFiles:
+    properties:
+      assetId:
+        type: string
+      base64:
+        type: string
+      createdAt:
+        type: string
+      fileName:
+        type: string
+      fileType:
+        type: string
+      id:
+        type: string
+      status:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.AssetLists:
+    properties:
+      accountCode:
+        type: string
+      accountName:
+        type: string
+      afterBeforeTax:
+        type: number
+      assetCode:
+        type: string
+      assetName:
+        type: string
+      brandCode:
+        type: string
+      brandName:
+        type: string
+      chequeNo:
+        type: string
+      cost:
+        type: number
+      createdAt:
+        type: string
+      deptId:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      includeTax:
+        type: boolean
+      invoiceDate:
+        type: string
+      invoiceNo:
+        type: string
+      invoiceRemark:
+        description: I
+        type: string
+      maintenancePeriodEnd:
+        type: string
+      maintenancePeriodStart:
+        type: string
+      placeId:
+        type: string
+      purchaseDate:
+        type: string
+      remark:
+        type: string
+      serialNo:
+        type: string
+      sponsor:
+        type: boolean
+      sponsorName:
+        type: string
+      staffName:
+        type: string
+      status:
+        type: integer
+      taxCode:
+        type: string
+      taxCountryCode:
+        type: string
+      taxInfoId:
+        type: string
+      taxRate:
+        type: number
+      typeId:
+        type: string
+      unit:
+        type: string
+      updatedAt:
+        type: string
+      uploadAssetListFiles:
+        items:
+          $ref: '#/definitions/models.AssetListFiles'
+        type: array
+      vendorId:
+        type: string
+      voucherNo:
+        type: string
+      voucherUsedDate:
         type: string
     type: object
   models.AssetTypes:
@@ -372,6 +513,37 @@ definitions:
       username:
         type: string
     type: object
+  models.TaxInformations:
+    properties:
+      countryCode:
+        type: string
+      countryName:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      importRate:
+        type: number
+      nationCode:
+        type: string
+      nationName:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      taxCode:
+        type: string
+      taxName:
+        type: string
+      taxRate:
+        type: number
+      taxType:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.Vendors:
     properties:
       address:
@@ -442,6 +614,75 @@ paths:
       summary: List Action Records
       tags:
       - Action Records
+  /asset/asset-list/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Asset Item record
+      parameters:
+      - description: Asset List Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.AssetLists'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssetLists'
+            type: array
+      summary: Create Asset Item record
+      tags:
+      - AssetList
+  /asset/asset-list/list:
+    post:
+      consumes:
+      - application/json
+      description: List Asset Items
+      parameters:
+      - description: Asset List Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dto.ListAssetReqDto'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.AssetListList'
+            type: array
+      summary: List Asset Items
+      tags:
+      - AssetList
+  /asset/asset-list/list-all:
+    get:
+      consumes:
+      - application/json
+      description: List All Asset Items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssetLists'
+            type: array
+      summary: List All Asset Items
+      tags:
+      - AssetList
   /asset/type/all:
     get:
       consumes:
@@ -567,6 +808,27 @@ paths:
       summary: Delete one Asset Type record by id
       tags:
       - Asset Type
+  /base/asset-list/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one asset record by id
+      parameters:
+      - description: asset list ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AssetLists'
+      summary: Get one asset record by id
+      tags:
+      - AssetList
   /base/budget/create:
     post:
       consumes:
@@ -668,6 +930,32 @@ paths:
       summary: Delete one budget record by id
       tags:
       - Budget
+  /base/code-type/batch-upload:
+    post:
+      consumes:
+      - application/json
+      description: Batch upload code type record
+      parameters:
+      - description: Code Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.CodeTypes'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CodeTypes'
+            type: array
+      summary: Batch upload code type record
+      tags:
+      - Code Type
   /base/code-type/create:
     post:
       consumes:
@@ -922,6 +1210,49 @@ paths:
       summary: Delete one location record by id
       tags:
       - Location
+  /base/tax-information/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Tax Information record
+      parameters:
+      - description: Tax Information Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TaxInformations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Create one Tax Information record
+      tags:
+      - Tax Information
+  /base/tax-information/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one tax information record by id
+      parameters:
+      - description: tax information ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TaxInformations'
+      summary: Get one tax information record by id
+      tags:
+      - Tax Information
   /base/vendor/all:
     get:
       description: Get all Vendor record
@@ -1248,6 +1579,49 @@ paths:
           schema:
             $ref: '#/definitions/models.SysRoles'
       summary: Get one sys role record by id
+      tags:
+      - Sys Role
+  /sys/role/update:
+    post:
+      consumes:
+      - application/json
+      description: Update sys role
+      parameters:
+      - description: Update Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysRoles'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysRoles'
+      summary: Update sys role
+      tags:
+      - Sys Role
+  /sys/role/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one sys role record by id
+      parameters:
+      - description: Sys Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Delete one sys role record by id
       tags:
       - Sys Role
   /sys/user/one/{id}:

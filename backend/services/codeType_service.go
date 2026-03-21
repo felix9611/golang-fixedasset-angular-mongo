@@ -3,16 +3,17 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-    "go.mongodb.org/mongo-driver/bson"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/gin-gonic/gin"
 )
 
-func  CreateCodeType(codeType *models.CodeTypes) (interface{}, error) {
+func CreateCodeType(codeType *models.CodeTypes) (interface{}, error) {
 	filter := bson.M{"status": 1, "valueCode": codeType.ValueCode, "valueName": codeType.ValueName}
 
 	collection := config.GetCollection("code_types")
@@ -85,7 +86,7 @@ func VoidOneCodeType(id string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	filter := bson.M{"_id": objectID}
 
 	var codeType models.CodeTypes
@@ -102,17 +103,17 @@ func VoidOneCodeType(id string) (interface{}, error) {
 	if codeType.Status == 1 {
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
-            "$set": bson.M{
-                "status": 0,
-                "updated_at": time.Now(),
-            },
-        })
+			"$set": bson.M{
+				"status":     0,
+				"updated_at": time.Now(),
+			},
+		})
 
-        if err != nil {
-            return nil, err
-        }
+		if err != nil {
+			return nil, err
+		}
 		CreateActionRecord("Code Type Void", "DELETE", "Code Type", codeType, "Success")
-        return result, nil
+		return result, nil
 	} else {
 		CreateActionRecord("Code Type Void", "DELETE", "Code Type", codeType, "Failed")
 		return "This Code Type is already voided", nil
@@ -161,10 +162,9 @@ func CodeTypeList(pageDto *dto.CodeTypeListDto) (interface{}, error) {
 		pageDto.Limit = 10
 	}
 
-
 	collection := config.GetCollection("code_types")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-    defer cancel()
+	defer cancel()
 
 	filter := bson.M{"status": 1}
 
@@ -185,12 +185,12 @@ func CodeTypeList(pageDto *dto.CodeTypeListDto) (interface{}, error) {
 	}
 
 	skip := int64((pageDto.Page - 1) * pageDto.Limit)
-    limit := int64(pageDto.Limit)
+	limit := int64(pageDto.Limit)
 
 	findOptions := options.Find()
-    findOptions.SetSkip(skip)
-    findOptions.SetLimit(limit)
-    findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	findOptions.SetSkip(skip)
+	findOptions.SetLimit(limit)
+	findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
 
 	cursor, err := collection.Find(ctx, filter, findOptions)
 	if err != nil {
@@ -209,10 +209,10 @@ func CodeTypeList(pageDto *dto.CodeTypeListDto) (interface{}, error) {
 	}
 
 	if err := cursor.Err(); err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
-	return gin.H{"lists": codeTypes, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+	return gin.H{"lists": codeTypes, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 }
 
 func ListCodeTypeByType(typeString string) (interface{}, error) {
@@ -243,4 +243,18 @@ func ListCodeTypeByType(typeString string) (interface{}, error) {
 	}
 
 	return gin.H{"datas": codeTypes}, nil
+}
+
+func BatchInsertCodeTypes(codeTypes []models.CodeTypes) (interface{}, error) {
+	// collection := config.GetCollection("code_types")
+
+	for _, codeType := range codeTypes {
+		result, _ := CreateCodeType(&codeType)
+
+		if result == nil {
+			return "failed to create code type", nil
+		}
+	}
+
+	return "batch insert completed", nil
 }

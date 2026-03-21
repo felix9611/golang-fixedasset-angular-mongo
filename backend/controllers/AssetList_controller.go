@@ -10,6 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create Asset Item record
+// @Description  Create Asset Item record
+// @Tags         AssetList
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.AssetLists true  "Asset List Request Body"
+// @Success      200      {object}  []models.AssetLists
+// @Router       /asset/asset-list/create [post]
 func CreateAssetList(c *gin.Context) {
 	var assetItem models.AssetLists
 	if err := c.ShouldBindJSON(&assetItem); err != nil {
@@ -27,6 +35,14 @@ func CreateAssetList(c *gin.Context) {
 	c.JSON(http.StatusOK, createdAsset)
 }
 
+// @Summary      List Asset Items
+// @Description  List Asset Items
+// @Tags         AssetList
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []dto.ListAssetReqDto true  "Asset List Request Body"
+// @Success      200      {object}  []dto.AssetListList
+// @Router       /asset/asset-list/list [post]
 func ListAssetItems(c *gin.Context) {
 	var req dto.ListAssetReqDto
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -44,6 +60,13 @@ func ListAssetItems(c *gin.Context) {
 	c.JSON(http.StatusOK, assetItems)
 }
 
+// @Summary      List All Asset Items
+// @Description  List All Asset Items
+// @Tags         AssetList
+// @Accept       json
+// @Produce      json
+// @Success      200      {object}  []models.AssetLists
+// @Router       /asset/asset-list/list-all [get]
 func ListAllAssetItems(c *gin.Context) {
 
 	// Call the service to list the asset items
@@ -56,6 +79,14 @@ func ListAllAssetItems(c *gin.Context) {
 	c.JSON(http.StatusOK, assetItems)
 }
 
+// @Summary      Get one asset record by id
+// @Description  Get one asset record by id
+// @Tags         AssetList
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "asset list ID"
+// @Success      200      {object}  models.AssetLists
+// @Router       /base/asset-list/one/{id} [get]
 func GetOneAssetItem(c *gin.Context) {
 	id := c.Param("id")
 	assetItem, err := services.GetOneAssetItemByID(id)
@@ -142,7 +173,5 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		assetListGroup.GET("/code/:code", GetOneAssetItemByAssetCode)
 		assetListGroup.DELETE("/file-remove/:id", RemoveAssetFile)
 		assetListGroup.POST("/chart-query-date", QueryAssetDataByDataType)
-		assetListGroup.POST("/chart-query-data", QueryAssetDataByDataType)
-
 	}
 }
