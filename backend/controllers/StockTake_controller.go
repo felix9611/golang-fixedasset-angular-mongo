@@ -1,14 +1,23 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create one stock take form
+// @Description  Create one stock take form
+// @Tags         Stock Take
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.StockTakes  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router       /asset/stock-take/create [post]
 func CreateStockTakeApi(c *gin.Context) {
 	var stockTake models.StockTakes
 	if err := c.ShouldBindJSON(&stockTake); err != nil {
@@ -61,7 +70,6 @@ func StockTakeItemSubmit(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, data)
 }
-
 
 func FinishStockTake(c *gin.Context) {
 	id := c.Param("id")

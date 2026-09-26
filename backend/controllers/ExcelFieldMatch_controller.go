@@ -10,6 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      List ExcelFieldMatch records
+// @Description  List ExcelFieldMatch records
+// @Tags         Excel Field Match
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.ExcelFieldMatchPageDto  true  "List ExcelFieldMatch Request Body"
+// @Success      200      {object}  dto.ExcelFieldMatchList
+// @Router       /sys/excel-field-match/list [post]
 func ListPageExcelFieldMatch(c *gin.Context) {
 	var param dto.ExcelFieldMatchPageDto
 	result, err := services.ExcelFieldMatchListAndPage(param)
@@ -20,6 +28,14 @@ func ListPageExcelFieldMatch(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Create ExcelFieldMatch record
+// @Description  Create ExcelFieldMatch record
+// @Tags         Excel Field Match
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.ExcelFieldMatchs true  "Excel Field Match Request Body"
+// @Success      200      {object}  dto.GeneralCreateResponseBody
+// @Router       /sys/excel-field-match/create [post]
 func CreateExcelFieldMatch(c *gin.Context) {
 	var param models.ExcelFieldMatchs
 	if err := c.ShouldBindJSON(&param); err != nil {
@@ -34,6 +50,14 @@ func CreateExcelFieldMatch(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one ExcelFieldMatch record by id
+// @Description  Get one ExcelFieldMatch record by id
+// @Tags         Excel Field Match
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "ExcelFieldMatch ID"
+// @Success      200      {object}  models.ExcelFieldMatchs
+// @Router       /sys/excel-field-match/one/{id} [get]
 func GetOneExcelFieldMatchById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.GetOneExcelFieldMatch(id)
@@ -44,6 +68,14 @@ func GetOneExcelFieldMatchById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Void one ExcelFieldMatch record by id
+// @Description  Void one ExcelFieldMatch record by id
+// @Tags         Excel Field Match
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "ExcelFieldMatch ID"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router       /sys/excel-field-match/void/{id} [delete]
 func VoidOneExcelFieldMatchById(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.InactiveOneExcelFieldMatch(id)
@@ -54,6 +86,14 @@ func VoidOneExcelFieldMatchById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Update ExcelFieldMatch record
+// @Description  Update ExcelFieldMatch record
+// @Tags         Excel Field Match
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.ExcelFieldMatchs true  "Excel Field Match Request Body"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router       /sys/excel-field-match/update [post]
 func UpdateExcelFieldMatchById(c *gin.Context) {
 	var param models.ExcelFieldMatchs
 	if err := c.ShouldBindJSON(&param); err != nil {

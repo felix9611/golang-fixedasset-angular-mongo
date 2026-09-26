@@ -16,7 +16,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        request  body      models.SysRoles  true  "List Action Record Request Body"
-// @Success      200      {object}  models.SysRoles
+// @Success      200      {object}  dto.GeneralCreateResponseBody
 // @Router       /sys/role/create [post]
 func CreateSysRoleApi(c *gin.Context) {
 	var role models.SysRoles
@@ -97,7 +97,7 @@ func UpdateSysRole(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      string  true  "Sys Role ID"
-// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router       /sys/role/void/{id} [delete]
 func InactiveSysRoleByID(c *gin.Context) {
 	id := c.Param("id")

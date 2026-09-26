@@ -58,6 +58,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/asset/asset-list/chart-query-date": {
+            "post": {
+                "description": "Query Asset Data by Data Type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Query Asset Data by Data Type",
+                "parameters": [
+                    {
+                        "description": "Dashboard Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DashboardReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/asset/asset-list/create": {
             "post": {
                 "description": "Create Asset Item record",
@@ -93,6 +130,38 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.AssetLists"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/asset-list/file-remove/{id}": {
+            "delete": {
+                "description": "Remove Asset File record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Remove Asset File record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "asset file ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
                         }
                     }
                 }
@@ -159,6 +228,74 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.AssetLists"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/asset-list/update": {
+            "post": {
+                "description": "Update Asset Item record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Update Asset Item record",
+                "parameters": [
+                    {
+                        "description": "Asset List Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AssetLists"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/stock-take/create": {
+            "post": {
+                "description": "Create one stock take form",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock Take"
+                ],
+                "summary": "Create one stock take form",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.StockTakes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
                         }
                     }
                 }
@@ -440,6 +577,73 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.WriteOffList"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/asset-list/code/{code}": {
+            "get": {
+                "description": "Get one asset record by code",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Get one asset record by code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "asset code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AssetLists"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/asset-list/load-file/{id}": {
+            "get": {
+                "description": "Get one asset file records by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetList"
+                ],
+                "summary": "Get one asset file records by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "asset list ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetListFiles"
+                            }
                         }
                     }
                 }
@@ -1024,7 +1228,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
                         }
                     }
                 }
@@ -1625,7 +1829,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
                         }
                     }
                 }
@@ -1658,6 +1862,172 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/excel-field-match/create": {
+            "post": {
+                "description": "Create ExcelFieldMatch record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Excel Field Match"
+                ],
+                "summary": "Create ExcelFieldMatch record",
+                "parameters": [
+                    {
+                        "description": "Excel Field Match Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ExcelFieldMatchs"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/excel-field-match/list": {
+            "post": {
+                "description": "List ExcelFieldMatch records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Excel Field Match"
+                ],
+                "summary": "List ExcelFieldMatch records",
+                "parameters": [
+                    {
+                        "description": "List ExcelFieldMatch Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ExcelFieldMatchPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ExcelFieldMatchList"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/excel-field-match/one/{id}": {
+            "get": {
+                "description": "Get one ExcelFieldMatch record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Excel Field Match"
+                ],
+                "summary": "Get one ExcelFieldMatch record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ExcelFieldMatch ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ExcelFieldMatchs"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/excel-field-match/update": {
+            "post": {
+                "description": "Update ExcelFieldMatch record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Excel Field Match"
+                ],
+                "summary": "Update ExcelFieldMatch record",
+                "parameters": [
+                    {
+                        "description": "Excel Field Match Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ExcelFieldMatchs"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/excel-field-match/void/{id}": {
+            "delete": {
+                "description": "Void one ExcelFieldMatch record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Excel Field Match"
+                ],
+                "summary": "Void one ExcelFieldMatch record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ExcelFieldMatch ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
                         }
                     }
                 }
@@ -1977,7 +2347,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SysRoles"
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
                         }
                     }
                 }
@@ -2180,7 +2550,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
                         }
                     }
                 }
@@ -2598,6 +2968,58 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.DashboardReqDto": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "type": "boolean"
+                },
+                "dataTypeValue": {
+                    "type": "string"
+                },
+                "dateType": {
+                    "type": "boolean"
+                },
+                "dateTypeValue": {
+                    "type": "string"
+                },
+                "filter": {
+                    "$ref": "#/definitions/dto.DashboardReqFilterDto"
+                },
+                "valueField": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DashboardReqFilterDto": {
+            "type": "object",
+            "properties": {
+                "deptIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "placeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "purchaseDates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "typeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.DepartmentList": {
             "type": "object",
             "properties": {
@@ -2629,6 +3051,43 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.ExcelFieldMatchList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ExcelFieldMatchs"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExcelFieldMatchPageDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
@@ -3637,6 +4096,52 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ExcelFieldMatchs": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "fieldLists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FieldListsModel"
+                    }
+                },
+                "functionCode": {
+                    "type": "string"
+                },
+                "functionName": {
+                    "type": "string"
+                },
+                "functionType": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FieldListsModel": {
+            "type": "object",
+            "properties": {
+                "dbFieldName": {
+                    "type": "string"
+                },
+                "excelFieldName": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Locations": {
             "type": "object",
             "properties": {
@@ -3660,6 +4165,38 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.StockTakes": {
+            "type": "object",
+            "properties": {
+                "actionName": {
+                    "type": "string"
+                },
+                "actionPlaceId": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "createdTime": {
+                    "type": "string"
+                },
+                "finishBy": {
+                    "type": "string"
+                },
+                "finishTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },
