@@ -225,6 +225,27 @@ const docTemplate = `{
             }
         },
         "/asset/type/list": {
+            "get": {
+                "description": "Get user details by token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get user details by token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AuthDataResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "List Asset Types",
                 "consumes": [
@@ -2107,6 +2128,14 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.AuthDataResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.SysUsers"
                 }
             }
         },

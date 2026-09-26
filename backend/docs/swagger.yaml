@@ -47,6 +47,11 @@ definitions:
       page:
         type: integer
     type: object
+  dto.AuthDataResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.SysUsers'
+    type: object
   dto.BudgetList:
     properties:
       limit:
@@ -866,6 +871,20 @@ paths:
       tags:
       - Asset Type
   /asset/type/list:
+    get:
+      consumes:
+      - application/json
+      description: Get user details by token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AuthDataResponse'
+      summary: Get user details by token
+      tags:
+      - Auth
     post:
       consumes:
       - application/json

@@ -1,5 +1,7 @@
 package dto
 
+import "golang-fixedasset-mongo-backend/backend/models"
+
 type GeneralUpdateResponse struct {
 	MatchedCount  int    `json:"MatchedCount"`
 	ModifiedCount int    `json:"ModifiedCount"`
@@ -15,6 +17,14 @@ type GeneralUpdateInactiveResponseBody struct {
 
 type GeneralCreateResponseBody struct {
 	Id string `json:"id"`
+}
+
+type DataResponse struct {
+	Data interface{} `json:"data"`
+}
+
+type AuthDataResponse struct {
+	Data models.SysUsers `json:"data"`
 }
 
 /*
