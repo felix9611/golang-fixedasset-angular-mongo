@@ -210,6 +210,43 @@ definitions:
       page:
         type: integer
     type: object
+  dto.ListMenus:
+    properties:
+      createdAt:
+        type: string
+      delete:
+        type: boolean
+      excelFunctionCode:
+        type: string
+      excelFunctionName:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      mainId:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      read:
+        type: boolean
+      sort:
+        type: integer
+      status:
+        type: integer
+      type:
+        type: string
+      update:
+        type: boolean
+      updatedAt:
+        type: string
+      upload:
+        type: boolean
+      write:
+        type: boolean
+    type: object
   dto.ListWriteOffReqDto:
     properties:
       dateRange:
@@ -254,6 +291,84 @@ definitions:
         type: string
       page:
         type: integer
+    type: object
+  dto.MenuItemPermissionBody:
+    properties:
+      id:
+        type: string
+      menuIds:
+        items: {}
+        type: array
+    type: object
+  dto.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.RoleIdsBody:
+    properties:
+      roleIds:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.RolesList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.SysRoles'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.RolesPageDto:
+    properties:
+      code:
+        type: string
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+    type: object
+  dto.SysRolesWithMenus:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      delete:
+        type: boolean
+      id:
+        type: string
+      menuIds:
+        items: {}
+        type: array
+      menuLists:
+        items:
+          $ref: '#/definitions/dto.ListMenus'
+        type: array
+      name:
+        type: string
+      read:
+        type: boolean
+      remark:
+        type: string
+      status:
+        type: integer
+      update:
+        type: boolean
+      updatedAt:
+        type: string
+      upload:
+        type: boolean
+      write:
+        type: boolean
     type: object
   dto.SysUserAvatarUpdateDto:
     properties:
@@ -1846,6 +1961,52 @@ paths:
       summary: Create one sys role
       tags:
       - Sys Role
+  /sys/role/list:
+    post:
+      consumes:
+      - application/json
+      description: List sys roles with pagination
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RolesPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RolesList'
+      summary: List sys roles with pagination
+      tags:
+      - Sys Role
+  /sys/role/list-permission:
+    post:
+      consumes:
+      - application/json
+      description: List sys role menu permission
+      parameters:
+      - description: Update Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoleIdsBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.SysRolesWithMenus'
+            type: array
+      summary: List sys role menu permission
+      tags:
+      - Sys Role
   /sys/role/one/{id}:
     get:
       consumes:
@@ -1887,6 +2048,28 @@ paths:
           schema:
             $ref: '#/definitions/models.SysRoles'
       summary: Update sys role
+      tags:
+      - Sys Role
+  /sys/role/update-permission:
+    post:
+      consumes:
+      - application/json
+      description: Update sys role menu permission
+      parameters:
+      - description: Update Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MenuItemPermissionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+      summary: Update sys role menu permission
       tags:
       - Sys Role
   /sys/role/void/{id}:

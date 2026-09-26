@@ -27,6 +27,10 @@ type AuthDataResponse struct {
 	Data models.SysUsers `json:"data"`
 }
 
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+
 /*
 {"MatchedCount":1,"ModifiedCount":1,"UpsertedCount":0,"UpsertedID":null}
 */

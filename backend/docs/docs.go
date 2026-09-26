@@ -1723,6 +1723,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/sys/role/list": {
+            "post": {
+                "description": "List sys roles with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "List sys roles with pagination",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RolesPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RolesList"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/list-permission": {
+            "post": {
+                "description": "List sys role menu permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "List sys role menu permission",
+                "parameters": [
+                    {
+                        "description": "Update Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoleIdsBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.SysRolesWithMenus"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sys/role/one/{id}": {
             "get": {
                 "description": "Get one sys role record by id",
@@ -1784,6 +1855,40 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.SysRoles"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/role/update-permission": {
+            "post": {
+                "description": "Update sys role menu permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Role"
+                ],
+                "summary": "Update sys role menu permission",
+                "parameters": [
+                    {
+                        "description": "Update Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MenuItemPermissionBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MessageResponse"
                         }
                     }
                 }
@@ -2383,6 +2488,62 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ListMenus": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "delete": {
+                    "type": "boolean"
+                },
+                "excelFunctionCode": {
+                    "type": "string"
+                },
+                "excelFunctionName": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mainId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "update": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "boolean"
+                },
+                "write": {
+                    "type": "boolean"
+                }
+            }
+        },
         "dto.ListWriteOffReqDto": {
             "type": "object",
             "properties": {
@@ -2449,6 +2610,125 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.MenuItemPermissionBody": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "menuIds": {
+                    "type": "array",
+                    "items": {}
+                }
+            }
+        },
+        "dto.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoleIdsBody": {
+            "type": "object",
+            "properties": {
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.RolesList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SysRoles"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RolesPageDto": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SysRolesWithMenus": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "delete": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "menuIds": {
+                    "type": "array",
+                    "items": {}
+                },
+                "menuLists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ListMenus"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "update": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "boolean"
+                },
+                "write": {
+                    "type": "boolean"
                 }
             }
         },
