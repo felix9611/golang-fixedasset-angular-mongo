@@ -301,6 +301,170 @@ const docTemplate = `{
                 }
             }
         },
+        "/asset/stock-take/finish/{id}": {
+            "delete": {
+                "description": "Finish stock take form",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock Take"
+                ],
+                "summary": "Finish stock take form",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Stock Take Form ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/stock-take/item-submit": {
+            "post": {
+                "description": "Submit stock take item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock Take"
+                ],
+                "summary": "Submit stock take item",
+                "parameters": [
+                    {
+                        "description": "Stock Take Item Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.StockTakeItems"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/stock-take/list": {
+            "post": {
+                "description": "List stock take forms with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock Take"
+                ],
+                "summary": "List stock take forms with pagination",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListStockTakeDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTakeResponseList"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/stock-take/one/{id}": {
+            "get": {
+                "description": "Get one stock take form by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock Take"
+                ],
+                "summary": "Get one stock take form by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Stock Take Form ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetStockTakeFormWithItemsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/stock-take/void/{id}": {
+            "delete": {
+                "description": "Void stock take form",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock Take"
+                ],
+                "summary": "Void stock take form",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Stock Take Form ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
         "/asset/type/all": {
             "get": {
                 "description": "Get one Asset Type records",
@@ -2821,7 +2985,7 @@ const docTemplate = `{
                 "lists": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.AssetLists"
+                        "$ref": "#/definitions/dto.AssetListsDetails"
                     }
                 },
                 "page": {
@@ -2829,6 +2993,132 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.AssetListsDetails": {
+            "type": "object",
+            "properties": {
+                "accountCode": {
+                    "type": "string"
+                },
+                "accountName": {
+                    "type": "string"
+                },
+                "afterBeforeTax": {
+                    "type": "number"
+                },
+                "assetCode": {
+                    "type": "string"
+                },
+                "assetName": {
+                    "type": "string"
+                },
+                "assetType": {
+                    "$ref": "#/definitions/models.AssetTypes"
+                },
+                "brandCode": {
+                    "type": "string"
+                },
+                "brandName": {
+                    "type": "string"
+                },
+                "chequeNo": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "department": {
+                    "$ref": "#/definitions/models.Department"
+                },
+                "deptId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "includeTax": {
+                    "type": "boolean"
+                },
+                "invoiceDate": {
+                    "type": "string"
+                },
+                "invoiceNo": {
+                    "type": "string"
+                },
+                "invoiceRemark": {
+                    "description": "I",
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/models.Locations"
+                },
+                "maintenancePeriodEnd": {
+                    "type": "string"
+                },
+                "maintenancePeriodStart": {
+                    "type": "string"
+                },
+                "placeId": {
+                    "type": "string"
+                },
+                "purchaseDate": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "serialNo": {
+                    "type": "string"
+                },
+                "sponsor": {
+                    "type": "boolean"
+                },
+                "sponsorName": {
+                    "type": "string"
+                },
+                "staffName": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "taxCode": {
+                    "type": "string"
+                },
+                "taxCountryCode": {
+                    "type": "string"
+                },
+                "taxInfoId": {
+                    "type": "string"
+                },
+                "taxRate": {
+                    "type": "number"
+                },
+                "typeId": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vendorId": {
+                    "type": "string"
+                },
+                "voucherNo": {
+                    "type": "string"
+                },
+                "voucherUsedDate": {
+                    "type": "string"
                 }
             }
         },
@@ -3139,6 +3429,114 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetStockTakeFormWithItemsResponse": {
+            "type": "object",
+            "properties": {
+                "actionName": {
+                    "type": "string"
+                },
+                "actionPlaceId": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "createdTime": {
+                    "type": "string"
+                },
+                "finishBy": {
+                    "type": "string"
+                },
+                "finishTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "stockTakeItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.GetStockTakeItemResponse"
+                    }
+                }
+            }
+        },
+        "dto.GetStockTakeItemResponse": {
+            "type": "object",
+            "properties": {
+                "assetCode": {
+                    "type": "string"
+                },
+                "assetId": {
+                    "type": "string"
+                },
+                "assetlist": {
+                    "$ref": "#/definitions/dto.AssetListsDetails"
+                },
+                "checkTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/models.Locations"
+                },
+                "placeId": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "stockTakeId": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GetStockTakeResponse": {
+            "type": "object",
+            "properties": {
+                "actionName": {
+                    "type": "string"
+                },
+                "actionPlaceId": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "createdTime": {
+                    "type": "string"
+                },
+                "finishBy": {
+                    "type": "string"
+                },
+                "finishTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/models.Locations"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.InvRecordList": {
             "type": "object",
             "properties": {
@@ -3332,6 +3730,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ListStockTakeDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "placeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.ListWriteOffReqDto": {
             "type": "object",
             "properties": {
@@ -3465,6 +3883,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockTakeResponseList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.GetStockTakeResponse"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
                     "type": "integer"
                 }
             }
@@ -4164,6 +4602,35 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.StockTakeItems": {
+            "type": "object",
+            "properties": {
+                "assetCode": {
+                    "type": "string"
+                },
+                "assetId": {
+                    "type": "string"
+                },
+                "checkTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "placeId": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "stockTakeId": {
                     "type": "string"
                 }
             }

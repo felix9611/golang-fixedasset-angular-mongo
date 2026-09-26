@@ -3,7 +3,52 @@ package dto
 import (
 	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type AssetListsDetails struct {
+	ID                     primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	AssetCode              string             `bson:"assetCode" json:"assetCode"`
+	AssetName              string             `bson:"assetName" json:"assetName"`
+	Unit                   string             `bson:"unit" json:"unit"`
+	TypeID                 string             `bson:"typeId" json:"typeId"`
+	PlaceId                string             `bson:"placeId" json:"placeId"`
+	DeptId                 string             `bson:"deptId" json:"deptId"`
+	PurchaseDate           string             `bson:"purchaseDate" json:"purchaseDate"`
+	Description            string             `bson:"description" json:"description"`
+	Sponsor                bool               `bson:"sponsor" json:"sponsor"`
+	SponsorName            string             `bson:"sponsorName" json:"sponsorName"`
+	Cost                   float64            `bson:"cost" json:"cost"`
+	SerialNumber           string             `bson:"serialNo" json:"serialNo"`
+	InvoiceNo              string             `bson:"invoiceNo" json:"invoiceNo"`
+	InvoiceDate            string             `bson:"invoiceDate" json:"invoiceDate"`
+	InvoiceRemark          string             `bson:"invoiceRemark" json:"invoiceRemark"` // I
+	VendorId               string             `bson:"vendorId" json:"vendorId"`
+	Remark                 string             `bson:"remark" json:"remark"`
+	TaxInfoId              string             `bson:"taxInfoId" json:"taxInfoId"`
+	TaxCountryCode         string             `bson:"taxCountryCode" json:"taxCountryCode"`
+	TaxCode                string             `bson:"taxCode" json:"taxCode"`
+	TaxRate                float64            `bson:"taxRate" json:"taxRate"`
+	IncludeTax             bool               `bson:"includeTax" json:"includeTax"`
+	AfterBeforeTax         float64            `bson:"afterBeforeTax" json:"afterBeforeTax"`
+	AccountCode            string             `bson:"accountCode" json:"accountCode"`
+	AccountName            string             `bson:"accountName" json:"accountName"`
+	BrandCode              string             `bson:"brandCode" json:"brandCode"`
+	BrandName              string             `bson:"brandName" json:"brandName"`
+	ChequeNo               string             `bson:"chequeNo" json:"chequeNo"`
+	MaintenancePeriodStart string             `bson:"maintenancePeriodStart" json:"maintenancePeriodStart"`
+	MaintenancePeriodEnd   string             `bson:"maintenancePeriodEnd" json:"maintenancePeriodEnd"`
+	VoucherNo              string             `bson:"voucherNo" json:"voucherNo"`
+	VoucherUsedDate        string             `bson:"voucherUsedDate" json:"voucherUsedDate"`
+	StaffName              string             `bson:"staffName" json:"staffName"`
+	Status                 int                `bson:"status" json:"status"`
+	CreatedAt              string             `bson:"createdAt,omitempty" json:"createdAt"`
+	UpdatedAt              string             `bson:"updatedAt,omitempty" json:"updatedAt"`
+	Location               models.Locations   `bson:"location" json:"location"`
+	Department             models.Department  `bson:"department" json:"department"`
+	AssetType              models.AssetTypes  `bson:"assetType" json:"assetType"`
+}
 
 type ListAssetReqDto struct {
 	Page          int      `json:"page"`
@@ -24,7 +69,7 @@ type ListRecordReqDto struct {
 }
 
 type AssetListList struct {
-	Lists []models.AssetLists `json:"lists"`
+	Lists []AssetListsDetails `json:"lists"`
 	Total int64               `json:"total"`
 	Page  int                 `json:"page"`
 	Limit int                 `json:"limit"`

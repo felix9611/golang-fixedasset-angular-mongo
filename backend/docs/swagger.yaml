@@ -18,12 +18,96 @@ definitions:
         type: integer
       lists:
         items:
-          $ref: '#/definitions/models.AssetLists'
+          $ref: '#/definitions/dto.AssetListsDetails'
         type: array
       page:
         type: integer
       total:
         type: integer
+    type: object
+  dto.AssetListsDetails:
+    properties:
+      accountCode:
+        type: string
+      accountName:
+        type: string
+      afterBeforeTax:
+        type: number
+      assetCode:
+        type: string
+      assetName:
+        type: string
+      assetType:
+        $ref: '#/definitions/models.AssetTypes'
+      brandCode:
+        type: string
+      brandName:
+        type: string
+      chequeNo:
+        type: string
+      cost:
+        type: number
+      createdAt:
+        type: string
+      department:
+        $ref: '#/definitions/models.Department'
+      deptId:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      includeTax:
+        type: boolean
+      invoiceDate:
+        type: string
+      invoiceNo:
+        type: string
+      invoiceRemark:
+        description: I
+        type: string
+      location:
+        $ref: '#/definitions/models.Locations'
+      maintenancePeriodEnd:
+        type: string
+      maintenancePeriodStart:
+        type: string
+      placeId:
+        type: string
+      purchaseDate:
+        type: string
+      remark:
+        type: string
+      serialNo:
+        type: string
+      sponsor:
+        type: boolean
+      sponsorName:
+        type: string
+      staffName:
+        type: string
+      status:
+        type: integer
+      taxCode:
+        type: string
+      taxCountryCode:
+        type: string
+      taxInfoId:
+        type: string
+      taxRate:
+        type: number
+      typeId:
+        type: string
+      unit:
+        type: string
+      updatedAt:
+        type: string
+      vendorId:
+        type: string
+      voucherNo:
+        type: string
+      voucherUsedDate:
+        type: string
     type: object
   dto.AssetTypeList:
     properties:
@@ -224,6 +308,77 @@ definitions:
         items: {}
         type: array
     type: object
+  dto.GetStockTakeFormWithItemsResponse:
+    properties:
+      actionName:
+        type: string
+      actionPlaceId:
+        type: string
+      createdBy:
+        type: string
+      createdTime:
+        type: string
+      finishBy:
+        type: string
+      finishTime:
+        type: string
+      id:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      stockTakeItems:
+        items:
+          $ref: '#/definitions/dto.GetStockTakeItemResponse'
+        type: array
+    type: object
+  dto.GetStockTakeItemResponse:
+    properties:
+      assetCode:
+        type: string
+      assetId:
+        type: string
+      assetlist:
+        $ref: '#/definitions/dto.AssetListsDetails'
+      checkTime:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/models.Locations'
+      placeId:
+        type: string
+      remark:
+        type: string
+      status:
+        type: string
+      stockTakeId:
+        type: string
+    type: object
+  dto.GetStockTakeResponse:
+    properties:
+      actionName:
+        type: string
+      actionPlaceId:
+        type: string
+      createdBy:
+        type: string
+      createdTime:
+        type: string
+      finishBy:
+        type: string
+      finishTime:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/models.Locations'
+      remark:
+        type: string
+      status:
+        type: integer
+    type: object
   dto.InvRecordList:
     properties:
       assetCode:
@@ -350,6 +505,19 @@ definitions:
       write:
         type: boolean
     type: object
+  dto.ListStockTakeDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+      placeIds:
+        items:
+          type: string
+        type: array
+    type: object
   dto.ListWriteOffReqDto:
     properties:
       dateRange:
@@ -437,6 +605,19 @@ definitions:
       name:
         type: string
       page:
+        type: integer
+    type: object
+  dto.StockTakeResponseList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/dto.GetStockTakeResponse'
+        type: array
+      page:
+        type: integer
+      total:
         type: integer
     type: object
   dto.SysMenuChildrenSencond:
@@ -898,6 +1079,25 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.StockTakeItems:
+    properties:
+      assetCode:
+        type: string
+      assetId:
+        type: string
+      checkTime:
+        type: string
+      id:
+        type: string
+      placeId:
+        type: string
+      remark:
+        type: string
+      status:
+        type: string
+      stockTakeId:
+        type: string
+    type: object
   models.StockTakes:
     properties:
       actionName:
@@ -1281,6 +1481,113 @@ paths:
           schema:
             $ref: '#/definitions/dto.GeneralCreateResponseBody'
       summary: Create one stock take form
+      tags:
+      - Stock Take
+  /asset/stock-take/finish/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Finish stock take form
+      parameters:
+      - description: Stock Take Form ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
+      summary: Finish stock take form
+      tags:
+      - Stock Take
+  /asset/stock-take/item-submit:
+    post:
+      consumes:
+      - application/json
+      description: Submit stock take item
+      parameters:
+      - description: Stock Take Item Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.StockTakeItems'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Submit stock take item
+      tags:
+      - Stock Take
+  /asset/stock-take/list:
+    post:
+      consumes:
+      - application/json
+      description: List stock take forms with pagination
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListStockTakeDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockTakeResponseList'
+      summary: List stock take forms with pagination
+      tags:
+      - Stock Take
+  /asset/stock-take/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one stock take form by id
+      parameters:
+      - description: Stock Take Form ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetStockTakeFormWithItemsResponse'
+      summary: Get one stock take form by id
+      tags:
+      - Stock Take
+  /asset/stock-take/void/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Void stock take form
+      parameters:
+      - description: Stock Take Form ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralCreateResponseBody'
+      summary: Void stock take form
       tags:
       - Stock Take
   /asset/type/all:
