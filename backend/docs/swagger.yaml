@@ -160,6 +160,38 @@ definitions:
       UpsertedID:
         type: string
     type: object
+  dto.InvRecordList:
+    properties:
+      assetCode:
+        type: string
+      assetList:
+        $ref: '#/definitions/models.AssetLists'
+      createdAt:
+        type: string
+      id:
+        type: string
+      placeFrom:
+        type: string
+      placeFromData:
+        $ref: '#/definitions/models.Locations'
+      placeTo:
+        type: string
+      placeToData:
+        $ref: '#/definitions/models.Locations'
+    type: object
+  dto.InvRecordListResponse:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/dto.InvRecordList'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
   dto.ListActionRecordReqDto:
     properties:
       limit:
@@ -246,6 +278,19 @@ definitions:
         type: boolean
       write:
         type: boolean
+    type: object
+  dto.ListRecordReqDto:
+    properties:
+      assetCode:
+        type: string
+      dateRange:
+        items:
+          type: string
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
     type: object
   dto.ListWriteOffReqDto:
     properties:
@@ -1922,6 +1967,28 @@ paths:
       summary: Delete one dpartment record by id
       tags:
       - Department
+  /sys/inv-record/list:
+    post:
+      consumes:
+      - application/json
+      description: List Inventory Records
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListRecordReqDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List Inventory Records
+          schema:
+            $ref: '#/definitions/dto.InvRecordListResponse'
+      summary: List Inventory Records
+      tags:
+      - Inventory Record
   /sys/role/all:
     get:
       consumes:

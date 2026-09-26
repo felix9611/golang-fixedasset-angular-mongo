@@ -1663,6 +1663,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/sys/inv-record/list": {
+            "post": {
+                "description": "List Inventory Records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inventory Record"
+                ],
+                "summary": "List Inventory Records",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListRecordReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List Inventory Records",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvRecordListResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/sys/role/all": {
             "get": {
                 "description": "Get all sys role",
@@ -2411,6 +2445,55 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.InvRecordList": {
+            "type": "object",
+            "properties": {
+                "assetCode": {
+                    "type": "string"
+                },
+                "assetList": {
+                    "$ref": "#/definitions/models.AssetLists"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "placeFrom": {
+                    "type": "string"
+                },
+                "placeFromData": {
+                    "$ref": "#/definitions/models.Locations"
+                },
+                "placeTo": {
+                    "type": "string"
+                },
+                "placeToData": {
+                    "$ref": "#/definitions/models.Locations"
+                }
+            }
+        },
+        "dto.InvRecordListResponse": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.InvRecordList"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.ListActionRecordReqDto": {
             "type": "object",
             "properties": {
@@ -2541,6 +2624,26 @@ const docTemplate = `{
                 },
                 "write": {
                     "type": "boolean"
+                }
+            }
+        },
+        "dto.ListRecordReqDto": {
+            "type": "object",
+            "properties": {
+                "assetCode": {
+                    "type": "string"
+                },
+                "dateRange": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
                 }
             }
         },
