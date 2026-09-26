@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
 )
 
@@ -20,4 +21,11 @@ type ListWriteOffReqDto struct {
 	DeptIds   []string    `json:"deptIds"`
 	TypeIds   []string    `json:"typeIds"`
 	DateRange []time.Time `json:"dateRange"`
+}
+
+type WriteOffList struct {
+	Lists []models.WriteOffs `json:"lists"`
+	Total int64              `json:"total"`
+	Page  int                `json:"page"`
+	Limit int                `json:"limit"`
 }

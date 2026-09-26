@@ -356,6 +356,74 @@ const docTemplate = `{
                 }
             }
         },
+        "/asset/write-off/create": {
+            "post": {
+                "description": "Create one Write Off record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Write Off"
+                ],
+                "summary": "Create one Write Off record",
+                "parameters": [
+                    {
+                        "description": "Write Off Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateWriteOffRecrod"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/write-off/list": {
+            "post": {
+                "description": "List Write Off Records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Write Off"
+                ],
+                "summary": "List Write Off Records",
+                "parameters": [
+                    {
+                        "description": "List Write Off Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListWriteOffReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WriteOffList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/asset-list/one/{id}": {
             "get": {
                 "description": "Get one asset record by id",
@@ -973,6 +1041,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/tax-information/all": {
+            "get": {
+                "description": "Get all Tax Information record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tax Information"
+                ],
+                "summary": "Get all Tax Information record",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TaxInformations"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/base/tax-information/create": {
             "post": {
                 "description": "Create one Tax Information record",
@@ -1007,6 +1098,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/tax-information/list": {
+            "post": {
+                "description": "List Tax Information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tax Information"
+                ],
+                "summary": "List Tax Information",
+                "parameters": [
+                    {
+                        "description": "List Tax Information Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TaxInformationListDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TaxInformationList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/tax-information/one/{id}": {
             "get": {
                 "description": "Get one tax information record by id",
@@ -1034,6 +1159,72 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.TaxInformations"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/tax-information/update": {
+            "post": {
+                "description": "Update one Tax Information record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tax Information"
+                ],
+                "summary": "Update one Tax Information record",
+                "parameters": [
+                    {
+                        "description": "Tax Information Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TaxInformations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/tax-information/void/{id}": {
+            "delete": {
+                "description": "Delete one tax information record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tax Information"
+                ],
+                "summary": "Void one tax information record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Information ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
                         }
                     }
                 }
@@ -1788,6 +1979,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateWriteOffRecrod": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "type": "string"
+                },
+                "disposalMethod": {
+                    "type": "string"
+                },
+                "lastDay": {
+                    "type": "string"
+                },
+                "lastPlaceId": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "remainingValue": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.DepartmentList": {
             "type": "object",
             "properties": {
@@ -1938,6 +2152,41 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ListWriteOffReqDto": {
+            "type": "object",
+            "properties": {
+                "dateRange": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "deptIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "placeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "typeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.LocationList": {
             "type": "object",
             "properties": {
@@ -1969,6 +2218,43 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.TaxInformationList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TaxInformations"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.TaxInformationListDTO": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "nameCode": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "tax": {
+                    "type": "string"
                 }
             }
         },
@@ -2009,6 +2295,26 @@ const docTemplate = `{
                 },
                 "place": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.WriteOffList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.WriteOffs"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -2522,6 +2828,41 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WriteOffs": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disposalMethod": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastDay": {
+                    "type": "string"
+                },
+                "lastPlaceId": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "remainingValue": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

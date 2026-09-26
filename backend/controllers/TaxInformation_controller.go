@@ -52,6 +52,14 @@ func GetOneTaxInformation(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Void one tax information record by id
+// @Description  Delete one tax information record by id
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Tax Information ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router       /base/tax-information/void/{id} [delete]
 func VoidOneTaxInformation(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.VoidOneTaxInformation(id)
@@ -62,6 +70,14 @@ func VoidOneTaxInformation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Tax Information inactivated successfully", "data": result})
 }
 
+// @Summary      List Tax Information
+// @Description  List Tax Information
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.TaxInformationListDTO  true  "List Tax Information Request Body"
+// @Success      200      {object}  dto.TaxInformationList
+// @Router       /base/tax-information/list [post]
 func ListTaxInformation(c *gin.Context) {
 	var taxInfoPageDto dto.TaxInformationListDTO
 	if err := c.ShouldBindJSON(&taxInfoPageDto); err != nil {
@@ -78,6 +94,14 @@ func ListTaxInformation(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Update one Tax Information record
+// @Description  Update one Tax Information record
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.TaxInformations  true  "Tax Information Request Body"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router      /base/tax-information/update [post]
 func UpdateTaxInformationById(c *gin.Context) {
 	var taxInfo models.TaxInformations
 	if err := c.ShouldBindJSON(&taxInfo); err != nil {
@@ -94,6 +118,14 @@ func UpdateTaxInformationById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      List Tax Information
+// @Description  List Tax Information
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.TaxInformationListDTO  true  "List Tax Information Request Body"
+// @Success      200      {object}  dto.TaxInformationList
+// @Router       /base/tax-information/list [post]
 func ListTaxInformations(c *gin.Context) {
 	var taxInfoPageDto dto.TaxInformationListDTO
 	if err := c.ShouldBindJSON(&taxInfoPageDto); err != nil {
@@ -110,6 +142,12 @@ func ListTaxInformations(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get all Tax Information record
+// @Description  Get all Tax Information record
+// @Tags         Tax Information
+// @Produce      json
+// @Success      200      {object}  []models.TaxInformations
+// @Router       /base/tax-information/all [get]
 func ListAllTaxInformation(c *gin.Context) {
 	result, err := services.ListAllTaxInformation()
 	if err != nil {
