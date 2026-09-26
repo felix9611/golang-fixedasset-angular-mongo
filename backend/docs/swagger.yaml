@@ -160,6 +160,12 @@ definitions:
       UpsertedID:
         type: string
     type: object
+  dto.GetMenusByIds:
+    properties:
+      ids:
+        items: {}
+        type: array
+    type: object
   dto.InvRecordList:
     properties:
       assetCode:
@@ -178,6 +184,13 @@ definitions:
         type: string
       placeToData:
         $ref: '#/definitions/models.Locations'
+    type: object
+  dto.InvRecordListDto:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
     type: object
   dto.InvRecordListResponse:
     properties:
@@ -279,19 +292,6 @@ definitions:
       write:
         type: boolean
     type: object
-  dto.ListRecordReqDto:
-    properties:
-      assetCode:
-        type: string
-      dateRange:
-        items:
-          type: string
-        type: array
-      limit:
-        type: integer
-      page:
-        type: integer
-    type: object
   dto.ListWriteOffReqDto:
     properties:
       dateRange:
@@ -380,6 +380,73 @@ definitions:
         type: string
       page:
         type: integer
+    type: object
+  dto.SysMenuChildrenSencond:
+    properties:
+      childrens:
+        items:
+          $ref: '#/definitions/dto.SysMenuChildrens'
+        type: array
+      createdAt:
+        type: string
+      excelFunctionCode:
+        type: string
+      excelFunctionName:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      mainId:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  dto.SysMenuChildrens:
+    properties:
+      childrens:
+        items:
+          $ref: '#/definitions/dto.SysMenuChildrens'
+        type: array
+      createdAt:
+        type: string
+      excelFunctionCode:
+        type: string
+      excelFunctionName:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      mainId:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  dto.SysMenuList:
+    properties:
+      name:
+        type: string
     type: object
   dto.SysRolesWithMenus:
     properties:
@@ -740,6 +807,33 @@ definitions:
         type: string
       status:
         type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.SysMenus:
+    properties:
+      createdAt:
+        type: string
+      excelFunctionCode:
+        type: string
+      excelFunctionName:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      mainId:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+      type:
+        type: string
       updatedAt:
         type: string
     type: object
@@ -1978,7 +2072,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.ListRecordReqDto'
+          $ref: '#/definitions/dto.InvRecordListDto'
       produces:
       - application/json
       responses:
@@ -1989,6 +2083,153 @@ paths:
       summary: List Inventory Records
       tags:
       - Inventory Record
+  /sys/menu/all-menu:
+    get:
+      consumes:
+      - application/json
+      description: Get all sys Menu items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SysMenus'
+            type: array
+      summary: Get all sys Menu items
+      tags:
+      - Sys Menu
+  /sys/menu/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one sys Menu
+      parameters:
+      - description: Create Sys Menu Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysMenus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SysUserCreateResponseDto'
+      summary: Create one sys Menu
+      tags:
+      - Sys Menu
+  /sys/menu/list:
+    post:
+      consumes:
+      - application/json
+      description: List all sys Menu records
+      parameters:
+      - description: List Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SysMenuList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SysMenus'
+            type: array
+      summary: List all sys Menu records
+      tags:
+      - Sys Menu
+  /sys/menu/main-item:
+    get:
+      consumes:
+      - application/json
+      description: List all sys Menu main IDs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: List all sys Menu main IDs
+      tags:
+      - Sys Menu
+  /sys/menu/one/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Sys Menu record by id
+      parameters:
+      - description: Sys Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SysMenus'
+      summary: Get one Sys Menu record by id
+      tags:
+      - Sys Menu
+  /sys/menu/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one sys Menu
+      parameters:
+      - description: Update Sys Menu Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysMenus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
+      summary: Update one sys Menu
+      tags:
+      - Sys Menu
+  /sys/menu/user/tree-menu:
+    post:
+      consumes:
+      - application/json
+      description: Get menus by IDs
+      parameters:
+      - description: Get Menus By Ids Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GetMenusByIds'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.SysMenuChildrenSencond'
+            type: array
+      summary: Get menus by IDs
+      tags:
+      - Sys Menu
   /sys/role/all:
     get:
       consumes:

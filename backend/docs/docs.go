@@ -1683,7 +1683,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.ListRecordReqDto"
+                            "$ref": "#/definitions/dto.InvRecordListDto"
                         }
                     }
                 ],
@@ -1692,6 +1692,232 @@ const docTemplate = `{
                         "description": "List Inventory Records",
                         "schema": {
                             "$ref": "#/definitions/dto.InvRecordListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/all-menu": {
+            "get": {
+                "description": "Get all sys Menu items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "Get all sys Menu items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SysMenus"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/create": {
+            "post": {
+                "description": "Create one sys Menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "Create one sys Menu",
+                "parameters": [
+                    {
+                        "description": "Create Sys Menu Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysMenus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysUserCreateResponseDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/list": {
+            "post": {
+                "description": "List all sys Menu records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "List all sys Menu records",
+                "parameters": [
+                    {
+                        "description": "List Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysMenuList"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SysMenus"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/main-item": {
+            "get": {
+                "description": "List all sys Menu main IDs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "List all sys Menu main IDs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/one/{id}": {
+            "get": {
+                "description": "Get one Sys Menu record by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "Get one Sys Menu record by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sys Menu ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SysMenus"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/update": {
+            "post": {
+                "description": "Update one sys Menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "Update one sys Menu",
+                "parameters": [
+                    {
+                        "description": "Update Sys Menu Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysMenus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/menu/user/tree-menu": {
+            "post": {
+                "description": "Get menus by IDs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys Menu"
+                ],
+                "summary": "Get menus by IDs",
+                "parameters": [
+                    {
+                        "description": "Get Menus By Ids Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetMenusByIds"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.SysMenuChildrenSencond"
+                            }
                         }
                     }
                 }
@@ -2445,6 +2671,15 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetMenusByIds": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {}
+                }
+            }
+        },
         "dto.InvRecordList": {
             "type": "object",
             "properties": {
@@ -2471,6 +2706,17 @@ const docTemplate = `{
                 },
                 "placeToData": {
                     "$ref": "#/definitions/models.Locations"
+                }
+            }
+        },
+        "dto.InvRecordListDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
                 }
             }
         },
@@ -2627,26 +2873,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.ListRecordReqDto": {
-            "type": "object",
-            "properties": {
-                "assetCode": {
-                    "type": "string"
-                },
-                "dateRange": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "page": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.ListWriteOffReqDto": {
             "type": "object",
             "properties": {
@@ -2781,6 +3007,108 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.SysMenuChildrenSencond": {
+            "type": "object",
+            "properties": {
+                "childrens": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SysMenuChildrens"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "excelFunctionCode": {
+                    "type": "string"
+                },
+                "excelFunctionName": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mainId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SysMenuChildrens": {
+            "type": "object",
+            "properties": {
+                "childrens": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SysMenuChildrens"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "excelFunctionCode": {
+                    "type": "string"
+                },
+                "excelFunctionName": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mainId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SysMenuList": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -3329,6 +3657,47 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SysMenus": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "excelFunctionCode": {
+                    "type": "string"
+                },
+                "excelFunctionName": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mainId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"

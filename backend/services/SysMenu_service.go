@@ -305,8 +305,7 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// 1️⃣ 初始 ID slice
-	initialIds := []interface{}{} // ✅ 正確初始化
+	initialIds := []interface{}{}
 
 	oids := []primitive.ObjectID{}
 
@@ -324,7 +323,6 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 		oids = append(oids, oid)
 	}
 
-	// 2️⃣ 第一輪查詢
 	filter1 := bson.M{
 		"status": 1,
 		"$or": []bson.M{
@@ -342,7 +340,6 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 		return nil, err
 	}
 
-	// 3️⃣ 拿第一輪的 mainId 去第二輪查詢
 	mainIdSet := make(map[string]struct{})
 	for _, r := range result1 {
 		if r.MainId != "" {
@@ -350,7 +347,7 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 		}
 	}
 
-	mainIds := []string{} // ✅ 不與上面 initialIds 衝突
+	mainIds := []string{}
 	for k := range mainIdSet {
 		mainIds = append(mainIds, k)
 	}
@@ -377,7 +374,6 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 		return nil, err
 	}
 
-	// 4️⃣ 合併去重
 	mergedMap := make(map[string]models.SysMenus)
 	for _, r := range append(result1, result2...) {
 		mergedMap[r.ID.Hex()] = r
@@ -402,7 +398,7 @@ func GetMenusByIds(query *dto.GetMenusByIds) (interface{}, error) {
 		})
 	}
 
-	// 5️⃣ Build tree
+	// Build tree
 	finalTree := BuildSortedTree(merged)
 
 	return finalTree, nil
