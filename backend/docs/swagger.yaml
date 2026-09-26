@@ -250,6 +250,51 @@ definitions:
       page:
         type: integer
     type: object
+  dto.SysUserAvatarUpdateDto:
+    properties:
+      photo:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.SysUserCreateResponseDto:
+    properties:
+      id:
+        type: string
+    type: object
+  dto.SysUserList:
+    properties:
+      limit:
+        type: integer
+      lists:
+        items:
+          $ref: '#/definitions/models.SysUsers'
+        type: array
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.SysUserPageDto:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+      roleIds:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.SysUserUpdatePasswordDto:
+    properties:
+      newPassword:
+        type: string
+      username:
+        type: string
+    type: object
   dto.TaxInformationList:
     properties:
       limit:
@@ -826,7 +871,7 @@ paths:
       - application/json
       description: List Asset Types
       parameters:
-      - description: List Action Record Request Body
+      - description: List Asset Types Request Body
         in: body
         name: request
         required: true
@@ -881,7 +926,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
       summary: Update one Asset Type record
       tags:
       - Asset Type
@@ -889,7 +934,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete one Asset Type record by id
+      description: Void one Asset Type record by id
       parameters:
       - description: Asset Type ID
         in: path
@@ -903,7 +948,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
-      summary: Delete one Asset Type record by id
+      summary: Void one Asset Type record by id
       tags:
       - Asset Type
   /asset/write-off/create:
@@ -1846,6 +1891,71 @@ paths:
       summary: Delete one sys role record by id
       tags:
       - Sys Role
+  /sys/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Void one Sys User by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Void one Sys User by id
+      tags:
+      - Sys User
+  /sys/user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create one Sys User
+      parameters:
+      - description: Sys User Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysUsers'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SysUserCreateResponseDto'
+      summary: Create one Sys User
+      tags:
+      - Sys User
+  /sys/user/list:
+    post:
+      consumes:
+      - application/json
+      description: List Sys Users
+      parameters:
+      - description: List Sys Users Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SysUserPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SysUserList'
+      summary: List Sys Users
+      tags:
+      - Sys User
   /sys/user/one/{id}:
     get:
       consumes:
@@ -1865,6 +1975,72 @@ paths:
           schema:
             $ref: '#/definitions/models.SysUsers'
       summary: Get one Sys User record by id
+      tags:
+      - Sys User
+  /sys/user/update:
+    post:
+      consumes:
+      - application/json
+      description: Update one Sys User
+      parameters:
+      - description: Sys User Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysUsers'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateInactiveResponseBody'
+      summary: Update one Sys User
+      tags:
+      - Sys User
+  /sys/user/user-self/update-avatar:
+    post:
+      consumes:
+      - application/json
+      description: Update one Sys User Avatar
+      parameters:
+      - description: Sys User Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SysUserAvatarUpdateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
+      summary: Update one Sys User Avatar
+      tags:
+      - Sys User
+  /sys/user/user-self/update-password:
+    post:
+      consumes:
+      - application/json
+      description: Update one Sys User Password
+      parameters:
+      - description: Sys User Request Body for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SysUserUpdatePasswordDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GeneralUpdateResponse'
+      summary: Update one Sys User Password
       tags:
       - Sys User
 swagger: "2.0"

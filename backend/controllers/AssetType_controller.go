@@ -52,8 +52,8 @@ func GetAssetTypeById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// @Summary      Delete one Asset Type record by id
-// @Description  Delete one Asset Type record by id
+// @Summary      Void one Asset Type record by id
+// @Description  Void one Asset Type record by id
 // @Tags         Asset Type
 // @Accept       json
 // @Produce      json
@@ -76,7 +76,7 @@ func InactiveAssetType(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      models.AssetTypes  true  "Asset Type Request Body for update"
-// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router      /asset/type/update [post]
 func UpdateAssetType(c *gin.Context) {
 	var assetType models.AssetTypes
@@ -115,7 +115,7 @@ func GetAssetTypes(c *gin.Context) {
 // @Tags         Asset Type
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.AssetTypeListDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.AssetTypeListDto  true  "List Asset Types Request Body"
 // @Success      200      {object}  dto.AssetTypeList
 // @Router       /asset/type/list [post]
 func ListPageAssetTypes(c *gin.Context) {

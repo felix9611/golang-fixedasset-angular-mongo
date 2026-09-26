@@ -239,7 +239,7 @@ const docTemplate = `{
                 "summary": "List Asset Types",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Asset Types Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -318,7 +318,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
                         }
                     }
                 }
@@ -326,7 +326,7 @@ const docTemplate = `{
         },
         "/asset/type/void/{id}": {
             "delete": {
-                "description": "Delete one Asset Type record by id",
+                "description": "Void one Asset Type record by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -336,7 +336,7 @@ const docTemplate = `{
                 "tags": [
                     "Asset Type"
                 ],
-                "summary": "Delete one Asset Type record by id",
+                "summary": "Void one Asset Type record by id",
                 "parameters": [
                     {
                         "type": "string",
@@ -1800,6 +1800,74 @@ const docTemplate = `{
                 }
             }
         },
+        "/sys/user/create": {
+            "post": {
+                "description": "Create one Sys User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys User"
+                ],
+                "summary": "Create one Sys User",
+                "parameters": [
+                    {
+                        "description": "Sys User Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysUsers"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysUserCreateResponseDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/user/list": {
+            "post": {
+                "description": "List Sys Users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys User"
+                ],
+                "summary": "List Sys Users",
+                "parameters": [
+                    {
+                        "description": "List Sys Users Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysUserPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysUserList"
+                        }
+                    }
+                }
+            }
+        },
         "/sys/user/one/{id}": {
             "get": {
                 "description": "Get one Sys User record by id",
@@ -1827,6 +1895,140 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.SysUsers"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/user/update": {
+            "post": {
+                "description": "Update one Sys User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys User"
+                ],
+                "summary": "Update one Sys User",
+                "parameters": [
+                    {
+                        "description": "Sys User Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SysUsers"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/user/user-self/update-avatar": {
+            "post": {
+                "description": "Update one Sys User Avatar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys User"
+                ],
+                "summary": "Update one Sys User Avatar",
+                "parameters": [
+                    {
+                        "description": "Sys User Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysUserAvatarUpdateDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/user/user-self/update-password": {
+            "post": {
+                "description": "Update one Sys User Password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys User"
+                ],
+                "summary": "Update one Sys User Password",
+                "parameters": [
+                    {
+                        "description": "Sys User Request Body for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SysUserUpdatePasswordDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/sys/user/{id}": {
+            "delete": {
+                "description": "Void one Sys User by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sys User"
+                ],
+                "summary": "Void one Sys User by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneralUpdateInactiveResponseBody"
                         }
                     }
                 }
@@ -2218,6 +2420,76 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.SysUserAvatarUpdateDto": {
+            "type": "object",
+            "properties": {
+                "photo": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SysUserCreateResponseDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SysUserList": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "lists": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SysUsers"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SysUserPageDto": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.SysUserUpdatePasswordDto": {
+            "type": "object",
+            "properties": {
+                "newPassword": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
