@@ -11,6 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Create one Sys User
+// @Description  Create one Sys User
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.SysUsers  true  "Sys User Request Body"
+// @Success      200      {object}  dto.SysUserCreateResponseDto
+// @Router      /sys/user/create [post]
 func CreateSysUser(c *gin.Context) {
 	var user models.SysUsers
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -26,6 +34,14 @@ func CreateSysUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
+// @Summary      Update one Sys User
+// @Description  Update one Sys User
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.SysUsers  true  "Sys User Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /sys/user/update [post]
 func UpdateSysUserByID(c *gin.Context) {
 	var user models.SysUsers
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -60,6 +76,14 @@ func GetSysUsersById(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// @Summary      Void one Sys User by id
+// @Description  Void one Sys User by id
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "User ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router      /sys/user/{id} [delete]
 func InactiveUserByID(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.InactiveUserByID(id)
@@ -71,6 +95,14 @@ func InactiveUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+// @Summary      List Sys Users
+// @Description  List Sys Users
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.SysUserPageDto  true  "List Sys Users Request Body"
+// @Success      200      {object}  dto.SysUserList
+// @Router       /sys/user/list [post]
 func SysUserLists(c *gin.Context) {
 	var pageDto dto.SysUserPageDto
 	if err := c.ShouldBindJSON(&pageDto); err != nil {
@@ -87,6 +119,14 @@ func SysUserLists(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
+// @Summary      Update one Sys User Avatar
+// @Description  Update one Sys User Avatar
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.SysUserAvatarUpdateDto  true  "Sys User Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router      /sys/user/user-self/update-avatar [post]
 func SysUserAvatarUpdate(c *gin.Context) {
 	var avatarDto dto.SysUserAvatarUpdateDto
 	if err := c.ShouldBindJSON(&avatarDto); err != nil {
@@ -103,6 +143,14 @@ func SysUserAvatarUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+// @Summary      Update one Sys User Password
+// @Description  Update one Sys User Password
+// @Tags         Sys User
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.SysUserUpdatePasswordDto  true  "Sys User Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router      /sys/user/user-self/update-password [post]
 func SysUserPasswordUpdate(c *gin.Context) {
 	var passwordDto dto.SysUserUpdatePasswordDto
 	if err := c.ShouldBindJSON(&passwordDto); err != nil {

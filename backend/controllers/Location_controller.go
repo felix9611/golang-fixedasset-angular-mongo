@@ -76,7 +76,7 @@ func InactiveLocationByID(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      models.Locations  true  "Location Request Body for update"
-// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router      /base/location/update/{id} [post]
 func UpdateLocationById(c *gin.Context) {
 	var location models.Locations

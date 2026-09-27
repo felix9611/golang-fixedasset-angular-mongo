@@ -16,7 +16,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        request  body      models.SysRoles  true  "List Action Record Request Body"
-// @Success      200      {object}  models.SysRoles
+// @Success      200      {object}  dto.GeneralCreateResponseBody
 // @Router       /sys/role/create [post]
 func CreateSysRoleApi(c *gin.Context) {
 	var role models.SysRoles
@@ -67,6 +67,14 @@ func GetAllRoles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": roles})
 }
 
+// @Summary      Update sys role
+// @Description  Update sys role
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.SysRoles  true  "Update Request Body"
+// @Success      200      {object}  models.SysRoles
+// @Router       /sys/role/update [post]
 func UpdateSysRole(c *gin.Context) {
 	// id := c.Param("id")
 	var role models.SysRoles
@@ -83,6 +91,14 @@ func UpdateSysRole(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Role updated successfully", "id": role.ID, "data": result})
 }
 
+// @Summary      Delete one sys role record by id
+// @Description  Delete one sys role record by id
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Sys Role ID"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router       /sys/role/void/{id} [delete]
 func InactiveSysRoleByID(c *gin.Context) {
 	id := c.Param("id")
 	result, err := services.VoidRoleById(id)
@@ -93,6 +109,14 @@ func InactiveSysRoleByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Role deactivated successfully", "id": id, "data": result})
 }
 
+// @Summary      List sys roles with pagination
+// @Description  List sys roles with pagination
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.RolesPageDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.RolesList
+// @Router       /sys/role/list [post]
 func ListPageRoles(c *gin.Context) {
 	var rolePageDto dto.RolesPageDto
 	if err := c.ShouldBindJSON(&rolePageDto); err != nil {
@@ -107,6 +131,14 @@ func ListPageRoles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
+// @Summary      Update sys role menu permission
+// @Description  Update sys role menu permission
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.MenuItemPermissionBody  true  "Update Request Body"
+// @Success      200      {object}  dto.MessageResponse
+// @Router       /sys/role/update-permission [post]
 func HandleMeunPermission(c *gin.Context) {
 	var menuPermissionDto dto.MenuItemPermissionBody
 	if err := c.ShouldBindJSON(&menuPermissionDto); err != nil {
@@ -121,6 +153,14 @@ func HandleMeunPermission(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Menu permissions updated successfully", "data": result})
 }
 
+// @Summary      List sys role menu permission
+// @Description  List sys role menu permission
+// @Tags         Sys Role
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.RoleIdsBody  true  "Update Request Body"
+// @Success      200      {object}  []dto.SysRolesWithMenus
+// @Router       /sys/role/list-permission [post]
 func LoadRoleWithMenu(c *gin.Context) {
 	var roleIdsDto dto.RoleIdsBody
 	if err := c.ShouldBindJSON(&roleIdsDto); err != nil {

@@ -79,7 +79,7 @@ func CreateDepartment(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      models.Department  true  "Department Request Body for update"
-// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router      /sys/dpartment/update/{id} [post]
 func UpdateDepartment(c *gin.Context) {
 	id := c.Param("id")

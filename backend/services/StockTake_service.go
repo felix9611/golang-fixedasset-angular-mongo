@@ -2,14 +2,15 @@ package services
 
 import (
 	"context"
-	"golang-fixedasset-mongo-backend/backend/models"
-	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
+
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateStockTakeForm(stockTakeForm *models.StockTakes) (interface{}, error) {
@@ -56,16 +57,16 @@ func GetOneStockTakeFormByID(id string) (interface{}, error) {
 	}
 
 	return gin.H{
-		"id": 		  stockTakeForm.ID,
-		"actionName": stockTakeForm.ActionName,
-		"actionPlaceId": stockTakeForm.ActionPlaceId,
-		"remark":     stockTakeForm.Remark,
-		"createdTime": stockTakeForm.CreatedTime,
-		"status":     stockTakeForm.Status,
-		"createdBy":  stockTakeForm.CreatedBy,
-		"finishTime": stockTakeForm.FinishTime,
-		"finishBy":   stockTakeForm.FinishBy,
-		"stockTakeItems":      stockTakeItems,
+		"id":             stockTakeForm.ID,
+		"actionName":     stockTakeForm.ActionName,
+		"actionPlaceId":  stockTakeForm.ActionPlaceId,
+		"remark":         stockTakeForm.Remark,
+		"createdTime":    stockTakeForm.CreatedTime,
+		"status":         stockTakeForm.Status,
+		"createdBy":      stockTakeForm.CreatedBy,
+		"finishTime":     stockTakeForm.FinishTime,
+		"finishBy":       stockTakeForm.FinishBy,
+		"stockTakeItems": stockTakeItems,
 	}, nil
 
 }
@@ -82,7 +83,6 @@ func ListStockTakeForms(pageDto *dto.ListStockTakeDto) (interface{}, error) {
 	limit := pageDto.Limit
 
 	filters := bson.M{}
-
 
 	if pageDto.Name == "" {
 		filters["actionName"] = bson.M{"$regex": pageDto.Name, "$options": "i"}
@@ -195,7 +195,7 @@ func GetStockTakeItem(stockTakeId string) (interface{}, error) {
 		{{
 			Key: "$lookup", Value: bson.D{
 				{Key: "from", Value: "asset_lists"},
-				{Key: "let", Value: bson.D{	
+				{Key: "let", Value: bson.D{
 					{Key: "assetIdStr", Value: bson.D{
 						{Key: "$convert", Value: bson.D{
 							{Key: "input", Value: "$assetId"},
@@ -291,7 +291,7 @@ func GetStockTakeItem(stockTakeId string) (interface{}, error) {
 			Key: "$lookup", Value: bson.D{
 				{Key: "from", Value: "locations"},
 
-				{Key: "let", Value: bson.D{	
+				{Key: "let", Value: bson.D{
 					{Key: "locationIdStr", Value: bson.D{
 						{Key: "$convert", Value: bson.D{
 							{Key: "input", Value: "$placeId"},
@@ -342,7 +342,7 @@ func GetStockTakeItem(stockTakeId string) (interface{}, error) {
 func StockTakeItemSubmit(stockTakeItem *models.StockTakeItems) (interface{}, error) {
 
 	collection := config.GetCollection("stock_take_items")
-	
+
 	stockTakeItem.CheckTime = time.Now()
 
 	res, errInsert := collection.InsertOne(context.Background(), stockTakeItem)
@@ -381,7 +381,7 @@ func FinishOrVoidStockTakeForm(_id string, status int, username string) (interfa
 		finalData := bson.M{
 			"finishBy":   username,
 			"finishTime": time.Now(),
-			"status":  status,
+			"status":     status,
 		}
 
 		res, err2 := collection.UpdateOne(ctx, filter, bson.M{"$set": finalData})
@@ -392,4 +392,3 @@ func FinishOrVoidStockTakeForm(_id string, status int, username string) (interfa
 		return gin.H{"result": res, "message": "Updated successfully!", "finished": true}, nil
 	}
 }
-	
