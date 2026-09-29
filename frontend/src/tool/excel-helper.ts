@@ -75,10 +75,18 @@ export function formatJson (header: any, filterVal: any, jsonData: any) {
     }) */
 }
   
-export function formatJsonToSheet(filterVal: any, jsonData: any) {
-    return jsonData.map((v: any) => filterVal.map((j: any) => {
-      return v[j]
-    }))
+export function formatJsonToSheet(filterVal: string[], jsonData: any[]) {
+  if (!Array.isArray(jsonData) || !jsonData.length) {
+    return []
+  }
+
+  return jsonData.map((row: any) =>
+    filterVal.map((key: string) => {
+      const value = key.split('.').reduce((obj, k) => (obj || {})[k], row)
+    
+      return value !== undefined && value !== null ? value : ''
+    })
+  )
 }
 
 
@@ -108,36 +116,40 @@ export function downloadTempExcelFile(
     const fileEx = XLSX.write(wb, { ...wopts })
     saveAs(new Blob([s2ab(fileEx)],{type:""}), fileName)
   }
-  export function saveJsonToExcel(
-    headers: any, 
-    data: any, 
-    excelHeader: any, 
-    fileName: string, 
-    excelStyle?: any,
-    headerColSeetting? : any
-  ) {
-    let dataSet = formatJsonToSheet(headers, data)
-    const ws = XLSX.utils.aoa_to_sheet([excelHeader])
-    
-    if (excelStyle) {
-      if (excelStyle) {
-        for (const [key] of Object.entries(ws)) {
-          if (key !== '!cols' && key !== '!ref') {
-            ws[key].s = excelStyle
-          }
-        }
-      }
-      if(headerColSeetting) {
-        ws['!cols'] = headerColSeetting['!cols']
+export function saveJsonToExcel(
+  headers: any, 
+  data: any, 
+  excelHeader: any, 
+  fileName: string, 
+  excelStyle?: any,
+  headerColSeetting?: any
+) {
+  
+  const dataSet = formatJsonToSheet(headers, data)
+  const fullData = [excelHeader, ...dataSet]
+  const ws = XLSX.utils.aoa_to_sheet(fullData)
+
+  if (headerColSeetting && headerColSeetting['!cols']) {
+    ws['!cols'] = headerColSeetting['!cols']
+  }
+
+  if (excelStyle) {
+    for (const key of Object.keys(ws)) {
+      if (!key.startsWith('!')) {
+        ws[key].s = excelStyle
       }
     }
-    console.log(ws)
-    XLSX.utils.sheet_add_aoa(ws, dataSet, { origin: 'A2' })
-    let wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-    const wopts: any = { bookType: 'xlsx', bookSST: false , type: 'binary' }
-    const fileEx = XLSX.write(wb, { ...wopts })
-    saveAs(new Blob([s2ab(fileEx)],{type:""}), fileName)
+  }
+
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+  const fileEx = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+  
+  const blob = new Blob([fileEx], { 
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' 
+  })
+  const exportFileName = fileName.endsWith('.xlsx') ? fileName : `${fileName}.xlsx`
+  saveAs(blob, exportFileName)
 }
   
 function s2ab(s: any) {

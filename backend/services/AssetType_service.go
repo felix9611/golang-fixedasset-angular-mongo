@@ -3,13 +3,14 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-    "go.mongodb.org/mongo-driver/bson"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/gin-gonic/gin"
 )
 
 func CreateAssetType(assetType *models.AssetTypes) (interface{}, error) {
@@ -131,7 +132,7 @@ func UpdateAssetType(updateData *models.AssetTypes) (interface{}, error) {
 		updateData.UpdatedAt = time.Now()
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
-		
+
 		CreateActionRecord("Asset Type Update", "POST", "Asset Type", updateData, "Success")
 
 		if err != nil {
@@ -169,6 +170,50 @@ func ListAllAssetType() (interface{}, error) {
 	}
 
 	return gin.H{"datas": assetTypes}, nil
+}
+
+func ListAssetTypeNoPaging(pageDto *dto.AssetTypeListDto) (interface{}, error) {
+
+	collection := config.GetCollection("asset_types")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1}
+
+	if pageDto.Name != "" {
+		filter = bson.M{
+			"status": 1,
+			"$or": []bson.M{
+				{"typeCode": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+				{"typeName": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			},
+		}
+	}
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var assetTypes []models.AssetTypes
+	for cursor.Next(ctx) {
+		var assetType models.AssetTypes
+		if err := cursor.Decode(&assetType); err != nil {
+			return nil, err
+		}
+		assetTypes = append(assetTypes, assetType)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return assetTypes, nil
 }
 
 func ListAssetType(pageDto *dto.AssetTypeListDto) (interface{}, error) {

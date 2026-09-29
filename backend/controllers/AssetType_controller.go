@@ -133,6 +133,21 @@ func ListPageAssetTypes(c *gin.Context) {
 
 }
 
+func ListAssetTypes(c *gin.Context) {
+	var assetTypePageDto dto.AssetTypeListDto
+	if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	assetTypes, err := services.ListAssetTypeNoPaging(&assetTypePageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
+		return
+	}
+	c.JSON(http.StatusOK, assetTypes)
+
+}
+
 func RegisterAssetTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	AssetTypeGroup := rg.Group("/asset/type", handle.MiddlewareFunc())
 	{
@@ -142,5 +157,6 @@ func RegisterAssetTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		AssetTypeGroup.POST("/update", UpdateAssetType)
 		AssetTypeGroup.GET("/all", GetAssetTypes)
 		AssetTypeGroup.POST("/list", ListPageAssetTypes)
+		AssetTypeGroup.POST("filter/list", ListAssetTypes)
 	}
 }
