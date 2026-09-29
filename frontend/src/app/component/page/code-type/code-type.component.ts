@@ -48,7 +48,7 @@ export class CodeTypeComponent {
         private userStoreService: UserStoreService
     ) {
         this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-          /*  const answer = findMenuItem(data, 'Code Type', 'code-type')
+            const answer = findMenuItem(data, 'Code Type', 'code-type')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -58,14 +58,14 @@ export class CodeTypeComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting() */
+            this.preLoadExcelSetting()
         })
     }
 
     ngOnDestroy() {
-     //   if (this.userStoreService.menuRole$) {
-          //  this.rightSubscription.unsubscribe()
-      //  }
+        if (this.userStoreService.menuRole$) {
+          this.rightSubscription.unsubscribe()
+      }
     }
 
     userRightInside: any = {

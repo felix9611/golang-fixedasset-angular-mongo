@@ -152,6 +152,51 @@ func UpdateCodeType(updateData *models.CodeTypes) (interface{}, error) {
 	}
 }
 
+func CodeTypeListWithoutPagination(pageDto *dto.CodeTypeListDto) (interface{}, error) {
+
+	collection := config.GetCollection("code_types")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1}
+
+	if pageDto.Name != "" {
+		filter = bson.M{
+			"status": 1,
+			"$or": []bson.M{
+				{"type": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+				{"valueCode": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+				{"valueName": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			},
+		}
+	}
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var codeTypes []models.CodeTypes
+	for cursor.Next(ctx) {
+		var codeType models.CodeTypes
+		if err := cursor.Decode(&codeType); err != nil {
+			return nil, err
+		}
+		codeTypes = append(codeTypes, codeType)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return codeTypes, nil
+}
+
 func CodeTypeList(pageDto *dto.CodeTypeListDto) (interface{}, error) {
 
 	if pageDto.Page < 1 {

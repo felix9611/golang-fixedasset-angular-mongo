@@ -70,6 +70,30 @@ func InactiveCodeTypeByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "CodeType inactivated successfully", "data": result})
 }
 
+// @Summary      List Code Types without pagination
+// @Description  List Code Types without pagination
+// @Tags         Code Type
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.CodeTypeListDto  true  "List Action Record Request Body"
+// @Success      200      {object}  dto.CodeTypeList
+// @Router       /base/code-type/filter/list [post]
+func ListCodeTypeWithoutPagination(c *gin.Context) {
+	var codeTypePageDto dto.CodeTypeListDto
+	if err := c.ShouldBindJSON(&codeTypePageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.CodeTypeListWithoutPagination(&codeTypePageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      List Code Types
 // @Description  List Code Types
 // @Tags         Code Type
@@ -172,5 +196,6 @@ func RegisterCodeTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		codeTypeGroup.POST("/update", UpdateCodeTypeById)
 		codeTypeGroup.GET("/get-type/:type", ListCodeTypeByType)
 		codeTypeGroup.POST("/batch-upload", BatchUploadCodeTypes)
+		codeTypeGroup.POST("/filter/list", ListCodeTypeWithoutPagination)
 	}
 }

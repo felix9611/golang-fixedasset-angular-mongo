@@ -133,6 +133,14 @@ func ListPageAssetTypes(c *gin.Context) {
 
 }
 
+// @Summary      List Asset Types
+// @Description  List Asset Types
+// @Tags         Asset Type
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.AssetTypeListDto  true  "List Asset Types Request Body"
+// @Success      200      {object}  []models.AssetTypes
+// @Router       /asset/type/filter/list [post]
 func ListAssetTypes(c *gin.Context) {
 	var assetTypePageDto dto.AssetTypeListDto
 	if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
