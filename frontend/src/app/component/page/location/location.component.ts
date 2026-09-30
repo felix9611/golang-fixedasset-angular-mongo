@@ -13,12 +13,12 @@ import { LocationForm } from './interface'
 import { NzMessageService } from 'ng-zorro-antd/message'
 import { NzPaginationModule } from 'ng-zorro-antd/pagination'
 import { UserStoreService } from '../../../../state/user.service'
-import { findMenuItem } from '../../tool-function'
-import { Subscription } from 'rxjs'
-import { downloadTempExcelFile, formatJson, readExcelFile } from '../../../../tool/excel-helper'
 import { NzUploadModule } from 'ng-zorro-antd/upload'
 import { DownloadExcelTemplateComponent } from '../../components/download-template-component/download-template-component.component'
 import { UploadDialogComponent } from '../../components/upload-dialog-component/upload-dialog-component.component'
+import { DownloadExcelDataComponent } from '../../components/download-excel-component/download-excel-data-component.component'
+import { findMenuItem } from '../../tool-function'
+import { Subscription } from 'rxjs'
 
 @Component({
     // selector: 'app-footer',
@@ -34,18 +34,19 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
         NzPaginationModule, 
         NzUploadModule,
         DownloadExcelTemplateComponent,
-        UploadDialogComponent
+        UploadDialogComponent,
+        DownloadExcelDataComponent
     ],
     templateUrl: './location.component.html',
     styleUrl: './location.component.css',
 })
 export class LocationComponent {
-   // private rightSubscription: Subscription
+        private rightSubscription: Subscription
         constructor(
             private message: NzMessageService,
             private userStoreService: UserStoreService
         ) {
-   /*         this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+            this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Location', 'location')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -57,14 +58,14 @@ export class LocationComponent {
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
-        }) */
+        })
                     
     }
     
     ngOnDestroy() {
-      //  if (this.userStoreService.menuRole$) {
-       //     this.rightSubscription.unsubscribe()
-    //    }
+        if (this.userStoreService.menuRole$) {
+            this.rightSubscription.unsubscribe()
+       }
     }
     
     

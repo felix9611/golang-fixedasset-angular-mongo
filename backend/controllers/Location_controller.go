@@ -118,6 +118,30 @@ func ListLocations(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      List Locations Without pagination
+// @Description  List Locations Without pagination
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.LocationPageDto  true  "List Action Record Request Body"
+// @Success      200      {object}  []models.Locations
+// @Router       /base/location/filter/list [post]
+func LocationListWithFilter(c *gin.Context) {
+	var locationPageDto dto.LocationPageDto
+	if err := c.ShouldBindJSON(&locationPageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.LocationListWithFilter(&locationPageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      Get all location record
 // @Description  Get all location record
 // @Tags         Location
@@ -142,5 +166,6 @@ func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		locationGroup.DELETE("/void/:id", InactiveLocationByID)
 		locationGroup.POST("/list", ListLocations)
 		locationGroup.GET("/all", GetAllLocations)
+		locationGroup.POST("/filter/list", LocationListWithFilter)
 	}
 }
