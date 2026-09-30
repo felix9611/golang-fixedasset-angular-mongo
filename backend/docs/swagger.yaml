@@ -1629,6 +1629,30 @@ paths:
       summary: Create one Asset Type record
       tags:
       - Asset Type
+  /asset/type/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Asset Types
+      parameters:
+      - description: List Asset Types Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssetTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssetTypes'
+            type: array
+      summary: List Asset Types
+      tags:
+      - Asset Type
   /asset/type/list:
     get:
       consumes:
@@ -1987,6 +2011,28 @@ paths:
       summary: Create one Code Type record
       tags:
       - Code Type
+  /base/code-type/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Code Types without pagination
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CodeTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CodeTypeList'
+      summary: List Code Types without pagination
+      tags:
+      - Code Type
   /base/code-type/get-type/{type}:
     get:
       consumes:
@@ -2131,6 +2177,30 @@ paths:
           schema:
             $ref: '#/definitions/dto.GeneralCreateResponseBody'
       summary: Create one Location record
+      tags:
+      - Location
+  /base/location/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Locations Without pagination
+      parameters:
+      - description: List Action Record Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LocationPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Locations'
+            type: array
+      summary: List Locations Without pagination
       tags:
       - Location
   /base/location/list:
@@ -2658,9 +2728,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get one ExcelFieldMatch record by id
+      description: Get one ExcelFieldMatch record by code
       parameters:
-      - description: ExcelFieldMatch ID
+      - description: Code
         in: path
         name: id
         required: true
@@ -2672,7 +2742,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.ExcelFieldMatchs'
-      summary: Get one ExcelFieldMatch record by id
+      summary: Get one ExcelFieldMatch record by code
       tags:
       - Excel Field Match
   /sys/excel-field-match/update:

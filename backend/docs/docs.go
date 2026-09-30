@@ -525,6 +525,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/asset/type/filter/list": {
+            "post": {
+                "description": "List Asset Types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "List Asset Types",
+                "parameters": [
+                    {
+                        "description": "List Asset Types Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AssetTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetTypes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/asset/type/list": {
             "get": {
                 "description": "Get user details by token",
@@ -1074,6 +1111,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/code-type/filter/list": {
+            "post": {
+                "description": "List Code Types without pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "List Code Types without pagination",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/code-type/get-type/{type}": {
             "get": {
                 "description": "Get one code type record by type",
@@ -1293,6 +1364,43 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.GeneralCreateResponseBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/location/filter/list": {
+            "post": {
+                "description": "List Locations Without pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "List Locations Without pagination",
+                "parameters": [
+                    {
+                        "description": "List Action Record Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LocationPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Locations"
+                            }
                         }
                     }
                 }
@@ -2101,7 +2209,7 @@ const docTemplate = `{
         },
         "/sys/excel-field-match/one/{id}": {
             "get": {
-                "description": "Get one ExcelFieldMatch record by id",
+                "description": "Get one ExcelFieldMatch record by code",
                 "consumes": [
                     "application/json"
                 ],
@@ -2111,11 +2219,11 @@ const docTemplate = `{
                 "tags": [
                     "Excel Field Match"
                 ],
-                "summary": "Get one ExcelFieldMatch record by id",
+                "summary": "Get one ExcelFieldMatch record by code",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ExcelFieldMatch ID",
+                        "description": "Code",
                         "name": "id",
                         "in": "path",
                         "required": true
