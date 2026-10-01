@@ -62,7 +62,7 @@ export class BudgetComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-        //    this.preLoadExcelSetting()*/
+            this.preLoadExcelSetting()
         })
                 
     }
@@ -89,8 +89,8 @@ export class BudgetComponent {
 
     editForm: BudgetForm =  {
         id: '',
-        deptId: '',
-        placeId: '',
+        deptId: [],
+        placeId: [],
         budgetNo: '',
         budgetName: '',
         year: '',
@@ -150,8 +150,8 @@ export class BudgetComponent {
 
             this.editForm = {
                 id: '',
-                deptId: '',
-                placeId: '',
+                deptId: [],
+                placeId: [],
                 budgetNo: '',
                 budgetName: '',
                 year: '',

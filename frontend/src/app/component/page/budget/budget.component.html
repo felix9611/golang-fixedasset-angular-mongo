@@ -25,7 +25,7 @@
                     nzAllowClear 
                     [nzShowArrow]="true">
                     @for (option of placeLists; track option) {
-                        <nz-option [nzLabel]="option.placeName" [nzValue]="option._id"></nz-option>
+                        <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
                     }
                 </nz-select>
             </div>
@@ -40,7 +40,7 @@
                     nzAllowClear 
                     [nzShowArrow]="true">
                     @for (option of deptLists; track option) {
-                        <nz-option [nzLabel]="option.deptName" [nzValue]="option._id"></nz-option>
+                        <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
                     }
                 </nz-select>
             </div>
