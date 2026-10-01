@@ -3,28 +3,27 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-    "go.mongodb.org/mongo-driver/bson"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/gin-gonic/gin"
 )
 
-
-func  CreateTaxInformation(taxInfo *models.TaxInformations) (interface{}, error) {
+func CreateTaxInformation(taxInfo *models.TaxInformations) (interface{}, error) {
 	filter := bson.M{
-		"status": 1,
+		"status":      1,
 		"countryCode": taxInfo.CountryCode,
 		"countryName": taxInfo.CountryName,
-		"taxType": taxInfo.TaxType,
-		"taxCode": taxInfo.TaxCode,
-		"taxName": taxInfo.TaxName,
+		"taxType":     taxInfo.TaxType,
+		"taxCode":     taxInfo.TaxCode,
+		"taxName":     taxInfo.TaxName,
 	}
 
 	collection := config.GetCollection("tax_informations")
-	
 
 	count, err := collection.CountDocuments(context.Background(), filter)
 	if err != nil {
@@ -89,7 +88,7 @@ func VoidOneTaxInformation(id string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	filter := bson.M{"_id": objectID}
 
 	var taxInfo models.TaxInformations
@@ -106,16 +105,16 @@ func VoidOneTaxInformation(id string) (interface{}, error) {
 	if taxInfo.Status == 1 {
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
-            "$set": bson.M{
-                "status": 0,
-                "updated_at": time.Now(),
-            },
-        })
+			"$set": bson.M{
+				"status":     0,
+				"updated_at": time.Now(),
+			},
+		})
 
-        if err != nil {
-            return nil, err
-        }
-        return result, nil
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
 	} else {
 		return "This Tax Information is already voided", nil
 	}
@@ -151,15 +150,7 @@ func UpdateTaxInformation(updateData *models.TaxInformations) (interface{}, erro
 	}
 }
 
-func TaxInformationList(pageDto *dto.TaxInformationListDTO) (interface{}, error) {
-	if pageDto.Page < 1 {
-		pageDto.Page = 1
-	}
-
-	if pageDto.Limit < 1 {
-		pageDto.Limit = 10
-	}
-	
+func TaxInformationListWithoutPagination(pageDto *dto.TaxInformationListDTO) (interface{}, error) {
 	collection := config.GetCollection("tax_informations")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -170,10 +161,10 @@ func TaxInformationList(pageDto *dto.TaxInformationListDTO) (interface{}, error)
 		filter = bson.M{
 			"status": 1,
 			"$or": []bson.M{
-				{ "nationCode": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
-				{ "nationName": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
-				{ "countryCode": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
-				{ "countryName": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"nationCode": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"nationName": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"countryCode": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"countryName": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
 			},
 		}
 	}
@@ -182,26 +173,15 @@ func TaxInformationList(pageDto *dto.TaxInformationListDTO) (interface{}, error)
 		filter = bson.M{
 			"status": 1,
 			"$or": []bson.M{
-				{ "taxType": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
-				{ "taxCode": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
-				{ "taxName": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
+				{"taxType": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
+				{"taxCode": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
+				{"taxName": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
 			},
 		}
 	}
 
-	count, errCount := collection.CountDocuments(ctx, filter)
-
-	if errCount != nil {
-		return nil, errCount
-	}
-
-	skip := int64((pageDto.Page - 1) * pageDto.Limit)
-    limit := int64(pageDto.Limit)
-
 	findOptions := options.Find()
-    findOptions.SetSkip(skip)
-    findOptions.SetLimit(limit)
-    findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
 	cursor, err := collection.Find(ctx, filter, findOptions)
 	if err != nil {
@@ -220,10 +200,85 @@ func TaxInformationList(pageDto *dto.TaxInformationListDTO) (interface{}, error)
 	}
 
 	if err := cursor.Err(); err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
-	return gin.H{"lists": TaxInfoList, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+	return TaxInfoList, nil
+}
+
+func TaxInformationList(pageDto *dto.TaxInformationListDTO) (interface{}, error) {
+	if pageDto.Page < 1 {
+		pageDto.Page = 1
+	}
+
+	if pageDto.Limit < 1 {
+		pageDto.Limit = 10
+	}
+
+	collection := config.GetCollection("tax_informations")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1}
+
+	if pageDto.NameCode != "" {
+		filter = bson.M{
+			"status": 1,
+			"$or": []bson.M{
+				{"nationCode": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"nationName": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"countryCode": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+				{"countryName": bson.M{"$regex": pageDto.NameCode, "$options": "i"}},
+			},
+		}
+	}
+
+	if pageDto.Tax != "" {
+		filter = bson.M{
+			"status": 1,
+			"$or": []bson.M{
+				{"taxType": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
+				{"taxCode": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
+				{"taxName": bson.M{"$regex": pageDto.Tax, "$options": "i"}},
+			},
+		}
+	}
+
+	count, errCount := collection.CountDocuments(ctx, filter)
+
+	if errCount != nil {
+		return nil, errCount
+	}
+
+	skip := int64((pageDto.Page - 1) * pageDto.Limit)
+	limit := int64(pageDto.Limit)
+
+	findOptions := options.Find()
+	findOptions.SetSkip(skip)
+	findOptions.SetLimit(limit)
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var TaxInfoList []models.TaxInformations
+	for cursor.Next(ctx) {
+		var taxInfo models.TaxInformations
+		if err := cursor.Decode(&taxInfo); err != nil {
+			return nil, err
+		}
+		TaxInfoList = append(TaxInfoList, taxInfo)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return gin.H{"lists": TaxInfoList, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 }
 
 func ListAllTaxInformation() (interface{}, error) {
