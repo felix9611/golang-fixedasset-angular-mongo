@@ -1,11 +1,23 @@
 package dto
 
-import "golang-fixedasset-mongo-backend/backend/models"
+import (
+	"golang-fixedasset-mongo-backend/backend/models"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type ListBudgetRecordsDto struct {
-	Name  string `json:"name"`
-	Page  int64  `json:"page"`
-	Limit int64  `json:"limit"`
+	Name    string `json:"name"`
+	Page    int64  `json:"page"`
+	DeptID  string `json:"deptId"`
+	PlaceId string `json:"placeId"`
+	// Date    DateRange `json:"date"`
+	Limit int64 `json:"limit"`
+}
+
+type DateRange struct {
+	From primitive.DateTime `json:"from"`
+	To   primitive.DateTime `json:"to"`
 }
 
 type BudgetSummary struct {

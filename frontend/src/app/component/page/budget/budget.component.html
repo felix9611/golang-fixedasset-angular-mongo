@@ -66,6 +66,17 @@
                     [dbFieldList]="dbFieldList"
                 />
             </div>
+            <div class="w-[150px] bg-[#ffac69] hover:bg-[#f0944a] text-white text-center px-1 py-2 rounded-lg">
+                <app-download-excel-data 
+                    [dataFieldList]="dbFieldList"
+                    buttonLabel="Download Excel Data"
+                    excelFileName="Budget_data.xlsx"
+                    [excelFieldList]="excelFieldList"
+                    downloadDataApiPath="/base/budget/filter/list"
+                    dataMode="post"
+                    [filterSet]="searchForm"
+                />
+            </div>
         </div>
         <nz-table
                 [nzData]="dataLists"
@@ -91,7 +102,7 @@
                         <td>{{data.budgetName}}</td>
                         <td>{{  dateFormat(data.budgetFrom)  }}</td>
                         <td>{{  dateFormat(data.budgetTo)  }}</td>
-                        <td>{{data.place && data.place.placeName}}</td>
+                        <td>{{data.location && data.location.placeName}}</td>
                         <td>{{data.department && data.department.deptName}}</td>
                         <td>{{  dateFormat(data.createdAt)  }}</td>
                         <td>{{  dateFormat(data.updatedAt)  }}</td>
@@ -99,13 +110,13 @@
                             <div class="flex gap-3">
                                 <div 
                                     *ngIf="userRightInside.update"
-                                    (click)="getOneData(data.id)" 
+                                    (click)="getOneData(data._id)" 
                                     class="w-[100px] hover:bg-[#90E975] bg-[#B7FFA1] border-1 border-[#3AB713] text-[#3AB713] text-center p-1 rounded-lg">
                                     Edit
                                 </div>
                                 <div 
                                     *ngIf="userRightInside.delete"
-                                    (click)="handleRomeve(data.id)"
+                                    (click)="handleRomeve(data._id)"
                                     class="w-[100px] bg-[#FFA8A8] hover:bg-[#EC7272] border-1 border-[#CB0000] text-[#CB0000] text-center p-1 rounded-lg">
                                     Delete
                                 </div>

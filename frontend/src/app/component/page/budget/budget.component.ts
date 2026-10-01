@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs'
 import { downloadTempExcelFile } from '../../../../tool/excel-helper'
 import { DownloadExcelTemplateComponent } from '../../components/download-template-component/download-template-component.component'
 import { UploadDialogComponent } from '../../components/upload-dialog-component/upload-dialog-component.component'
+import { DownloadExcelDataComponent } from '../../components/download-excel-component/download-excel-data-component.component'
 
 @Component({
     // selector: 'app-footer',
@@ -37,7 +38,8 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
         NzDatePickerModule,
         NzInputNumberModule,
         DownloadExcelTemplateComponent,
-        UploadDialogComponent
+        UploadDialogComponent,
+        DownloadExcelDataComponent
     ],
     templateUrl: './budget.component.html',
     styleUrl: './budget.component.css',
@@ -201,7 +203,8 @@ export class BudgetComponent {
         return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
-    async getOneData(id:string) {
+    async getOneData(id: string) {
+        console.log(id)
         const res = await getApiWithAuth(`/base/budget/one/${id}`)
         this.editForm = res
         this.department = res.department
