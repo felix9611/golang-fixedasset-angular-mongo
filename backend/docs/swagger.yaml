@@ -460,13 +460,6 @@ definitions:
         type: array
     type: object
   dto.ListBudgetRecordsDto:
-    properties:
-      limit:
-        type: integer
-      name:
-        type: string
-      page:
-        type: integer
     type: object
   dto.ListMenus:
     properties:
@@ -966,37 +959,6 @@ definitions:
         type: string
     type: object
   models.Budgets:
-    properties:
-      budgetAmount:
-        type: number
-      budgetFrom:
-        type: string
-      budgetName:
-        type: string
-      budgetNo:
-        type: string
-      budgetStatus:
-        type: string
-      budgetTo:
-        type: string
-      createdAt:
-        type: string
-      deptId:
-        type: string
-      id:
-        type: string
-      month:
-        type: string
-      placeId:
-        type: string
-      remark:
-        type: string
-      status:
-        type: integer
-      updatedAt:
-        type: string
-      year:
-        type: string
     type: object
   models.CodeTypes:
     properties:
@@ -2535,13 +2497,37 @@ paths:
       summary: Delete one vendor record by id
       tags:
       - Vendor
+  /sys/budget/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Budgets With Filter
+      parameters:
+      - description: List Budget Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListBudgetRecordsDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Budgets'
+            type: array
+      summary: List Budgets With Filter
+      tags:
+      - Budget
   /sys/budget/list:
     post:
       consumes:
       - application/json
       description: List Budgets
       parameters:
-      - description: List Action Record Request Body
+      - description: List Budget Request Body
         in: body
         name: request
         required: true

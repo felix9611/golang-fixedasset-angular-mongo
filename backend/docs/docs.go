@@ -1916,6 +1916,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/sys/budget/filter/list": {
+            "post": {
+                "description": "List Budgets With Filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "List Budgets With Filter",
+                "parameters": [
+                    {
+                        "description": "List Budget Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListBudgetRecordsDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Budgets"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sys/budget/list": {
             "post": {
                 "description": "List Budgets",
@@ -1931,7 +1968,7 @@ const docTemplate = `{
                 "summary": "List Budgets",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Budget Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3769,18 +3806,7 @@ const docTemplate = `{
             }
         },
         "dto.ListBudgetRecordsDto": {
-            "type": "object",
-            "properties": {
-                "limit": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "page": {
-                    "type": "integer"
-                }
-            }
+            "type": "object"
         },
         "dto.ListMenus": {
             "type": "object",
@@ -4541,54 +4567,7 @@ const docTemplate = `{
             }
         },
         "models.Budgets": {
-            "type": "object",
-            "properties": {
-                "budgetAmount": {
-                    "type": "number"
-                },
-                "budgetFrom": {
-                    "type": "string"
-                },
-                "budgetName": {
-                    "type": "string"
-                },
-                "budgetNo": {
-                    "type": "string"
-                },
-                "budgetStatus": {
-                    "type": "string"
-                },
-                "budgetTo": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deptId": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "month": {
-                    "type": "string"
-                },
-                "placeId": {
-                    "type": "string"
-                },
-                "remark": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "year": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "models.CodeTypes": {
             "type": "object",
