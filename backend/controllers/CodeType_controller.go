@@ -75,7 +75,7 @@ func InactiveCodeTypeByID(c *gin.Context) {
 // @Tags         Code Type
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.CodeTypeListDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.CodeTypeListDto  true  "List Code Type Request Body"
 // @Success      200      {object}  dto.CodeTypeList
 // @Router       /base/code-type/filter/list [post]
 func ListCodeTypeWithoutPagination(c *gin.Context) {
@@ -99,7 +99,7 @@ func ListCodeTypeWithoutPagination(c *gin.Context) {
 // @Tags         Code Type
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.CodeTypeListDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.CodeTypeListDto  true  "List Code Type Request Body"
 // @Success      200      {object}  dto.CodeTypeList
 // @Router       /base/code-type/list [post]
 func ListCodeType(c *gin.Context) {

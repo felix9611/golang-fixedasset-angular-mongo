@@ -1126,7 +1126,7 @@ const docTemplate = `{
                 "summary": "List Code Types without pagination",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Code Type Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1195,7 +1195,7 @@ const docTemplate = `{
                 "summary": "List Code Types",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Code Type Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1384,7 +1384,7 @@ const docTemplate = `{
                 "summary": "List Locations Without pagination",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Location Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1421,7 +1421,7 @@ const docTemplate = `{
                 "summary": "List Locations",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Location Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1799,7 +1799,7 @@ const docTemplate = `{
                 "summary": "List Vendors",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Vendor Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,

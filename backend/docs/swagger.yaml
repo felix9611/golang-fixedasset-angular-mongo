@@ -2017,7 +2017,7 @@ paths:
       - application/json
       description: List Code Types without pagination
       parameters:
-      - description: List Action Record Request Body
+      - description: List Code Type Request Body
         in: body
         name: request
         required: true
@@ -2062,7 +2062,7 @@ paths:
       - application/json
       description: List Code Types
       parameters:
-      - description: List Action Record Request Body
+      - description: List Code Type Request Body
         in: body
         name: request
         required: true
@@ -2185,7 +2185,7 @@ paths:
       - application/json
       description: List Locations Without pagination
       parameters:
-      - description: List Action Record Request Body
+      - description: List Location Request Body
         in: body
         name: request
         required: true
@@ -2209,7 +2209,7 @@ paths:
       - application/json
       description: List Locations
       parameters:
-      - description: List Action Record Request Body
+      - description: List Location Request Body
         in: body
         name: request
         required: true
@@ -2455,7 +2455,7 @@ paths:
       - application/json
       description: List Vendors
       parameters:
-      - description: List Action Record Request Body
+      - description: List Vendor Request Body
         in: body
         name: request
         required: true

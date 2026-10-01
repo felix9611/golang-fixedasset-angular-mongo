@@ -99,7 +99,7 @@ func UpdateLocationById(c *gin.Context) {
 // @Tags         Location
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.LocationPageDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.LocationPageDto  true  "List Location Request Body"
 // @Success      200      {object}  dto.LocationList
 // @Router       /base/location/list [post]
 func ListLocations(c *gin.Context) {
@@ -123,7 +123,7 @@ func ListLocations(c *gin.Context) {
 // @Tags         Location
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.LocationPageDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.LocationPageDto  true  "List Location Request Body"
 // @Success      200      {object}  []models.Locations
 // @Router       /base/location/filter/list [post]
 func LocationListWithFilter(c *gin.Context) {
