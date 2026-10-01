@@ -1,15 +1,16 @@
 package services
 
 import (
-	"golang-fixedasset-mongo-backend/backend/models"
+	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-	"context"
+
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/gin-gonic/gin"
 )
 
 func CreateVendor(vendor *models.Vendors) (interface{}, error) {
@@ -26,7 +27,7 @@ func CreateVendor(vendor *models.Vendors) (interface{}, error) {
 		return nil, err
 	}
 
-	if count == 0 { 
+	if count == 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
@@ -138,7 +139,7 @@ func InactiveVendorByID(id string) (interface{}, error) {
 	if vendor.Status == 1 {
 		vendor.Status = 0
 		vendor.UpdatedAt = time.Now()
-		
+
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
 			"$set": vendor,
 		})
@@ -180,6 +181,45 @@ func GetAllVendors() ([]models.Vendors, error) {
 	return vendors, nil
 }
 
+func VendorListwithFilter(pageDto *dto.VendorPageDto) (interface{}, error) {
+
+	collection := config.GetCollection("vendors")
+	filter := bson.M{
+		"status": 1,
+		"$or": []bson.M{
+			{"name": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			{"email": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			{"phone": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+		},
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{"created_at", -1}})
+	cursor, err := collection.Find(ctx, filter, findOptions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var vendors []models.Vendors
+	for cursor.Next(ctx) {
+		var vendor models.Vendors
+		if err := cursor.Decode(&vendor); err != nil {
+			return nil, err
+		}
+		vendors = append(vendors, vendor)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return vendors, nil
+
+}
+
 func VendorList(pageDto *dto.VendorPageDto) (interface{}, error) {
 	if pageDto.Page < 1 {
 		pageDto.Page = 1
@@ -192,7 +232,14 @@ func VendorList(pageDto *dto.VendorPageDto) (interface{}, error) {
 	limit := pageDto.Limit
 
 	collection := config.GetCollection("vendors")
-	filter := bson.M{"status": 1}
+	filter := bson.M{
+		"status": 1,
+		"$or": []bson.M{
+			{"name": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			{"email": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			{"phone": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+		},
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -224,5 +271,5 @@ func VendorList(pageDto *dto.VendorPageDto) (interface{}, error) {
 		return nil, err
 	}
 
-	return gin.H{"lists": vendors, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+	return gin.H{"lists": vendors, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 }

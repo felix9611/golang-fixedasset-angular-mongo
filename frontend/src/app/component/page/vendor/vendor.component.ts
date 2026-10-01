@@ -18,6 +18,7 @@ import { downloadTempExcelFile, formatJson, readExcelFile } from '../../../../to
 import { Subscription } from 'rxjs'
 import { DownloadExcelTemplateComponent } from '../../components/download-template-component/download-template-component.component'
 import { UploadDialogComponent } from '../../components/upload-dialog-component/upload-dialog-component.component'
+import { DownloadExcelDataComponent } from '../../components/download-excel-component/download-excel-data-component.component'
 
 @Component({
     // selector: 'app-footer',
@@ -33,19 +34,20 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
         NzPaginationModule, 
         NzUploadModule,
         DownloadExcelTemplateComponent,
-        UploadDialogComponent
+        UploadDialogComponent,
+        DownloadExcelDataComponent
     ],
     templateUrl: './vendor.component.html',
     styleUrl: './vendor.component.css',
 })
 export class VendorComponent {
-    // private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
     
-      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+      this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Vendor', 'vendor')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -56,15 +58,15 @@ export class VendorComponent {
                 // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting()*/
-      //  })
+            this.preLoadExcelSetting()
+      })
         
     }
     
     ngOnDestroy() {
-     //   if (this.userStoreService.menuRole$) {
-     //       this.rightSubscription.unsubscribe()
-    //    }
+       if (this.userStoreService.menuRole$) {
+           this.rightSubscription.unsubscribe()
+        }
     }
 
     userRightInside: any = {

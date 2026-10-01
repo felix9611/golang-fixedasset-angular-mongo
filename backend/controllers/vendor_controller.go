@@ -83,12 +83,36 @@ func DeleteVendorById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": result})
 }
 
+// @Summary      List Vendors with pagination
+// @Description  List Vendors with pagination
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.VendorPageDto  true  "List Vendor Request Body"
+// @Success      200      {object}  []models.Vendors
+// @Router       /base/vendor/list [post]
+func VendorListwithFilter(c *gin.Context) {
+	var pageDto dto.VendorPageDto
+	if err := c.ShouldBindJSON(&pageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.VendorListwithFilter(&pageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve vendor list"})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      List Vendors
 // @Description  List Vendors
 // @Tags         Vendor
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.VendorPageDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.VendorPageDto  true  "List Vendor Request Body"
 // @Success      200      {object}  dto.VendorList
 // @Router       /base/vendor/list [post]
 func VendorList(c *gin.Context) {
@@ -155,5 +179,6 @@ func RegisterVendorRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		vendorGroup.POST("/list", VendorList)
 		vendorGroup.POST("/update", UpdateVendor)
 		vendorGroup.GET("/all", GetAllVendors)
+		vendorGroup.POST("/filter/list", VendorListwithFilter)
 	}
 }
