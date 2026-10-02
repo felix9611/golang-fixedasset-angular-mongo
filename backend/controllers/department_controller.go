@@ -117,6 +117,29 @@ func VoidDepartmentById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Department voided successfully", "data": result})
 }
 
+// @Summary      List Departments with filter
+// @Description  List Departments with filter
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.DepartmentPageDto  true  "List Action Record Request Body"
+// @Success      200      {object}  []models.Department
+// @Router       /sys/department/filter/list [post]
+func ListPageDepartmentWithFilter(c *gin.Context) {
+	var deptPageDto dto.DepartmentPageDto
+	if err := c.ShouldBindJSON(&deptPageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	departments, err := services.DepartmentListWithFilters(&deptPageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list departments"})
+		return
+	}
+	c.JSON(http.StatusOK, departments)
+
+}
+
 // @Summary      List Departments
 // @Description  List Departments
 // @Tags         Department
@@ -140,6 +163,30 @@ func ListPageDepartment(c *gin.Context) {
 
 }
 
+// @Summary      Batch upload department record
+// @Description  Batch upload department record
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.Department true  "Department Request Body"
+// @Success      200      {object}  []models.Department
+// @Router       /base/department/batch-upload [post]
+func BatchUploadDepartments(c *gin.Context) {
+	var departments []models.Department
+	if err := c.ShouldBindJSON(&departments); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateDepartments(departments)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterDepartmentRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	departments := rg.Group("/sys/department", handle.MiddlewareFunc())
 	{
@@ -149,5 +196,7 @@ func RegisterDepartmentRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware)
 		departments.DELETE("/void/:id", VoidDepartmentById)
 		departments.POST("/list", ListPageDepartment)
 		departments.GET("/all", GetAllDepartments)
+		departments.POST("/batch-upload", BatchUploadDepartments)
+		departments.POST("/filter/list", ListPageDepartmentWithFilter)
 	}
 }
