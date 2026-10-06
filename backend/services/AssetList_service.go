@@ -15,6 +15,86 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func BatchCreateAssetItems(assetItems []dto.AssetListsPureDetails) (interface{}, error) {
+	var results []interface{}
+	for _, asset := range assetItems {
+
+		assetType, _ := AssetTypeDataFinderReturn(asset.TypeCode, asset.TypeName)
+
+		department, _ := DepartmentDataFinder(asset.DeptCode, asset.DeptName)
+
+		location, _ := LocationDataFinder(asset.PlaceCode, asset.PlaceName)
+
+		var sponsor bool
+		if asset.Sponsor == "Yes" || asset.Sponsor == "YES" || asset.Sponsor == "yes" {
+			sponsor = true
+		} else {
+			sponsor = false
+		}
+
+		var includeTax bool
+		if asset.IncludeTax == "Yes" || asset.IncludeTax == "YES" || asset.IncludeTax == "yes" {
+			includeTax = true
+		} else {
+			includeTax = false
+		}
+
+		newData := models.AssetLists{
+			AssetCode:              asset.AssetCode,
+			AssetName:              asset.AssetName,
+			Unit:                   asset.Unit,
+			PurchaseDate:           asset.PurchaseDate,
+			Description:            asset.Description,
+			Sponsor:                sponsor,
+			SponsorName:            asset.SponsorName,
+			Cost:                   asset.Cost,
+			SerialNumber:           asset.SerialNumber,
+			InvoiceNo:              asset.InvoiceNo,
+			InvoiceDate:            asset.InvoiceDate,
+			InvoiceRemark:          asset.InvoiceRemark,
+			VendorId:               asset.VendorId,
+			Remark:                 asset.Remark,
+			TaxCountryCode:         asset.TaxCountryCode,
+			TaxCode:                asset.TaxCode,
+			TaxRate:                asset.TaxRate,
+			IncludeTax:             includeTax,
+			AfterBeforeTax:         asset.AfterBeforeTax,
+			AccountCode:            asset.AccountCode,
+			AccountName:            asset.AccountName,
+			BrandCode:              asset.BrandCode,
+			BrandName:              asset.BrandName,
+			ChequeNo:               asset.ChequeNo,
+			MaintenancePeriodStart: asset.MaintenancePeriodStart,
+			MaintenancePeriodEnd:   asset.MaintenancePeriodEnd,
+			VoucherNo:              asset.VoucherNo,
+			VoucherUsedDate:        asset.VoucherUsedDate,
+			StaffName:              asset.StaffName,
+			Status:                 1,
+			CreatedAt:              time.Now().Format(time.RFC3339),
+			UpdatedAt:              time.Now().Format(time.RFC3339),
+		}
+
+		if !assetType.ID.IsZero() {
+			newData.TypeID = assetType.ID.Hex()
+		}
+
+		if !department.ID.IsZero() {
+			newData.DeptId = department.ID.Hex()
+		}
+
+		if !location.ID.IsZero() {
+			newData.PlaceId = location.ID.Hex()
+		}
+
+		result, err := CreateAssetItem(&newData)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, result)
+	}
+	return results, nil
+}
+
 func GetOneAssetItemByID(id string) (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
 	var assetItem models.AssetLists

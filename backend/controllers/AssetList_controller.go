@@ -226,6 +226,30 @@ func RemoveAssetFile(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary      Batch upload Asset item record
+// @Description  Batch upload Asset item record
+// @Tags         AssetList
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.AssetTypes true  "Asset Type Request Body"
+// @Success      200      string  "Batch upload Asset Type record"
+// @Router       /asset/asset-list/batch-create [post]
+func BatchUploadAssetList(c *gin.Context) {
+	var codeTypes []dto.AssetListsPureDetails
+	if err := c.ShouldBindJSON(&codeTypes); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateAssetItems(codeTypes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	assetListGroup := rg.Group("/asset/asset-list", handle.MiddlewareFunc())
 	{
@@ -239,5 +263,6 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		assetListGroup.DELETE("/file-remove/:id", RemoveAssetFile)
 		assetListGroup.POST("/chart-query-date", QueryAssetDataByDataType)
 		assetListGroup.POST("/filter/list", ListAssetItemsWithFilter)
+		assetListGroup.POST("/batch-create", BatchUploadAssetList)
 	}
 }

@@ -290,3 +290,24 @@ func ListAllLocation() (interface{}, error) {
 
 	return gin.H{"data": locations}, nil
 }
+
+func LocationDataFinder(placeCode string, placeName string) (models.Locations, error) {
+	collection := config.GetCollection("locations")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1, "placeCode": placeCode, "placeName": placeName}
+
+	var location models.Locations
+
+	err := collection.FindOne(ctx, filter).Decode(&location)
+	if err != nil {
+		return models.Locations{}, err
+	}
+
+	if location.Status == 0 {
+		return models.Locations{}, nil
+	} else {
+		return location, nil
+	}
+}

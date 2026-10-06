@@ -321,3 +321,24 @@ func BatchCreateDepartments(departments []models.Department) (interface{}, error
 
 	return "batch insert completed", nil
 }
+
+func DepartmentDataFinder(deptCode string, deptName string) (models.Department, error) {
+	collection := config.GetCollection("departments")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1, "deptCode": deptCode, "deptName": deptName}
+
+	var department models.Department
+
+	err := collection.FindOne(ctx, filter).Decode(&department)
+	if err != nil {
+		return models.Department{}, err
+	}
+
+	if department.Status == 0 {
+		return models.Department{}, nil
+	} else {
+		return department, nil
+	}
+}
