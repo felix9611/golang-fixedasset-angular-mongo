@@ -6,6 +6,7 @@ import (
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/tools"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -365,32 +366,14 @@ func ListAsseetItemsWithFilter(req *dto.ListAssetReqDto) (interface{}, error) {
 			return nil, err
 		}
 
-		if location, ok := item["location"].(bson.M); ok {
-			if name, ok := location["placeName"].(string); ok {
-				assetDetails.PlaceName = name
-			}
-			if code, ok := location["placeCode"].(string); ok {
-				assetDetails.PlaceCode = code
-			}
-		}
+		assetDetails.PlaceName = tools.GetNestedString(item, "location", "placeName")
+		assetDetails.PlaceCode = tools.GetNestedString(item, "location", "placeCode")
 
-		if department, ok := item["department"].(bson.M); ok {
-			if name, ok := department["deptName"].(string); ok {
-				assetDetails.DeptName = name
-			}
-			if code, ok := department["deptCode"].(string); ok {
-				assetDetails.DeptCode = code
-			}
-		}
+		assetDetails.DeptName = tools.GetNestedString(item, "department", "deptName")
+		assetDetails.DeptCode = tools.GetNestedString(item, "department", "deptCode")
 
-		if assettype, ok := item["assettype"].(bson.M); ok {
-			if name, ok := assettype["typeName"].(string); ok {
-				assetDetails.TypeName = name
-			}
-			if code, ok := assettype["typeCode"].(string); ok {
-				assetDetails.TypeCode = code
-			}
-		}
+		assetDetails.TypeName = tools.GetNestedString(item, "assettype", "typeName")
+		assetDetails.TypeCode = tools.GetNestedString(item, "assettype", "typeCode")
 
 		LastResults = append(LastResults, assetDetails)
 	}

@@ -30,7 +30,7 @@ type AssetListsPureDetails struct {
 	TaxCountryCode         string             `bson:"taxCountryCode" json:"taxCountryCode"`
 	TaxCode                string             `bson:"taxCode" json:"taxCode"`
 	TaxRate                float64            `bson:"taxRate" json:"taxRate"`
-	IncludeTax             bool               `bson:"includeTax" json:"includeTax"`
+	IncludeTax             string             `bson:"includeTax" json:"includeTax"`
 	AfterBeforeTax         float64            `bson:"afterBeforeTax" json:"afterBeforeTax"`
 	AccountCode            string             `bson:"accountCode" json:"accountCode"`
 	AccountName            string             `bson:"accountName" json:"accountName"`
