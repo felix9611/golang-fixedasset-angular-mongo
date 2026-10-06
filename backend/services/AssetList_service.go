@@ -202,8 +202,206 @@ func UpdateAssetItem(updateData *models.AssetLists) (interface{}, error) {
 	}
 }
 
+func ListAsseetItemsWithFilter(req *dto.ListAssetReqDto) (interface{}, error) {
+	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filters := bson.M{
+		"status": 1,
+	}
+	if req.AssetCode != "" {
+		filters["asset_code"] = req.AssetCode
+	}
+	if req.AssetName != "" {
+		filters["asset_name"] = bson.M{"$regex": req.AssetName, "$options": "i"}
+	}
+	if len(req.TypeIds) > 0 {
+		filters["type_ids"] = bson.M{"$in": req.TypeIds}
+	}
+	if len(req.PlaceIds) > 0 {
+		filters["place_ids"] = bson.M{"$in": req.PlaceIds}
+	}
+	if len(req.DeptIds) > 0 {
+		filters["dept_ids"] = bson.M{"$in": req.DeptIds}
+	}
+	if len(req.PurchaseDates) > 0 {
+		filters["purchase_dates"] = bson.M{"$gte": req.PurchaseDates[0], "$lte": req.PurchaseDates[1]}
+	}
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: filters}}, // filters must be bson.D or bson.M
+
+		// $lookup locations
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "locations"},
+				{Key: "let", Value: bson.D{
+					{Key: "placeIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$placeId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "location"},
+			},
+		}},
+
+		// $lookup departments
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "departments"},
+				{Key: "let", Value: bson.D{
+					{Key: "deptIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$deptId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "department"},
+			},
+		}},
+
+		// $lookup assettypes
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "asset_types"},
+				{Key: "let", Value: bson.D{
+					{Key: "typeIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$typeId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "assettype"},
+			},
+		}},
+
+		// $addFields assetCodeInt
+		{{
+			Key: "$addFields", Value: bson.D{
+				{Key: "assetCodeInt", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$assetCode"},
+						{Key: "to", Value: "int"},
+						{Key: "onError", Value: 0}, // 防止 "" 出錯
+						{Key: "onNull", Value: 0},
+					}},
+				}},
+			},
+		}},
+
+		// unwind
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$location"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$department"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$assettype"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+
+		// sort
+		{{Key: "$sort", Value: bson.D{{Key: "assetCodeInt", Value: 1}}}},
+	}
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var FinalResults []bson.M
+	if err := cursor.All(ctx, &FinalResults); err != nil {
+		return nil, err
+	}
+
+	var LastResults []dto.AssetListsPureDetails
+	for _, item := range FinalResults {
+		if isSponsor, ok := item["sponsor"].(bool); ok && isSponsor {
+			item["sponsor"] = "Yes"
+		} else {
+			item["sponsor"] = "No"
+		}
+
+		if isIncludeTax, ok := item["includeTax"].(bool); ok && isIncludeTax {
+			item["includeTax"] = "Yes"
+		} else {
+			item["includeTax"] = "No"
+		}
+
+		resultData, err := bson.Marshal(item)
+		if err != nil {
+			return nil, err
+		}
+
+		var assetDetails dto.AssetListsPureDetails
+		if err := bson.Unmarshal(resultData, &assetDetails); err != nil {
+			return nil, err
+		}
+
+		if location, ok := item["location"].(bson.M); ok {
+			if name, ok := location["placeName"].(string); ok {
+				assetDetails.PlaceName = name
+			}
+			if code, ok := location["placeCode"].(string); ok {
+				assetDetails.PlaceCode = code
+			}
+		}
+
+		if department, ok := item["department"].(bson.M); ok {
+			if name, ok := department["deptName"].(string); ok {
+				assetDetails.DeptName = name
+			}
+			if code, ok := department["deptCode"].(string); ok {
+				assetDetails.DeptCode = code
+			}
+		}
+
+		if assettype, ok := item["assettype"].(bson.M); ok {
+			if name, ok := assettype["typeName"].(string); ok {
+				assetDetails.TypeName = name
+			}
+			if code, ok := assettype["typeCode"].(string); ok {
+				assetDetails.TypeCode = code
+			}
+		}
+
+		LastResults = append(LastResults, assetDetails)
+	}
+
+	return LastResults, nil
+}
+
 func ListAllAssetItems() (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	pipeline := mongo.Pipeline{
 		// $lookup locations
@@ -303,9 +501,6 @@ func ListAllAssetItems() (interface{}, error) {
 		// sort
 		{{Key: "$sort", Value: bson.D{{Key: "assetCodeInt", Value: 1}}}},
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {

@@ -35,6 +35,31 @@ func CreateAssetList(c *gin.Context) {
 	c.JSON(http.StatusOK, createdAsset)
 }
 
+// @Summary      List Asset Items With Filter
+// @Description  List Asset Items With Filter
+// @Tags         AssetList
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []dto.ListAssetReqDto true  "Asset List Request Body"
+// @Success      200      {object}  []dto.AssetListsPureDetails
+// @Router       /asset/asset-list/filter/list [post]
+func ListAssetItemsWithFilter(c *gin.Context) {
+	var req dto.ListAssetReqDto
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Call the service to list the asset items
+	assetItems, err := services.ListAsseetItemsWithFilter(&req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, assetItems)
+}
+
 // @Summary      List Asset Items
 // @Description  List Asset Items
 // @Tags         AssetList
@@ -213,5 +238,6 @@ func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		assetListGroup.GET("/code/:code", GetOneAssetItemByAssetCode)
 		assetListGroup.DELETE("/file-remove/:id", RemoveAssetFile)
 		assetListGroup.POST("/chart-query-date", QueryAssetDataByDataType)
+		assetListGroup.POST("/filter/list", ListAssetItemsWithFilter)
 	}
 }
