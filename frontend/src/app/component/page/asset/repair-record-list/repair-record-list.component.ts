@@ -21,6 +21,7 @@ import { UserStoreService } from '../../../../../state/user.service'
 import { findMenuItem } from '../../../tool-function'
 import { UploadDialogComponent } from '../../../components/upload-dialog-component/upload-dialog-component.component'
 import { DownloadExcelTemplateComponent } from '../../../components/download-template-component/download-template-component.component'
+import { DownloadExcelDataComponent } from '../../../components/download-excel-component/download-excel-data-component.component'
 
 @Component({
     // selector: 'app-footer',
@@ -39,7 +40,8 @@ import { DownloadExcelTemplateComponent } from '../../../components/download-tem
         NzCheckboxModule,
         NzInputNumberModule,
         DownloadExcelTemplateComponent,
-        UploadDialogComponent
+        UploadDialogComponent,
+        DownloadExcelDataComponent
     ],
     templateUrl: './repair-record-list.component.html',
     styleUrl: './repair-record-list.component.css',
