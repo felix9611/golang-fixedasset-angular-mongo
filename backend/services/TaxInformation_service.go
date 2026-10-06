@@ -13,6 +13,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func BatchCreateTaxInformation(TaxInfos []models.TaxInformations) (interface{}, error) {
+	for _, taxInfo := range TaxInfos {
+		result, _ := CreateTaxInformation(&taxInfo)
+
+		if result == nil {
+			return "failed to create vendor", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
 func CreateTaxInformation(taxInfo *models.TaxInformations) (interface{}, error) {
 	filter := bson.M{
 		"status":      1,

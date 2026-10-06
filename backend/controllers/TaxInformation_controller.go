@@ -10,6 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Batch Create Tax Information record
+// @Description  Batch Create Tax Information record
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.TaxInformations  true  "Tax Information Request Body"
+// @Success      200      string
+// @Router      /base/tax-information/create [post]
+func BatchCreateTaxInformation(c *gin.Context) {
+	var taxInfo []models.TaxInformations
+	if err := c.ShouldBindJSON(&taxInfo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateTaxInformation(taxInfo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      Create one Tax Information record
 // @Description  Create one Tax Information record
 // @Tags         Tax Information
@@ -191,6 +215,7 @@ func RegisterTaxInformationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddlew
 		TaxInformationRoute.POST("/list", ListTaxInformations)
 		TaxInformationRoute.GET("/all", ListAllTaxInformation)
 		TaxInformationRoute.POST("/filter/list", ListTaxInformationsWithoutPagination)
+		TaxInformationRoute.POST("/batch-upload", BatchCreateTaxInformation)
 	}
 
 }
