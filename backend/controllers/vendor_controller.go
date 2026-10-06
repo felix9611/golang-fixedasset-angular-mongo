@@ -41,7 +41,7 @@ func GetOneVendorByIdGet(c *gin.Context) {
 // @Produce      json
 // @Param        request  body      []models.Vendors  true  "Vendor Request Body"
 // @Success      200      string
-// @Router      /base/vendor/batch-upload [post]
+// @Router      /base/vendor/batch-create [post]
 func BatchCreateVendorPost(c *gin.Context) {
 	var vendor []models.Vendors
 	if err := c.ShouldBindJSON(&vendor); err != nil {
@@ -204,6 +204,6 @@ func RegisterVendorRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		vendorGroup.POST("/update", UpdateVendor)
 		vendorGroup.GET("/all", GetAllVendors)
 		vendorGroup.POST("/filter/list", VendorListwithFilter)
-		vendorGroup.POST("/batch-upload", BatchCreateVendorPost)
+		vendorGroup.POST("/batch-create", BatchCreateVendorPost)
 	}
 }

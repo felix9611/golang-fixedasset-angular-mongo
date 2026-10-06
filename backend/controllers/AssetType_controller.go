@@ -162,7 +162,7 @@ func ListAssetTypes(c *gin.Context) {
 // @Produce      json
 // @Param        request  body      []models.AssetTypes true  "Asset Type Request Body"
 // @Success      200      string  "Batch upload Asset Type record"
-// @Router       /asset/type/batch-upload [post]
+// @Router       /asset/type/batch-create [post]
 func BatchUploadAssetTypes(c *gin.Context) {
 	var codeTypes []models.AssetTypes
 	if err := c.ShouldBindJSON(&codeTypes); err != nil {
@@ -189,6 +189,6 @@ func RegisterAssetTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		AssetTypeGroup.GET("/all", GetAssetTypes)
 		AssetTypeGroup.POST("/list", ListPageAssetTypes)
 		AssetTypeGroup.POST("filter/list", ListAssetTypes)
-		AssetTypeGroup.POST("/batch-upload", BatchUploadAssetTypes)
+		AssetTypeGroup.POST("/batch-create", BatchUploadAssetTypes)
 	}
 }

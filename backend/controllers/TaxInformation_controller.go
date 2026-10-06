@@ -17,7 +17,7 @@ import (
 // @Produce      json
 // @Param        request  body      []models.TaxInformations  true  "Tax Information Request Body"
 // @Success      200      string
-// @Router      /base/tax-information/create [post]
+// @Router      /base/tax-information/batch-create [post]
 func BatchCreateTaxInformation(c *gin.Context) {
 	var taxInfo []models.TaxInformations
 	if err := c.ShouldBindJSON(&taxInfo); err != nil {
@@ -215,7 +215,7 @@ func RegisterTaxInformationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddlew
 		TaxInformationRoute.POST("/list", ListTaxInformations)
 		TaxInformationRoute.GET("/all", ListAllTaxInformation)
 		TaxInformationRoute.POST("/filter/list", ListTaxInformationsWithoutPagination)
-		TaxInformationRoute.POST("/batch-upload", BatchCreateTaxInformation)
+		TaxInformationRoute.POST("/batch-create", BatchCreateTaxInformation)
 	}
 
 }

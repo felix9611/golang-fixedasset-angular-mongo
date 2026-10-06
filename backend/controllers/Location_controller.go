@@ -191,6 +191,6 @@ func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		locationGroup.POST("/list", ListLocations)
 		locationGroup.GET("/all", GetAllLocations)
 		locationGroup.POST("/filter/list", LocationListWithFilter)
-		locationGroup.POST("/batch-upload", BatchCreateLocation)
+		locationGroup.POST("/batch-create", BatchCreateLocation)
 	}
 }
