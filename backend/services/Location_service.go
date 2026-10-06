@@ -15,6 +15,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func BatchCreateLocation(locations []models.Locations) (interface{}, error) {
+	for _, location := range locations {
+		result, _ := CreateLocation(&location)
+
+		if result == nil {
+			return "failed to create vendor", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
 func CreateLocation(location *models.Locations) (interface{}, error) {
 	collection := config.GetCollection("locations")
 

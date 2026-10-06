@@ -10,6 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Batch Create location record
+// @Description  Batch Create location record
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.Locations  true  "Locations Request Body"
+// @Success      200      string
+// @Router      /base/location/batch-create [post]
+func BatchCreateLocation(c *gin.Context) {
+	var locations []models.Locations
+	if err := c.ShouldBindJSON(&locations); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateLocation(locations)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      Create one Location record
 // @Description  Create one Location record
 // @Tags         Location
@@ -167,5 +191,6 @@ func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		locationGroup.POST("/list", ListLocations)
 		locationGroup.GET("/all", GetAllLocations)
 		locationGroup.POST("/filter/list", LocationListWithFilter)
+		locationGroup.POST("/batch-upload", BatchCreateLocation)
 	}
 }

@@ -17,6 +17,18 @@ import (
 	// "log"
 )
 
+func BatchCreateDepartment(departments []models.Department) (interface{}, error) {
+	for _, department := range departments {
+		result, _ := CreateDepartment(&department)
+
+		if result == nil {
+			return "failed to create vendor", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
 func CreateDepartment(department *models.Department) (interface{}, error) {
 
 	filter := bson.M{"status": 1, "deptCode": department.DeptCode, "deptName": department.DeptName}

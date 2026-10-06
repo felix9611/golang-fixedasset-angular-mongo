@@ -13,9 +13,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// var tongsCollection = config.GetCollection("tongs")
+// @Summary      Batch Create Department record
+// @Description  Batch Create Department record
+// @Tags         Department
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.Department  true  "Department Request Body"
+// @Success      200      string
+// @Router      /base/department//create [post]
+func BatchCreateDepartment(c *gin.Context) {
+	var departments []models.Department
+	if err := c.ShouldBindJSON(&departments); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-var d models.Department
+	result, err := services.BatchCreateDepartment(departments)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
 
 // @Summary      Get one Department record by id
 // @Description  Get one Department record by id
@@ -198,5 +218,6 @@ func RegisterDepartmentRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware)
 		departments.GET("/all", GetAllDepartments)
 		departments.POST("/batch-upload", BatchUploadDepartments)
 		departments.POST("/filter/list", ListPageDepartmentWithFilter)
+		departments.POST("/batch-create", BatchCreateDepartment)
 	}
 }
