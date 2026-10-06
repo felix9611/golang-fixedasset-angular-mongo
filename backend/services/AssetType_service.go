@@ -13,6 +13,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func BatchCreateAssetTypes(assetTypes []models.AssetTypes) (interface{}, error) {
+	for _, assetType := range assetTypes {
+		result, _ := CreateAssetType(&assetType)
+
+		if result == nil {
+			return "failed to create code type", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
 func CreateAssetType(assetType *models.AssetTypes) (interface{}, error) {
 	filter := bson.M{"status": 1, "typeCode": assetType.TypeCode, "typeName": assetType.TypeName}
 

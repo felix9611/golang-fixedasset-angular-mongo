@@ -13,6 +13,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func BatchCreateVendors(Vendors []models.Vendors) (interface{}, error) {
+	for _, vendor := range Vendors {
+		result, _ := CreateVendor(&vendor)
+
+		if result == nil {
+			return "failed to create vendor", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
 func CreateVendor(vendor *models.Vendors) (interface{}, error) {
 	collection := config.GetCollection("vendors")
 

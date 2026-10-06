@@ -168,7 +168,7 @@ func ListCodeTypeByType(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      []models.CodeTypes true  "Code Type Request Body"
-// @Success      200      {object}  []models.CodeTypes
+// @Success      200      string  "Batch upload Asset Type record"
 // @Router       /base/code-type/batch-upload [post]
 func BatchUploadCodeTypes(c *gin.Context) {
 	var codeTypes []models.CodeTypes

@@ -34,6 +34,30 @@ func GetOneVendorByIdGet(c *gin.Context) {
 	c.JSON(http.StatusOK, vendor)
 }
 
+// @Summary      Batch create vendor record
+// @Description  Batch create vendor record
+// @Tags         Vendor
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.Vendors  true  "Vendor Request Body"
+// @Success      200      string
+// @Router      /base/vendor/batch-upload [post]
+func BatchCreateVendorPost(c *gin.Context) {
+	var vendor []models.Vendors
+	if err := c.ShouldBindJSON(&vendor); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateVendors(vendor)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create vendor"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"id": result})
+}
+
 // @Summary      Create one vendor record
 // @Description  Create one vendor record
 // @Tags         Vendor
