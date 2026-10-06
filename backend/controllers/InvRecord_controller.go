@@ -34,9 +34,27 @@ func ListInvRecord_(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func ListInvRecordWithFilter_(c *gin.Context) {
+	var req dto.ListRecordReqDto
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.ListInvRecordsWithFilter(&req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterInvRecordRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	InvRecordGroup := rg.Group("/sys/inv-record", handle.MiddlewareFunc())
 	{
 		InvRecordGroup.POST("/list", ListInvRecord_)
+		InvRecordGroup.POST("/filter/list", ListInvRecordWithFilter_)
 	}
 }

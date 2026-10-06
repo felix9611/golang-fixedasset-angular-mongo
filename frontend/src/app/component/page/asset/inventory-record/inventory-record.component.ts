@@ -16,6 +16,7 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'
 import { UserStoreService } from '../../../../../state/user.service'
 import { findMenuItem } from '../../../tool-function'
 import { Subscription } from 'rxjs'
+import { DownloadExcelDataComponent } from '../../../components/download-excel-component/download-excel-data-component.component'
 
 @Component({
     // selector: 'app-footer',
@@ -31,22 +32,27 @@ import { Subscription } from 'rxjs'
         NzInputModule, 
         NzPaginationModule,
         NzDatePickerModule,
+        DownloadExcelDataComponent
     ],
     templateUrl: './inventory-record.component.html',
     styleUrl: './inventory-record.component.css',
 })
 export class InventoryRecordListComponent {
-   // private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private userStoreService: UserStoreService
     ) {
-
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+            const answer = findMenuItem(data, 'Inventory Record', 'inventory-record')
+            this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
+            this.preLoadExcelSetting()
+        })
     }
 
     ngOnDestroy() {
-     //   if (this.userStoreService.menuRole$) {
-     //       this.rightSubscription.unsubscribe()
-     //   }
+       if (this.userStoreService.menuRole$) {
+           this.rightSubscription.unsubscribe()
+       }
     }
 
     userRightInside: any = {
@@ -76,5 +82,15 @@ export class InventoryRecordListComponent {
         return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
+    excelFileSetting: any = {
+        code: ''
+    }
 
+    dbFieldList: string[] = []
+    excelFieldList: string[] = []
+    async preLoadExcelSetting() {
+        const res = await getApiWithAuth(`/sys/excel-field-match/code/${this.excelFileSetting.code}`)
+        this.dbFieldList = res.fieldLists.map((item: any) => item.dbFieldName)
+        this.excelFieldList = res.fieldLists.map((item: any) => item.excelFieldName)
+    }
 }
