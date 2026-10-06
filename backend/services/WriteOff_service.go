@@ -5,6 +5,7 @@ import (
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/tools"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -70,6 +71,116 @@ func CreateWriteOff(data dto.CreateWriteOffRecrod) (interface{}, error) {
 	}
 }
 
+func ListPageWriteOffWithFilter(dataReq dto.ListWriteOffReqDto) (interface{}, error) {
+	collection := config.GetCollection("write_offs")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filters := bson.M{"status": 1}
+
+	if len(dataReq.DateRange) == 2 {
+		filters["createdAt"] = bson.M{
+			"$gte": dataReq.DateRange[0], // Ensure these are time.Time values
+			"$lte": dataReq.DateRange[1],
+		}
+	}
+
+	if len(dataReq.PlaceIds) > 0 {
+		filters["lastPlaceId"] = bson.M{"$in": dataReq.PlaceIds}
+	}
+
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: filters}},
+
+		// Lookup Asset List
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "asset_lists"},
+			{Key: "let", Value: bson.D{
+				{Key: "assetIdStr", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$assetId"},
+						{Key: "to", Value: "objectId"},
+						{Key: "onError", Value: nil},
+						{Key: "onNull", Value: nil},
+					}},
+				}},
+			}},
+			{Key: "pipeline", Value: mongo.Pipeline{
+				bson.D{{Key: "$match", Value: bson.D{
+					{Key: "$expr", Value: bson.D{
+						{Key: "$eq", Value: bson.A{"$_id", "$$assetIdStr"}},
+					}},
+				}}},
+			}},
+			{Key: "as", Value: "assetlist"},
+		}}},
+
+		// Lookup Location
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "locations"},
+			{Key: "let", Value: bson.D{
+				{Key: "placeIdStr", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$lastPlaceId"},
+						{Key: "to", Value: "objectId"},
+						{Key: "onError", Value: nil},
+						{Key: "onNull", Value: nil},
+					}},
+				}},
+			}},
+			{Key: "pipeline", Value: mongo.Pipeline{
+				bson.D{{Key: "$match", Value: bson.D{
+					{Key: "$expr", Value: bson.D{
+						{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
+					}},
+				}}},
+			}},
+			{Key: "as", Value: "location"},
+		}}},
+
+		// Unwind joined arrays
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$assetlist"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$location"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+
+		bson.D{{Key: "$sort", Value: bson.M{"createdAt": -1}}},
+	}
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	// Decode directly into struct slice
+	var FinalResults []bson.M
+	if err := cursor.All(ctx, &FinalResults); err != nil {
+		return nil, err
+	}
+
+	var LastResults []bson.M
+	for _, item := range FinalResults {
+		resultData, err := bson.Marshal(item)
+		if err != nil {
+			return nil, err
+		}
+
+		var writeOff bson.M
+		if err = bson.Unmarshal(resultData, &writeOff); err != nil {
+			return nil, err
+		}
+
+		writeOff["assetCode"] = tools.GetNestedString(item, "assetlist", "assetCode")
+		writeOff["assetName"] = tools.GetNestedString(item, "assetlist", "assetName")
+		writeOff["purchaseDate"] = tools.GetNestedString(item, "assetlist", "purchaseDate")
+		writeOff["lastPlaceCode"] = tools.GetNestedString(item, "location", "placeCode")
+		writeOff["lastPlaceName"] = tools.GetNestedString(item, "location", "placeName")
+
+		LastResults = append(LastResults, writeOff)
+	}
+
+	return LastResults, nil
+}
+
 func ListPageWriteOff(dataReq dto.ListWriteOffReqDto) (interface{}, error) {
 	collection := config.GetCollection("write_offs")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -85,14 +196,6 @@ func ListPageWriteOff(dataReq dto.ListWriteOffReqDto) (interface{}, error) {
 
 	if len(dataReq.PlaceIds) > 0 {
 		filters["lastPlaceId"] = bson.M{"$in": dataReq.PlaceIds}
-	}
-
-	if len(dataReq.DeptIds) > 0 {
-		filters["deptId"] = bson.M{"$in": dataReq.DeptIds}
-	}
-
-	if len(dataReq.TypeIds) > 0 {
-		filters["typeId"] = bson.M{"$in": dataReq.TypeIds}
 	}
 
 	skip := int64((dataReq.Page - 1) * dataReq.Limit)
@@ -152,35 +255,6 @@ func ListPageWriteOff(dataReq dto.ListWriteOffReqDto) (interface{}, error) {
 		bson.D{{Key: "$sort", Value: bson.M{"createdAt": -1}}},
 		bson.D{{Key: "$skip", Value: skip}},
 		bson.D{{Key: "$limit", Value: limit}},
-
-		/*	{Key: "$match", Value: filters},
-			{
-				Key: "$lookup", Value: bson.D{
-					{Key: "from", Value: "asset_lists"},
-					{Key: "let", Value: bson.D{
-						{Key: "assetIdStr", Value: bson.D{
-							{Key: "$convert", Value: bson.D{
-								{Key: "input", Value: "$assetId"},
-								{Key: "to", Value: "objectId"},
-								{Key: "onError", Value: nil},
-								{Key: "onNull", Value: nil},
-							}},
-						}},
-					}},
-					{Key: "pipeline", Value: mongo.Pipeline{
-						{Key: "$match", Value: bson.D{
-							{Key: "$expr", Value: bson.D{
-								{Key: "$eq", Value: bson.A{"$_id", "$$assetIdStr"}},
-							}},
-						}},
-					}},
-					{Key: "as", Value: "assetlist"},
-				},
-			},
-
-			{Key: "$sort", Value: bson.M{"createdAt": -1}},
-			{Key: "$skip", Value: skip},
-			{Key: "$limit", Value: limit},*/
 	}
 
 	cursor, err := collection.Aggregate(ctx, pipeline)
