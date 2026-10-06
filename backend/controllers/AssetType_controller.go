@@ -189,5 +189,6 @@ func RegisterAssetTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) 
 		AssetTypeGroup.GET("/all", GetAssetTypes)
 		AssetTypeGroup.POST("/list", ListPageAssetTypes)
 		AssetTypeGroup.POST("filter/list", ListAssetTypes)
+		AssetTypeGroup.POST("/batch-upload", BatchUploadAssetTypes)
 	}
 }

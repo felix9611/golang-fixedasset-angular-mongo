@@ -204,5 +204,6 @@ func RegisterVendorRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		vendorGroup.POST("/update", UpdateVendor)
 		vendorGroup.GET("/all", GetAllVendors)
 		vendorGroup.POST("/filter/list", VendorListwithFilter)
+		vendorGroup.POST("/batch-upload", BatchCreateVendorPost)
 	}
 }
