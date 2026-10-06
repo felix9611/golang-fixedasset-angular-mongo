@@ -290,27 +290,6 @@ func ListAssetType(pageDto *dto.AssetTypeListDto) (interface{}, error) {
 	return gin.H{"lists": assetTypes, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 }
 
-func AssetTypeDataFinder(typeCode string, typeName string) (interface{}, error) {
-	collection := config.GetCollection("asset_types")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	filter := bson.M{"status": 1, "typeCode": typeCode, "typeName": typeName}
-
-	var assetType models.AssetTypes
-
-	err := collection.FindOne(ctx, filter).Decode(&assetType)
-	if err != nil {
-		return nil, err
-	}
-
-	if assetType.Status == 0 {
-		return nil, nil
-	} else {
-		return &assetType, nil
-	}
-}
-
 func AssetTypeDataFinderReturn(typeCode string, typeName string) (models.AssetTypes, error) {
 	collection := config.GetCollection("asset_types")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
