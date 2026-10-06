@@ -860,3 +860,24 @@ func WriteOffInactiveAsset(assetId string) (interface{}, error) {
 		return asset, nil
 	}
 }
+
+func AssetDataFinderReturn(assetCode string, assetName string) (models.AssetLists, error) {
+	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1, "assetCode": assetCode, "assetName": assetName}
+
+	var asset models.AssetLists
+
+	err := collection.FindOne(ctx, filter).Decode(&asset)
+	if err != nil {
+		return models.AssetLists{}, err
+	}
+
+	if asset.Status == 0 {
+		return models.AssetLists{}, nil
+	}
+
+	return asset, nil
+}

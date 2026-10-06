@@ -14,6 +14,40 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func BatchCreateWriteOff(datas []dto.WriteOffPureList) (interface{}, error) {
+	var results []interface{}
+	for _, asset := range datas {
+
+		assetList, _ := AssetDataFinderReturn(asset.AssetCode, asset.AssetName)
+		location, _ := LocationDataFinder(asset.LastPlaceCode, asset.LastPlaceName)
+
+		newData := models.WriteOffs{
+			Reason:         asset.Reason,
+			LastDay:        asset.LastDay,
+			DisposalMethod: asset.DisposalMethod,
+			RemainingValue: asset.RemainingValue,
+			Status:         1,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		}
+
+		if !assetList.ID.IsZero() {
+			newData.AssetId = assetList.ID.Hex()
+		}
+
+		if !location.ID.IsZero() {
+			newData.LastPlaceId = location.ID.Hex()
+		}
+
+		/*	result, err := CreateWriteOff(&newData)
+			if err != nil {
+				return nil, err
+			} */
+		results = append(results, newData)
+	}
+	return results, nil
+}
+
 func CreateWriteOff(data dto.CreateWriteOffRecrod) (interface{}, error) {
 	var assetItem models.AssetLists
 

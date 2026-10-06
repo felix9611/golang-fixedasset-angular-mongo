@@ -98,6 +98,30 @@ func VoidRepairRecord(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Batch upload Repair Record record
+// @Description  Batch upload Repair Record record
+// @Tags         Repair Record
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []dto.RepairRecordPureList  true  "Asset Type Request Body"
+// @Success      200      string  "Batch upload Repair Recorde record"
+// @Router       /asset/repair-record/batch-create [post]
+func BatchUploadRepairRecord(c *gin.Context) {
+	var dataSets []dto.RepairRecordPureList
+	if err := c.ShouldBindJSON(&dataSets); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateRepairRecord(dataSets)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterRepairRecordRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	repairRecordRoute := rg.Group("/asset/repair-record", handle.MiddlewareFunc())
 	{
@@ -107,5 +131,6 @@ func RegisterRepairRecordRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddlewar
 		repairRecordRoute.POST("/update", UpdateRepairRecord)
 		repairRecordRoute.DELETE("/void/:id", VoidRepairRecord)
 		repairRecordRoute.POST("/filter/list", ListPageRepairRecordsWithFilter)
+		repairRecordRoute.POST("/batch-create", BatchUploadRepairRecord)
 	}
 }

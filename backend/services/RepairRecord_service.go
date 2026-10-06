@@ -15,6 +15,55 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func BatchCreateRepairRecord(dataSets []dto.RepairRecordPureList) (interface{}, error) {
+	var finalResult []models.RepairRecords
+
+	for _, data := range dataSets {
+		assetData, err := AssetDataFinderReturn(data.AssetCode, data.AssetName)
+		if err != nil {
+			return models.RepairRecords{}, err
+		}
+
+		if assetData.ID.IsZero() {
+			return models.RepairRecords{}, errors.New("Asset not found")
+		}
+
+		assetID := assetData.ID.Hex()
+
+		var MaintenanceReriod bool
+		if data.MaintenanceReriod == "Yes" || data.MaintenanceReriod == "YES" || data.MaintenanceReriod == "yes" {
+			MaintenanceReriod = true
+		} else {
+			MaintenanceReriod = false
+		}
+
+		final := models.RepairRecords{
+			AssetId:               assetID,
+			RepairReason:          data.RepairReason,
+			MaintenancePeriod:     MaintenanceReriod,
+			MaintenanceDate:       data.MaintenanceDate,
+			MaintenanceFinishDate: data.MaintenanceFinishDate,
+			RepairInvoiceDate:     data.RepairInvoiceDate,
+			MaintenanceName:       data.MaintenanceName,
+			RepairAmount:          data.RepairAmount,
+			Remark:                data.Remark,
+			Status:                1,
+			CreatedAt:             time.Now(),
+			UpdatedAt:             time.Now(),
+		}
+
+		_, err = CreateRepairRecord(&final)
+		if err != nil {
+			return nil, err
+		}
+
+		finalResult = append(finalResult, final)
+
+	}
+
+	return finalResult, nil
+}
+
 func CreateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 	collection := config.GetCollection("repair_records")
 	assetCollection := config.GetCollection("asset_lists")
