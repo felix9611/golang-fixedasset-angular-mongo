@@ -3,20 +3,34 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-    "go.mongodb.org/mongo-driver/bson"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	// "go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+func BatchCreateLocation(locations []models.Locations) (interface{}, error) {
+	for _, location := range locations {
+		result, _ := CreateLocation(&location)
+
+		if result == nil {
+			return "failed to create vendor", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
 
 func CreateLocation(location *models.Locations) (interface{}, error) {
 	collection := config.GetCollection("locations")
 
-	filter := bson.M{"status": 1, "vendorName": location.PlaceCode, "placeCode": location.PlaceName  }
+	filter := bson.M{"status": 1, "vendorName": location.PlaceCode, "placeCode": location.PlaceName}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -27,7 +41,7 @@ func CreateLocation(location *models.Locations) (interface{}, error) {
 		return nil, err
 	}
 
-	if count == 0 { 
+	if count == 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
@@ -127,7 +141,6 @@ func InactiveLocationByID(id string) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-
 	var existingLocation models.Locations
 	err = collection.FindOne(ctx, filter).Decode(&existingLocation)
 	if err != nil {
@@ -154,6 +167,45 @@ func InactiveLocationByID(id string) (interface{}, error) {
 	}
 }
 
+func LocationListWithFilter(pageDto *dto.LocationPageDto) (interface{}, error) {
+	collection := config.GetCollection("locations")
+	filter := bson.M{
+		"status": 1,
+		"$or": []bson.M{
+			{"placeCode": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			{"placeName": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+		},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{"created_at", -1}})
+	cursor, err := collection.Find(ctx, filter, findOptions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var locations []models.Locations
+	for cursor.Next(ctx) {
+		var location models.Locations
+		if err := cursor.Decode(&location); err != nil {
+			return nil, err
+		}
+		locations = append(locations, location)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+	return locations, nil
+
+}
+
 func LocationList(pageDto *dto.LocationPageDto) (interface{}, error) {
 	if pageDto.Page < 1 {
 		pageDto.Page = 1
@@ -166,7 +218,13 @@ func LocationList(pageDto *dto.LocationPageDto) (interface{}, error) {
 	limit := pageDto.Limit
 
 	collection := config.GetCollection("locations")
-	filter := bson.M{"status": 1}
+	filter := bson.M{
+		"status": 1,
+		"$or": []bson.M{
+			{"placeCode": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			{"placeName": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+		},
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -200,7 +258,7 @@ func LocationList(pageDto *dto.LocationPageDto) (interface{}, error) {
 		return nil, err
 	}
 
-	return gin.H{"lists": locations, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+	return gin.H{"lists": locations, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
 }
 
 func ListAllLocation() (interface{}, error) {
@@ -231,4 +289,25 @@ func ListAllLocation() (interface{}, error) {
 	}
 
 	return gin.H{"data": locations}, nil
+}
+
+func LocationDataFinder(placeCode string, placeName string) (models.Locations, error) {
+	collection := config.GetCollection("locations")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1, "placeCode": placeCode, "placeName": placeName}
+
+	var location models.Locations
+
+	err := collection.FindOne(ctx, filter).Decode(&location)
+	if err != nil {
+		return models.Locations{}, err
+	}
+
+	if location.Status == 0 {
+		return models.Locations{}, nil
+	} else {
+		return location, nil
+	}
 }

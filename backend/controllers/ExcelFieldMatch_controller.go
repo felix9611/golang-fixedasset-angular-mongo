@@ -68,6 +68,24 @@ func GetOneExcelFieldMatchById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Get one ExcelFieldMatch record by code
+// @Description  Get one ExcelFieldMatch record by code
+// @Tags         Excel Field Match
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Code"
+// @Success      200      {object}  models.ExcelFieldMatchs
+// @Router       /sys/excel-field-match/one/{id} [get]
+func GetOneExcelFieldMatchByCode(c *gin.Context) {
+	code := c.Param("code")
+	result, err := services.GetOneExcelFieldMatchByCode(code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      Void one ExcelFieldMatch record by id
 // @Description  Void one ExcelFieldMatch record by id
 // @Tags         Excel Field Match
@@ -116,5 +134,6 @@ func RegisterExcelFieldMatchRoutes(r *gin.RouterGroup, handle *jwt.GinJWTMiddlew
 		excelFieldMatchGroup.POST("/create", CreateExcelFieldMatch)
 		excelFieldMatchGroup.DELETE("/void/:id", VoidOneExcelFieldMatchById)
 		excelFieldMatchGroup.POST("/update", UpdateExcelFieldMatchById)
+		excelFieldMatchGroup.GET("/code/:code", GetOneExcelFieldMatchByCode)
 	}
 }

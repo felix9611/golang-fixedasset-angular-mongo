@@ -27,6 +27,18 @@
             <div (click)="loadWriteOffLists()" class="w-[100px]  border-1 border-[#54A4FF] hover:bg-[#2E7FDB] text-center px-1 py-2 rounded-lg">
                 Search
             </div>
+
+            <div class="w-[150px] bg-[#ffac69] hover:bg-[#f0944a] text-white text-center px-1 py-2 rounded-lg">
+                <app-download-excel-data 
+                    [dataFieldList]="dbFieldList"
+                    buttonLabel="Download Excel Data"
+                    excelFileName="Budget_data.xlsx"
+                    [excelFieldList]="excelFieldList"
+                    downloadDataApiPath="/asset/write-off/filter/list"
+                    dataMode="post"
+                    [filterSet]="searchForm"
+                />
+            </div>
         </div>
         <nz-table
                 [nzData]="dataLists"

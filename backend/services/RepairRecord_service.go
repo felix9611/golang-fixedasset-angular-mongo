@@ -1,17 +1,68 @@
 package services
 
 import (
-	"golang-fixedasset-mongo-backend/backend/models"
+	"context"
+	"errors"
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/dto"
-	"context"
+	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/tools"
 	"time"
+
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"github.com/gin-gonic/gin"
-	"errors"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+func BatchCreateRepairRecord(dataSets []dto.RepairRecordPureList) (interface{}, error) {
+	var finalResult []models.RepairRecords
+
+	for _, data := range dataSets {
+		assetData, err := AssetDataFinderReturn(data.AssetCode, data.AssetName)
+		if err != nil {
+			return models.RepairRecords{}, err
+		}
+
+		if assetData.ID.IsZero() {
+			return models.RepairRecords{}, errors.New("Asset not found")
+		}
+
+		assetID := assetData.ID.Hex()
+
+		var MaintenanceReriod bool
+		if data.MaintenanceReriod == "Yes" || data.MaintenanceReriod == "YES" || data.MaintenanceReriod == "yes" {
+			MaintenanceReriod = true
+		} else {
+			MaintenanceReriod = false
+		}
+
+		final := models.RepairRecords{
+			AssetId:               assetID,
+			RepairReason:          data.RepairReason,
+			MaintenancePeriod:     MaintenanceReriod,
+			MaintenanceDate:       data.MaintenanceDate,
+			MaintenanceFinishDate: data.MaintenanceFinishDate,
+			RepairInvoiceDate:     data.RepairInvoiceDate,
+			MaintenanceName:       data.MaintenanceName,
+			RepairAmount:          data.RepairAmount,
+			Remark:                data.Remark,
+			Status:                1,
+			CreatedAt:             time.Now(),
+			UpdatedAt:             time.Now(),
+		}
+
+		_, err = CreateRepairRecord(&final)
+		if err != nil {
+			return nil, err
+		}
+
+		finalResult = append(finalResult, final)
+
+	}
+
+	return finalResult, nil
+}
 
 func CreateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 	collection := config.GetCollection("repair_records")
@@ -27,7 +78,7 @@ func CreateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 
 	filters := bson.M{"_id": objectAssetID, "status": 1}
 
-//	var asset *models.AssetLists
+	//	var asset *models.AssetLists
 
 	count, err := assetCollection.CountDocuments(ctx, filters)
 	if err != nil {
@@ -74,7 +125,7 @@ func GetOneRepairRecord(id string) (interface{}, error) {
 		return nil, errors.New("Invalid ID format")
 	}
 
-	filter := bson.M{ "_id": objectID }
+	filter := bson.M{"_id": objectID}
 
 	err = collection.FindOne(ctx, filter).Decode(&record)
 	if err != nil {
@@ -113,7 +164,7 @@ func UpdateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 			"$set": record,
 		})
 		if err != nil {
-			return nil, err	
+			return nil, err
 		}
 		CreateActionRecord("Repair Record Update", "POST", "Repair Record", record, "Success")
 		return res, nil
@@ -160,6 +211,151 @@ func VoidRepairRecord(id string) (interface{}, error) {
 		CreateActionRecord("Repair Record Void", "DELETE", "Repair Record", record, "Failed")
 		return "This record is already voided", nil
 	}
+}
+
+func ListRepairRecordsWithFilter(dataReq *dto.RepairRecordPageReqDTO) (interface{}, error) {
+	collection := config.GetCollection("repair_records")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	finalFilter := bson.M{"status": 1}
+	if len(dataReq.DateRange) == 2 {
+		finalFilter["createdAt"] = bson.M{
+			"$gte": dataReq.DateRange[0],
+			"$lte": dataReq.DateRange[1],
+		}
+	}
+
+	assetMatch := bson.M{
+		"$expr": bson.M{"$eq": []interface{}{"$_id", "$$assetIdStr"}},
+	}
+
+	if dataReq.AssetCode != "" {
+		assetMatch["assetCode"] = dataReq.AssetCode
+	}
+
+	if len(dataReq.TypeIds) > 0 {
+		objectTypeIds := make([]primitive.ObjectID, len(dataReq.TypeIds))
+		for i, t := range dataReq.TypeIds {
+			id, _ := primitive.ObjectIDFromHex(t)
+			objectTypeIds[i] = id
+		}
+		assetMatch["typeId"] = bson.M{"$in": objectTypeIds}
+	}
+
+	if len(dataReq.DeptIds) > 0 {
+		objectDeptIds := make([]primitive.ObjectID, len(dataReq.DeptIds))
+		for i, d := range dataReq.DeptIds {
+			id, _ := primitive.ObjectIDFromHex(d)
+			objectDeptIds[i] = id
+		}
+		assetMatch["deptId"] = bson.M{"$in": objectDeptIds}
+	}
+
+	if len(dataReq.PlaceIds) > 0 {
+		objectPlaceIds := make([]primitive.ObjectID, len(dataReq.PlaceIds))
+		for i, p := range dataReq.PlaceIds {
+			id, _ := primitive.ObjectIDFromHex(p)
+			objectPlaceIds[i] = id
+		}
+		assetMatch["placeId"] = bson.M{"$in": objectPlaceIds}
+	}
+
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: finalFilter}},
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "asset_lists"},
+			{Key: "let", Value: bson.D{
+				{Key: "assetIdStr", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$assetId"},
+						{Key: "to", Value: "objectId"},
+						{Key: "onError", Value: nil},
+						{Key: "onNull", Value: nil},
+					}},
+				}},
+			}},
+			{Key: "pipeline", Value: mongo.Pipeline{
+				bson.D{{Key: "$lookup", Value: bson.D{
+					{Key: "from", Value: "locations"},
+					{Key: "let", Value: bson.D{
+						{Key: "placeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$placeId"}}},
+					}},
+					{Key: "pipeline", Value: mongo.Pipeline{
+						bson.D{{Key: "$match", Value: bson.D{
+							{Key: "$expr", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
+							}},
+						}}},
+					}},
+					{Key: "as", Value: "location"},
+				}}},
+				bson.D{{Key: "$lookup", Value: bson.D{
+					{Key: "from", Value: "departments"},
+					{Key: "let", Value: bson.D{
+						{Key: "deptIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$deptId"}}},
+					}},
+					{Key: "pipeline", Value: mongo.Pipeline{
+						bson.D{{Key: "$match", Value: bson.D{
+							{Key: "$expr", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
+							}},
+						}}},
+					}},
+					{Key: "as", Value: "department"},
+				}}},
+				bson.D{{Key: "$lookup", Value: bson.D{
+					{Key: "from", Value: "asset_types"},
+					{Key: "let", Value: bson.D{
+						{Key: "typeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$typeId"}}},
+					}},
+					{Key: "pipeline", Value: mongo.Pipeline{
+						bson.D{{Key: "$match", Value: bson.D{
+							{Key: "$expr", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
+							}},
+						}}},
+					}},
+					{Key: "as", Value: "assettype"},
+				}}},
+				bson.D{{Key: "$unwind", Value: bson.M{"path": "$department", "preserveNullAndEmptyArrays": true}}},
+				bson.D{{Key: "$unwind", Value: bson.M{"path": "$assettype", "preserveNullAndEmptyArrays": true}}},
+				bson.D{{Key: "$unwind", Value: bson.M{"path": "$location", "preserveNullAndEmptyArrays": true}}},
+				bson.D{{Key: "$match", Value: assetMatch}},
+			}},
+			{Key: "as", Value: "assetlist"},
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.M{"path": "$assetlist", "preserveNullAndEmptyArrays": true}}},
+	}
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	var FinalResults []bson.M
+	if err := cursor.All(ctx, &FinalResults); err != nil {
+		return nil, err
+	}
+
+	var LastResults []dto.RepairRecordPureList
+	for _, item := range FinalResults {
+		resultData, err := bson.Marshal(item)
+		if err != nil {
+			return nil, err
+		}
+
+		var repairRecord dto.RepairRecordPureList
+		if err = bson.Unmarshal(resultData, &repairRecord); err != nil {
+			return nil, err
+		}
+
+		repairRecord.AssetCode = tools.GetNestedString(item, "assetlist", "assetCode")
+		repairRecord.AssetName = tools.GetNestedString(item, "assetlist", "assetName")
+
+		LastResults = append(LastResults, repairRecord)
+	}
+	return LastResults, nil
 }
 
 func ListRepairRecords(dataReq *dto.RepairRecordPageReqDTO) (interface{}, error) {
@@ -219,77 +415,76 @@ func ListRepairRecords(dataReq *dto.RepairRecordPageReqDTO) (interface{}, error)
 	}
 
 	skip := int64((dataReq.Page - 1) * dataReq.Limit)
-    limit := int64(dataReq.Limit)
+	limit := int64(dataReq.Limit)
 
 	pipeline := mongo.Pipeline{
-    	bson.D{{Key: "$match", Value: finalFilter}},
-			bson.D{{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "asset_lists"},
-				{Key: "let", Value: bson.D{
-					{Key: "assetIdStr", Value: bson.D{
-						{Key: "$convert", Value: bson.D{
-							{Key: "input", Value: "$assetId"},
-							{Key: "to", Value: "objectId"},
-							{Key: "onError", Value: nil},
-							{Key: "onNull", Value: nil},
-						}},
+		bson.D{{Key: "$match", Value: finalFilter}},
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "asset_lists"},
+			{Key: "let", Value: bson.D{
+				{Key: "assetIdStr", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$assetId"},
+						{Key: "to", Value: "objectId"},
+						{Key: "onError", Value: nil},
+						{Key: "onNull", Value: nil},
 					}},
 				}},
-				{Key: "pipeline", Value: mongo.Pipeline{
-					bson.D{{Key: "$lookup", Value: bson.D{
-						{Key: "from", Value: "locations"},
-						{Key: "let", Value: bson.D{
-							{Key: "placeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$placeId"}}},
-						}},
-						{Key: "pipeline", Value: mongo.Pipeline{
-							bson.D{{Key: "$match", Value: bson.D{
-								{Key: "$expr", Value: bson.D{
-									{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
-								}},
-							}}},
-						}},
-						{Key: "as", Value: "location"},
-					}}},
-					bson.D{{Key: "$lookup", Value: bson.D{
-							{Key: "from", Value: "departments"},
-							{Key: "let", Value: bson.D{
-								{Key: "deptIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$deptId"}}},
+			}},
+			{Key: "pipeline", Value: mongo.Pipeline{
+				bson.D{{Key: "$lookup", Value: bson.D{
+					{Key: "from", Value: "locations"},
+					{Key: "let", Value: bson.D{
+						{Key: "placeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$placeId"}}},
+					}},
+					{Key: "pipeline", Value: mongo.Pipeline{
+						bson.D{{Key: "$match", Value: bson.D{
+							{Key: "$expr", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
 							}},
-							{Key: "pipeline", Value: mongo.Pipeline{
-								bson.D{{Key: "$match", Value: bson.D{
-									{Key: "$expr", Value: bson.D{
-										{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
-									}},
-								}}},
+						}}},
+					}},
+					{Key: "as", Value: "location"},
+				}}},
+				bson.D{{Key: "$lookup", Value: bson.D{
+					{Key: "from", Value: "departments"},
+					{Key: "let", Value: bson.D{
+						{Key: "deptIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$deptId"}}},
+					}},
+					{Key: "pipeline", Value: mongo.Pipeline{
+						bson.D{{Key: "$match", Value: bson.D{
+							{Key: "$expr", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
 							}},
-							{Key: "as", Value: "department"},
-					}}},
-					bson.D{{Key: "$lookup", Value: bson.D{
-							{Key: "from", Value: "asset_types"},
-							{Key: "let", Value: bson.D{
-								{Key: "typeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$typeId"}}},
+						}}},
+					}},
+					{Key: "as", Value: "department"},
+				}}},
+				bson.D{{Key: "$lookup", Value: bson.D{
+					{Key: "from", Value: "asset_types"},
+					{Key: "let", Value: bson.D{
+						{Key: "typeIdStr", Value: bson.D{{Key: "$toObjectId", Value: "$typeId"}}},
+					}},
+					{Key: "pipeline", Value: mongo.Pipeline{
+						bson.D{{Key: "$match", Value: bson.D{
+							{Key: "$expr", Value: bson.D{
+								{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
 							}},
-							{Key: "pipeline", Value: mongo.Pipeline{
-								bson.D{{Key: "$match", Value: bson.D{
-									{Key: "$expr", Value: bson.D{
-										{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
-									}},
-								}}},
-							}},
-							{Key: "as", Value: "assettype"},
-					}}},
-					bson.D{{Key: "$unwind", Value: bson.M{"path": "$department", "preserveNullAndEmptyArrays": true}}},
-					bson.D{{Key: "$unwind", Value: bson.M{"path": "$assettype", "preserveNullAndEmptyArrays": true}}},
-					bson.D{{Key: "$unwind", Value: bson.M{"path": "$location", "preserveNullAndEmptyArrays": true}}},
-					bson.D{{Key: "$match", Value: assetMatch}},
-				}},
-				{Key: "as", Value: "assetlist"},
-			}}},
-			bson.D{{Key: "$unwind", Value: bson.M{"path": "$assetlist", "preserveNullAndEmptyArrays": true}}},
-			bson.D{{Key: "$skip", Value: skip}},
-			bson.D{{Key: "$limit", Value: limit}},
+						}}},
+					}},
+					{Key: "as", Value: "assettype"},
+				}}},
+				bson.D{{Key: "$unwind", Value: bson.M{"path": "$department", "preserveNullAndEmptyArrays": true}}},
+				bson.D{{Key: "$unwind", Value: bson.M{"path": "$assettype", "preserveNullAndEmptyArrays": true}}},
+				bson.D{{Key: "$unwind", Value: bson.M{"path": "$location", "preserveNullAndEmptyArrays": true}}},
+				bson.D{{Key: "$match", Value: assetMatch}},
+			}},
+			{Key: "as", Value: "assetlist"},
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.M{"path": "$assetlist", "preserveNullAndEmptyArrays": true}}},
+		bson.D{{Key: "$skip", Value: skip}},
+		bson.D{{Key: "$limit", Value: limit}},
 	}
-
 
 	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
@@ -304,7 +499,7 @@ func ListRepairRecords(dataReq *dto.RepairRecordPageReqDTO) (interface{}, error)
 		{{Key: "$match", Value: finalFilter}},
 		{{Key: "$lookup", Value: bson.M{
 			"from": "assetlists",
-			"let": bson.M{"assetIdStr": bson.M{"$toObjectId": "$assetId"}},
+			"let":  bson.M{"assetIdStr": bson.M{"$toObjectId": "$assetId"}},
 			"pipeline": mongo.Pipeline{
 				{{Key: "$match", Value: assetMatch}},
 			},

@@ -26,6 +26,17 @@
                     [dbFieldList]="dbFieldList"
                 />
             </div>
+            <div class="w-[150px] bg-[#ffac69] hover:bg-[#f0944a] text-white text-center px-1 py-2 rounded-lg">
+                <app-download-excel-data 
+                    [dataFieldList]="dbFieldList"
+                    buttonLabel="Download Excel Data"
+                    excelFileName="CODE_TYPE_data.xlsx"
+                    [excelFieldList]="excelFieldList"
+                    downloadDataApiPath="/base/code-type/filter/list"
+                    dataMode="post"
+                    [filterSet]="searchForm"
+                />
+            </div>
         </div>
         <nz-table
                 [nzData]="dataLists"

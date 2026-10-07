@@ -7,6 +7,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type InvRecordPureList struct {
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	AssetCode     string             `bson:"assetCode,omitempty" json:"assetCode"`
+	AssetName     string             `bson:"assetName,omitempty" json:"assetName"`
+	PlaceFromCode string             `bson:"placeFromCode,omitempty" json:"placeFromCode"`
+	PlaceFromName string             `bson:"placeFromName,omitempty" json:"placeFromName"`
+	PlaceToCode   string             `bson:"placeToCode,omitempty" json:"placeToCode"`
+	PlaceToName   string             `bson:"placeToName,omitempty" json:"placeToName"`
+	CreatedAt     time.Time          `bson:"createdAt,omitempty" json:"createdAt"`
+	PlaceFromData models.Locations   `bson:"placeFromData,omitempty" json:"placeFromData"`
+	PlaceToData   models.Locations   `bson:"placeToData,omitempty" json:"placeToData"`
+	AssetList     models.AssetLists  `bson:"assetList,omitempty" json:"assetList"`
+}
+
 type InvRecordList struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	AssetCode     string             `bson:"assetCode,omitempty" json:"assetCode"`

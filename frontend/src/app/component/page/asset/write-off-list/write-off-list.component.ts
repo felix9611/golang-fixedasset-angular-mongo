@@ -16,6 +16,7 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'
 import { UserStoreService } from '../../../../../state/user.service'
 import { findMenuItem } from '../../../tool-function'
 import { Subscription } from 'rxjs'
+import { DownloadExcelDataComponent } from '../../../components/download-excel-component/download-excel-data-component.component'
 
 @Component({
     // selector: 'app-footer',
@@ -31,34 +32,37 @@ import { Subscription } from 'rxjs'
         NzInputModule, 
         NzPaginationModule,
         NzDatePickerModule,
+        DownloadExcelDataComponent
     ],
     templateUrl: './write-off-list.component.html',
     styleUrl: './write-off-list.component.css',
 })
 export class WriteOffListComponent {
-   // private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService,
         private routeTo: Router
      ) {
     
-      //  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-      //      const answer = findMenuItem(data, 'Write Off Record', 'write-off-list')
-          /*  this.userRightInside = {
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+            const answer = findMenuItem(data, 'Write Off Record', 'write-off-list')
+            this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
                 update: answer.update ?? false,
                 delete: answer.delete ?? false,
                 upload: answer.upload ?? false
                 // keep default value
-            } */
-     //   })
+            }
+            this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
+            this.preLoadExcelSetting()
+       })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
-     //       this.rightSubscription.unsubscribe()
+            this.rightSubscription.unsubscribe()
         }
     }
 
@@ -133,4 +137,15 @@ export class WriteOffListComponent {
         this.routeTo.navigate([`write-off`])
     }
 
+    excelFileSetting: any = {
+        code: ''
+    }
+
+    dbFieldList: string[] = []
+    excelFieldList: string[] = []
+    async preLoadExcelSetting() {
+        const res = await getApiWithAuth(`/sys/excel-field-match/code/${this.excelFileSetting.code}`)
+        this.dbFieldList = res.fieldLists.map((item: any) => item.dbFieldName)
+        this.excelFieldList = res.fieldLists.map((item: any) => item.excelFieldName)
+    }
 }

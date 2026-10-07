@@ -10,6 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Batch Create Tax Information record
+// @Description  Batch Create Tax Information record
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.TaxInformations  true  "Tax Information Request Body"
+// @Success      200      string
+// @Router      /base/tax-information/batch-create [post]
+func BatchCreateTaxInformation(c *gin.Context) {
+	var taxInfo []models.TaxInformations
+	if err := c.ShouldBindJSON(&taxInfo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateTaxInformation(taxInfo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      Create one Tax Information record
 // @Description  Create one Tax Information record
 // @Tags         Tax Information
@@ -118,6 +142,30 @@ func UpdateTaxInformationById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      List Tax Information With filter
+// @Description  List Tax Information With filter
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.TaxInformationListDTO  true  "List Tax Information Request Body"
+// @Success      200      {object}  []models.TaxInformations
+// @Router       /base/tax-information/filter/list [post]
+func ListTaxInformationsWithoutPagination(c *gin.Context) {
+	var taxInfoPageDto dto.TaxInformationListDTO
+	if err := c.ShouldBindJSON(&taxInfoPageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.TaxInformationListWithoutPagination(&taxInfoPageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      List Tax Information
 // @Description  List Tax Information
 // @Tags         Tax Information
@@ -166,6 +214,8 @@ func RegisterTaxInformationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddlew
 		TaxInformationRoute.DELETE("/void/:id", VoidOneTaxInformation)
 		TaxInformationRoute.POST("/list", ListTaxInformations)
 		TaxInformationRoute.GET("/all", ListAllTaxInformation)
+		TaxInformationRoute.POST("/filter/list", ListTaxInformationsWithoutPagination)
+		TaxInformationRoute.POST("/batch-create", BatchCreateTaxInformation)
 	}
 
 }

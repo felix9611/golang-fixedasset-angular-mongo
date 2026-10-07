@@ -6,6 +6,7 @@ import (
 	"golang-fixedasset-mongo-backend/backend/config"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
+	"golang-fixedasset-mongo-backend/backend/tools"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,86 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+func BatchCreateAssetItems(assetItems []dto.AssetListsPureDetails) (interface{}, error) {
+	var results []interface{}
+	for _, asset := range assetItems {
+
+		assetType, _ := AssetTypeDataFinderReturn(asset.TypeCode, asset.TypeName)
+
+		department, _ := DepartmentDataFinder(asset.DeptCode, asset.DeptName)
+
+		location, _ := LocationDataFinder(asset.PlaceCode, asset.PlaceName)
+
+		var sponsor bool
+		if asset.Sponsor == "Yes" || asset.Sponsor == "YES" || asset.Sponsor == "yes" {
+			sponsor = true
+		} else {
+			sponsor = false
+		}
+
+		var includeTax bool
+		if asset.IncludeTax == "Yes" || asset.IncludeTax == "YES" || asset.IncludeTax == "yes" {
+			includeTax = true
+		} else {
+			includeTax = false
+		}
+
+		newData := models.AssetLists{
+			AssetCode:              asset.AssetCode,
+			AssetName:              asset.AssetName,
+			Unit:                   asset.Unit,
+			PurchaseDate:           asset.PurchaseDate,
+			Description:            asset.Description,
+			Sponsor:                sponsor,
+			SponsorName:            asset.SponsorName,
+			Cost:                   asset.Cost,
+			SerialNumber:           asset.SerialNumber,
+			InvoiceNo:              asset.InvoiceNo,
+			InvoiceDate:            asset.InvoiceDate,
+			InvoiceRemark:          asset.InvoiceRemark,
+			VendorId:               asset.VendorId,
+			Remark:                 asset.Remark,
+			TaxCountryCode:         asset.TaxCountryCode,
+			TaxCode:                asset.TaxCode,
+			TaxRate:                asset.TaxRate,
+			IncludeTax:             includeTax,
+			AfterBeforeTax:         asset.AfterBeforeTax,
+			AccountCode:            asset.AccountCode,
+			AccountName:            asset.AccountName,
+			BrandCode:              asset.BrandCode,
+			BrandName:              asset.BrandName,
+			ChequeNo:               asset.ChequeNo,
+			MaintenancePeriodStart: asset.MaintenancePeriodStart,
+			MaintenancePeriodEnd:   asset.MaintenancePeriodEnd,
+			VoucherNo:              asset.VoucherNo,
+			VoucherUsedDate:        asset.VoucherUsedDate,
+			StaffName:              asset.StaffName,
+			Status:                 1,
+			CreatedAt:              time.Now().Format(time.RFC3339),
+			UpdatedAt:              time.Now().Format(time.RFC3339),
+		}
+
+		if !assetType.ID.IsZero() {
+			newData.TypeID = assetType.ID.Hex()
+		}
+
+		if !department.ID.IsZero() {
+			newData.DeptId = department.ID.Hex()
+		}
+
+		if !location.ID.IsZero() {
+			newData.PlaceId = location.ID.Hex()
+		}
+
+		result, err := CreateAssetItem(&newData)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, result)
+	}
+	return results, nil
+}
 
 func GetOneAssetItemByID(id string) (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
@@ -202,8 +283,188 @@ func UpdateAssetItem(updateData *models.AssetLists) (interface{}, error) {
 	}
 }
 
+func ListAsseetItemsWithFilter(req *dto.ListAssetReqDto) (interface{}, error) {
+	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filters := bson.M{
+		"status": 1,
+	}
+	if req.AssetCode != "" {
+		filters["asset_code"] = req.AssetCode
+	}
+	if req.AssetName != "" {
+		filters["asset_name"] = bson.M{"$regex": req.AssetName, "$options": "i"}
+	}
+	if len(req.TypeIds) > 0 {
+		filters["type_ids"] = bson.M{"$in": req.TypeIds}
+	}
+	if len(req.PlaceIds) > 0 {
+		filters["place_ids"] = bson.M{"$in": req.PlaceIds}
+	}
+	if len(req.DeptIds) > 0 {
+		filters["dept_ids"] = bson.M{"$in": req.DeptIds}
+	}
+	if len(req.PurchaseDates) > 0 {
+		filters["purchase_dates"] = bson.M{"$gte": req.PurchaseDates[0], "$lte": req.PurchaseDates[1]}
+	}
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: filters}}, // filters must be bson.D or bson.M
+
+		// $lookup locations
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "locations"},
+				{Key: "let", Value: bson.D{
+					{Key: "placeIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$placeId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$placeIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "location"},
+			},
+		}},
+
+		// $lookup departments
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "departments"},
+				{Key: "let", Value: bson.D{
+					{Key: "deptIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$deptId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$deptIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "department"},
+			},
+		}},
+
+		// $lookup assettypes
+		{{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "asset_types"},
+				{Key: "let", Value: bson.D{
+					{Key: "typeIdStr", Value: bson.D{
+						{Key: "$convert", Value: bson.D{
+							{Key: "input", Value: "$typeId"},
+							{Key: "to", Value: "objectId"},
+							{Key: "onError", Value: nil},
+							{Key: "onNull", Value: nil},
+						}},
+					}},
+				}},
+				{Key: "pipeline", Value: mongo.Pipeline{
+					{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$eq", Value: bson.A{"$_id", "$$typeIdStr"}},
+						}},
+					}}},
+				}},
+				{Key: "as", Value: "assettype"},
+			},
+		}},
+
+		// $addFields assetCodeInt
+		{{
+			Key: "$addFields", Value: bson.D{
+				{Key: "assetCodeInt", Value: bson.D{
+					{Key: "$convert", Value: bson.D{
+						{Key: "input", Value: "$assetCode"},
+						{Key: "to", Value: "int"},
+						{Key: "onError", Value: 0}, // 防止 "" 出錯
+						{Key: "onNull", Value: 0},
+					}},
+				}},
+			},
+		}},
+
+		// unwind
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$location"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$department"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$assettype"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
+
+		// sort
+		{{Key: "$sort", Value: bson.D{{Key: "assetCodeInt", Value: 1}}}},
+	}
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var FinalResults []bson.M
+	if err := cursor.All(ctx, &FinalResults); err != nil {
+		return nil, err
+	}
+
+	var LastResults []dto.AssetListsPureDetails
+	for _, item := range FinalResults {
+		if isSponsor, ok := item["sponsor"].(bool); ok && isSponsor {
+			item["sponsor"] = "Yes"
+		} else {
+			item["sponsor"] = "No"
+		}
+
+		if isIncludeTax, ok := item["includeTax"].(bool); ok && isIncludeTax {
+			item["includeTax"] = "Yes"
+		} else {
+			item["includeTax"] = "No"
+		}
+
+		resultData, err := bson.Marshal(item)
+		if err != nil {
+			return nil, err
+		}
+
+		var assetDetails dto.AssetListsPureDetails
+		if err := bson.Unmarshal(resultData, &assetDetails); err != nil {
+			return nil, err
+		}
+
+		assetDetails.PlaceName = tools.GetNestedString(item, "location", "placeName")
+		assetDetails.PlaceCode = tools.GetNestedString(item, "location", "placeCode")
+
+		assetDetails.DeptName = tools.GetNestedString(item, "department", "deptName")
+		assetDetails.DeptCode = tools.GetNestedString(item, "department", "deptCode")
+
+		assetDetails.TypeName = tools.GetNestedString(item, "assettype", "typeName")
+		assetDetails.TypeCode = tools.GetNestedString(item, "assettype", "typeCode")
+
+		LastResults = append(LastResults, assetDetails)
+	}
+
+	return LastResults, nil
+}
+
 func ListAllAssetItems() (interface{}, error) {
 	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	pipeline := mongo.Pipeline{
 		// $lookup locations
@@ -303,9 +564,6 @@ func ListAllAssetItems() (interface{}, error) {
 		// sort
 		{{Key: "$sort", Value: bson.D{{Key: "assetCodeInt", Value: 1}}}},
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
@@ -601,4 +859,25 @@ func WriteOffInactiveAsset(assetId string) (interface{}, error) {
 		}
 		return asset, nil
 	}
+}
+
+func AssetDataFinderReturn(assetCode string, assetName string) (models.AssetLists, error) {
+	collection := config.GetCollection("asset_lists")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1, "assetCode": assetCode, "assetName": assetName}
+
+	var asset models.AssetLists
+
+	err := collection.FindOne(ctx, filter).Decode(&asset)
+	if err != nil {
+		return models.AssetLists{}, err
+	}
+
+	if asset.Status == 0 {
+		return models.AssetLists{}, nil
+	}
+
+	return asset, nil
 }

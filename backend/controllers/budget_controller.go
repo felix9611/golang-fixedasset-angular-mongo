@@ -57,7 +57,7 @@ func GetBudgetRecordById(c *gin.Context) {
 // @Tags         Budget
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.ListBudgetRecordsDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.ListBudgetRecordsDto  true  "List Budget Request Body"
 // @Success      200      {object}  dto.BudgetList
 // @Router       /sys/budget/list [post]
 func ListPageBudgetRecords(c *gin.Context) {
@@ -67,6 +67,28 @@ func ListPageBudgetRecords(c *gin.Context) {
 		return
 	}
 	budgets, err := services.ListBudgetRecords(&budgetPageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list budgets"})
+		return
+	}
+	c.JSON(http.StatusOK, budgets)
+}
+
+// @Summary      List Budgets With Filter
+// @Description  List Budgets With Filter
+// @Tags         Budget
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.ListBudgetRecordsDto  true  "List Budget Request Body"
+// @Success      200      {object}  []models.Budgets
+// @Router       /sys/budget/filter/list [post]
+func ListPageBudgetRecordsWithFilter(c *gin.Context) {
+	var budgetPageDto dto.ListBudgetRecordsDto
+	if err := c.ShouldBindJSON(&budgetPageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	budgets, err := services.ListBudgetRecordsFilter(&budgetPageDto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list budgets"})
 		return
@@ -140,5 +162,6 @@ func RegisterBudgetRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		BudgetGroup.GET("/getBudgetSummary", GetBudgetSummary)
 		BudgetGroup.POST("/update", UpdateBudgetRecord)
 		BudgetGroup.DELETE("/void/:id", InactiveBudgetRecord)
+		BudgetGroup.POST("/filter/list", ListPageBudgetRecordsWithFilter)
 	}
 }

@@ -525,6 +525,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/asset/type/filter/list": {
+            "post": {
+                "description": "List Asset Types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset Type"
+                ],
+                "summary": "List Asset Types",
+                "parameters": [
+                    {
+                        "description": "List Asset Types Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AssetTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AssetTypes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/asset/type/list": {
             "get": {
                 "description": "Get user details by token",
@@ -1074,6 +1111,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/code-type/filter/list": {
+            "post": {
+                "description": "List Code Types without pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Code Type"
+                ],
+                "summary": "List Code Types without pagination",
+                "parameters": [
+                    {
+                        "description": "List Code Type Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeListDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CodeTypeList"
+                        }
+                    }
+                }
+            }
+        },
         "/base/code-type/get-type/{type}": {
             "get": {
                 "description": "Get one code type record by type",
@@ -1124,7 +1195,7 @@ const docTemplate = `{
                 "summary": "List Code Types",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Code Type Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1298,6 +1369,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/location/filter/list": {
+            "post": {
+                "description": "List Locations Without pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "List Locations Without pagination",
+                "parameters": [
+                    {
+                        "description": "List Location Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LocationPageDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Locations"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/base/location/list": {
             "post": {
                 "description": "List Locations",
@@ -1313,7 +1421,7 @@ const docTemplate = `{
                 "summary": "List Locations",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Location Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1691,7 +1799,7 @@ const docTemplate = `{
                 "summary": "List Vendors",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Vendor Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1808,6 +1916,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/sys/budget/filter/list": {
+            "post": {
+                "description": "List Budgets With Filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Budget"
+                ],
+                "summary": "List Budgets With Filter",
+                "parameters": [
+                    {
+                        "description": "List Budget Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListBudgetRecordsDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Budgets"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sys/budget/list": {
             "post": {
                 "description": "List Budgets",
@@ -1823,7 +1968,7 @@ const docTemplate = `{
                 "summary": "List Budgets",
                 "parameters": [
                     {
-                        "description": "List Action Record Request Body",
+                        "description": "List Budget Request Body",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2101,7 +2246,7 @@ const docTemplate = `{
         },
         "/sys/excel-field-match/one/{id}": {
             "get": {
-                "description": "Get one ExcelFieldMatch record by id",
+                "description": "Get one ExcelFieldMatch record by code",
                 "consumes": [
                     "application/json"
                 ],
@@ -2111,11 +2256,11 @@ const docTemplate = `{
                 "tags": [
                     "Excel Field Match"
                 ],
-                "summary": "Get one ExcelFieldMatch record by id",
+                "summary": "Get one ExcelFieldMatch record by code",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ExcelFieldMatch ID",
+                        "description": "Code",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3661,18 +3806,7 @@ const docTemplate = `{
             }
         },
         "dto.ListBudgetRecordsDto": {
-            "type": "object",
-            "properties": {
-                "limit": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "page": {
-                    "type": "integer"
-                }
-            }
+            "type": "object"
         },
         "dto.ListMenus": {
             "type": "object",
@@ -4433,54 +4567,7 @@ const docTemplate = `{
             }
         },
         "models.Budgets": {
-            "type": "object",
-            "properties": {
-                "budgetAmount": {
-                    "type": "number"
-                },
-                "budgetFrom": {
-                    "type": "string"
-                },
-                "budgetName": {
-                    "type": "string"
-                },
-                "budgetNo": {
-                    "type": "string"
-                },
-                "budgetStatus": {
-                    "type": "string"
-                },
-                "budgetTo": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deptId": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "month": {
-                    "type": "string"
-                },
-                "placeId": {
-                    "type": "string"
-                },
-                "remark": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "year": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "models.CodeTypes": {
             "type": "object",

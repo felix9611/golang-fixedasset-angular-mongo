@@ -460,13 +460,6 @@ definitions:
         type: array
     type: object
   dto.ListBudgetRecordsDto:
-    properties:
-      limit:
-        type: integer
-      name:
-        type: string
-      page:
-        type: integer
     type: object
   dto.ListMenus:
     properties:
@@ -966,37 +959,6 @@ definitions:
         type: string
     type: object
   models.Budgets:
-    properties:
-      budgetAmount:
-        type: number
-      budgetFrom:
-        type: string
-      budgetName:
-        type: string
-      budgetNo:
-        type: string
-      budgetStatus:
-        type: string
-      budgetTo:
-        type: string
-      createdAt:
-        type: string
-      deptId:
-        type: string
-      id:
-        type: string
-      month:
-        type: string
-      placeId:
-        type: string
-      remark:
-        type: string
-      status:
-        type: integer
-      updatedAt:
-        type: string
-      year:
-        type: string
     type: object
   models.CodeTypes:
     properties:
@@ -1629,6 +1591,30 @@ paths:
       summary: Create one Asset Type record
       tags:
       - Asset Type
+  /asset/type/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Asset Types
+      parameters:
+      - description: List Asset Types Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssetTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssetTypes'
+            type: array
+      summary: List Asset Types
+      tags:
+      - Asset Type
   /asset/type/list:
     get:
       consumes:
@@ -1987,6 +1973,28 @@ paths:
       summary: Create one Code Type record
       tags:
       - Code Type
+  /base/code-type/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Code Types without pagination
+      parameters:
+      - description: List Code Type Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CodeTypeListDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CodeTypeList'
+      summary: List Code Types without pagination
+      tags:
+      - Code Type
   /base/code-type/get-type/{type}:
     get:
       consumes:
@@ -2016,7 +2024,7 @@ paths:
       - application/json
       description: List Code Types
       parameters:
-      - description: List Action Record Request Body
+      - description: List Code Type Request Body
         in: body
         name: request
         required: true
@@ -2133,13 +2141,37 @@ paths:
       summary: Create one Location record
       tags:
       - Location
+  /base/location/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Locations Without pagination
+      parameters:
+      - description: List Location Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LocationPageDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Locations'
+            type: array
+      summary: List Locations Without pagination
+      tags:
+      - Location
   /base/location/list:
     post:
       consumes:
       - application/json
       description: List Locations
       parameters:
-      - description: List Action Record Request Body
+      - description: List Location Request Body
         in: body
         name: request
         required: true
@@ -2385,7 +2417,7 @@ paths:
       - application/json
       description: List Vendors
       parameters:
-      - description: List Action Record Request Body
+      - description: List Vendor Request Body
         in: body
         name: request
         required: true
@@ -2465,13 +2497,37 @@ paths:
       summary: Delete one vendor record by id
       tags:
       - Vendor
+  /sys/budget/filter/list:
+    post:
+      consumes:
+      - application/json
+      description: List Budgets With Filter
+      parameters:
+      - description: List Budget Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ListBudgetRecordsDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Budgets'
+            type: array
+      summary: List Budgets With Filter
+      tags:
+      - Budget
   /sys/budget/list:
     post:
       consumes:
       - application/json
       description: List Budgets
       parameters:
-      - description: List Action Record Request Body
+      - description: List Budget Request Body
         in: body
         name: request
         required: true
@@ -2658,9 +2714,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get one ExcelFieldMatch record by id
+      description: Get one ExcelFieldMatch record by code
       parameters:
-      - description: ExcelFieldMatch ID
+      - description: Code
         in: path
         name: id
         required: true
@@ -2672,7 +2728,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.ExcelFieldMatchs'
-      summary: Get one ExcelFieldMatch record by id
+      summary: Get one ExcelFieldMatch record by code
       tags:
       - Excel Field Match
   /sys/excel-field-match/update:

@@ -10,6 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Batch Create location record
+// @Description  Batch Create location record
+// @Tags         Tax Information
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []models.Locations  true  "Locations Request Body"
+// @Success      200      string
+// @Router      /base/location/batch-create [post]
+func BatchCreateLocation(c *gin.Context) {
+	var locations []models.Locations
+	if err := c.ShouldBindJSON(&locations); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.BatchCreateLocation(locations)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // @Summary      Create one Location record
 // @Description  Create one Location record
 // @Tags         Location
@@ -99,7 +123,7 @@ func UpdateLocationById(c *gin.Context) {
 // @Tags         Location
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.LocationPageDto  true  "List Action Record Request Body"
+// @Param        request  body      dto.LocationPageDto  true  "List Location Request Body"
 // @Success      200      {object}  dto.LocationList
 // @Router       /base/location/list [post]
 func ListLocations(c *gin.Context) {
@@ -110,6 +134,30 @@ func ListLocations(c *gin.Context) {
 	}
 
 	result, err := services.LocationList(&locationPageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+// @Summary      List Locations Without pagination
+// @Description  List Locations Without pagination
+// @Tags         Location
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.LocationPageDto  true  "List Location Request Body"
+// @Success      200      {object}  []models.Locations
+// @Router       /base/location/filter/list [post]
+func LocationListWithFilter(c *gin.Context) {
+	var locationPageDto dto.LocationPageDto
+	if err := c.ShouldBindJSON(&locationPageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.LocationListWithFilter(&locationPageDto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -142,5 +190,7 @@ func RegisterLocationRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 		locationGroup.DELETE("/void/:id", InactiveLocationByID)
 		locationGroup.POST("/list", ListLocations)
 		locationGroup.GET("/all", GetAllLocations)
+		locationGroup.POST("/filter/list", LocationListWithFilter)
+		locationGroup.POST("/batch-create", BatchCreateLocation)
 	}
 }

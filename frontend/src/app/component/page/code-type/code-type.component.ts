@@ -18,6 +18,7 @@ import { formatJson, readExcelFile } from '../../../../tool/excel-helper'
 import { NzUploadModule } from 'ng-zorro-antd/upload'
 import { DownloadExcelTemplateComponent } from '../../components/download-template-component/download-template-component.component'
 import { UploadDialogComponent } from '../../components/upload-dialog-component/upload-dialog-component.component'
+import { DownloadExcelDataComponent } from '../../components/download-excel-component/download-excel-data-component.component'
 
 @Component({
     // selector: 'app-footer',
@@ -33,7 +34,8 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
         NzPaginationModule, 
         NzUploadModule,
         DownloadExcelTemplateComponent,
-        UploadDialogComponent
+        UploadDialogComponent,
+        DownloadExcelDataComponent
     ],
     templateUrl: './code-type.component.html',
     styleUrl: './code-type.component.css',
@@ -46,7 +48,7 @@ export class CodeTypeComponent {
         private userStoreService: UserStoreService
     ) {
         this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-          /*  const answer = findMenuItem(data, 'Code Type', 'code-type')
+            const answer = findMenuItem(data, 'Code Type', 'code-type')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -56,14 +58,14 @@ export class CodeTypeComponent {
                  // keep default value
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
-            this.preLoadExcelSetting() */
+            this.preLoadExcelSetting()
         })
     }
 
     ngOnDestroy() {
-     //   if (this.userStoreService.menuRole$) {
-          //  this.rightSubscription.unsubscribe()
-      //  }
+        if (this.userStoreService.menuRole$) {
+          this.rightSubscription.unsubscribe()
+      }
     }
 
     userRightInside: any = {

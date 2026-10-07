@@ -3,20 +3,34 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
-	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/dto"
+	"golang-fixedasset-mongo-backend/backend/models"
 	"time"
-    "go.mongodb.org/mongo-driver/bson"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	// "go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gin-gonic/gin"
-    // "errors"
-    // "log"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	// "errors"
+	// "log"
 )
 
+func BatchCreateDepartment(departments []models.Department) (interface{}, error) {
+	for _, department := range departments {
+		result, _ := CreateDepartment(&department)
+
+		if result == nil {
+			return "failed to create vendor", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
 func CreateDepartment(department *models.Department) (interface{}, error) {
-	
+
 	filter := bson.M{"status": 1, "deptCode": department.DeptCode, "deptName": department.DeptName}
 
 	// Check if a Department with the same name already exists
@@ -93,7 +107,7 @@ func GetOneDepartment(id string) (interface{}, error) {
 		return nil, err
 	}
 
-	filter := bson.M{ "_id": objectID }
+	filter := bson.M{"_id": objectID}
 
 	var department models.Department
 
@@ -119,7 +133,7 @@ func VoidDepartmentById(id string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	filter := bson.M{"_id": objectID}
 
 	var dept models.Department
@@ -139,16 +153,16 @@ func VoidDepartmentById(id string) (interface{}, error) {
 		dept.UpdatedAt = time.Now()
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{
-            "$set": dept,
-        })
+			"$set": dept,
+		})
 
-        if err != nil {
-            return nil, err
-        }
+		if err != nil {
+			return nil, err
+		}
 
 		CreateActionRecord("Department Void", "DELETE", "Department", dept, "Success")
 
-        return result.ModifiedCount, nil
+		return result.ModifiedCount, nil
 	} else {
 		CreateActionRecord("Department Void", "DELETE", "Department", dept, "Failed")
 		return "Department is already voided", nil
@@ -156,14 +170,14 @@ func VoidDepartmentById(id string) (interface{}, error) {
 }
 
 func UpdateDeptById(id string, updateData *models.Department) (interface{}, error) {
-    collection := config.GetCollection("departments")
+	collection := config.GetCollection("departments")
 
-    objectID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        return nil, err
-    }
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
 
-    filter := bson.M{"_id": objectID, "status": 1}
+	filter := bson.M{"_id": objectID, "status": 1}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -193,20 +207,10 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 	}
 }
 
-
-func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
-
-	if pageDto.Page < 1 {
-		pageDto.Page = 1
-	}
-
-	if pageDto.Limit < 1 {
-	pageDto.Limit = 10
-	}
-
+func DepartmentListWithFilters(pageDto *dto.DepartmentPageDto) (interface{}, error) {
 	collection := config.GetCollection("departments")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-    defer cancel()
+	defer cancel()
 
 	filter := bson.M{"status": 1}
 	if pageDto.Name != "" {
@@ -219,18 +223,8 @@ func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
 		}
 	}
 
-	count, errCount := collection.CountDocuments(ctx, filter)
-	if errCount != nil {
-		return nil, errCount
-	}
-
-	skip := int64((pageDto.Page - 1) * pageDto.Limit)
-    limit := int64(pageDto.Limit)
-
 	findOptions := options.Find()
-    findOptions.SetSkip(skip)
-    findOptions.SetLimit(limit)
-    findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
 	cursor, err := collection.Find(ctx, filter, findOptions)
 	if err != nil {
@@ -249,9 +243,102 @@ func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
 	}
 
 	if err := cursor.Err(); err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
-	return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit }, nil
+	return results, nil
+}
 
+func DepartmentList(pageDto *dto.DepartmentPageDto) (interface{}, error) {
+
+	if pageDto.Page < 1 {
+		pageDto.Page = 1
+	}
+
+	if pageDto.Limit < 1 {
+		pageDto.Limit = 10
+	}
+
+	collection := config.GetCollection("departments")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1}
+	if pageDto.Name != "" {
+		filter = bson.M{
+			"status": 1,
+			"$or": []bson.M{
+				{"dept_name": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+				{"dept_code": bson.M{"$regex": pageDto.Name, "$options": "i"}},
+			},
+		}
+	}
+
+	count, errCount := collection.CountDocuments(ctx, filter)
+	if errCount != nil {
+		return nil, errCount
+	}
+
+	skip := int64((pageDto.Page - 1) * pageDto.Limit)
+	limit := int64(pageDto.Limit)
+
+	findOptions := options.Find()
+	findOptions.SetSkip(skip)
+	findOptions.SetLimit(limit)
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	var results []models.Department
+	for cursor.Next(ctx) {
+		var department models.Department
+		if err := cursor.Decode(&department); err != nil {
+			return nil, err
+		}
+		results = append(results, department)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return gin.H{"lists": results, "total": count, "page": pageDto.Page, "limit": pageDto.Limit}, nil
+
+}
+
+func BatchCreateDepartments(departments []models.Department) (interface{}, error) {
+	for _, department := range departments {
+		result, _ := CreateDepartment(&department)
+		if result == nil {
+			return "failed to create department", nil
+		}
+	}
+
+	return "batch insert completed", nil
+}
+
+func DepartmentDataFinder(deptCode string, deptName string) (models.Department, error) {
+	collection := config.GetCollection("departments")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": 1, "deptCode": deptCode, "deptName": deptName}
+
+	var department models.Department
+
+	err := collection.FindOne(ctx, filter).Decode(&department)
+	if err != nil {
+		return models.Department{}, err
+	}
+
+	if department.Status == 0 {
+		return models.Department{}, nil
+	} else {
+		return department, nil
+	}
 }
