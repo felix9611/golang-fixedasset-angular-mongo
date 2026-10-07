@@ -44,15 +44,15 @@ import { Subscription } from 'rxjs'
     styleUrl: './stock-take-form.component.css',
 })
 export class StockTakeFormComponent implements OnInit {
-    //private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private route: ActivatedRoute, 
         private routeTo: Router,
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-      //  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-         /*   const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+           const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -61,13 +61,13 @@ export class StockTakeFormComponent implements OnInit {
                 upload: answer.upload ?? false
                  // keep default value
             }
-        }) */
+        })
     }
 
     ngOnDestroy() {
-      //  if (this.userStoreService.menuRole$) {
-   //         this.rightSubscription.unsubscribe()
-    //    }
+    if (this.userStoreService.menuRole$) {
+           this.rightSubscription.unsubscribe()
+        }
     }
 
     userRightInside: any = {

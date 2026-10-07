@@ -38,15 +38,14 @@ import { Subscription } from 'rxjs'
     styleUrl: './stock-take-list.component.css',
 })
 export class StockTakeListComponent implements OnInit {
-   // private rightSubscription: Subscription
+   private rightSubscription: Subscription
     constructor(
-        private message: NzMessageService,
         private routeTo: Router,
+        private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-
-      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
+      this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+           const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
             this.userRightInside = {
                 read: answer?.read ?? false,
                 write: answer.write ?? false,
@@ -55,13 +54,13 @@ export class StockTakeListComponent implements OnInit {
                 upload: answer.upload ?? false
                  // keep default value
             }
-        }) */
+        })
     }
 
     ngOnDestroy() {
-     //   if (this.userStoreService.menuRole$) {
-        //    this.rightSubscription.unsubscribe()
-     //   }
+        if (this.userStoreService.menuRole$) {
+            this.rightSubscription.unsubscribe()
+        }
     }
 
     ngOnInit(): void {
