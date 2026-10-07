@@ -109,7 +109,7 @@ func GetOneAssetItemByID(id string) (interface{}, error) {
 		return nil, err2
 	}
 	if assetItem.Status == 0 {
-		return "This Asset item is write off", nil
+		return "This Asset item was write off", nil
 	} else {
 
 		return &assetItem, nil
