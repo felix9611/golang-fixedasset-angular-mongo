@@ -36,12 +36,12 @@ import { Subscription } from 'rxjs'
     styleUrl: './menu.component.css',
 })
 export class MenuListComponent implements OnInit {
-  //  private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-       /*this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Menu', 'menu')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -51,13 +51,13 @@ export class MenuListComponent implements OnInit {
                 upload: answer.upload ?? false
                      // keep default value
             }
-        })  */           
+        })         
     }
     
     ngOnDestroy() {
-    //    if (this.userStoreService.menuRole$) {
-    //            this.rightSubscription.unsubscribe()
-    //    }
+        if (this.userStoreService.menuRole$) {
+                this.rightSubscription.unsubscribe()
+        }
     }
 
 
