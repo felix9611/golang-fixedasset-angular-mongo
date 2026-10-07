@@ -37,12 +37,12 @@ import { UploadDialogComponent } from '../../components/upload-dialog-component/
     styleUrl: './department.component.css',
 })
 export class DepartmentComponent {
-  //  private rightSubscription: Subscription
+    private rightSubscription: Subscription
     constructor(
         private message: NzMessageService,
-   //     private userStoreService: UserStoreService
+        private userStoreService: UserStoreService
     ) {
-      /*  this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+      this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Department', 'departments')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -54,13 +54,13 @@ export class DepartmentComponent {
             }
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
-        }) */
+        })
                     
     }
     ngOnDestroy() {
-     //   if (this.userStoreService.menuRole$) {
-        //    this.rightSubscription.unsubscribe()
-     //   }
+        if (this.userStoreService.menuRole$) {
+            this.rightSubscription.unsubscribe()
+        }
     }
 
     userRightInside: any = {
