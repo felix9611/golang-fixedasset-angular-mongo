@@ -6,7 +6,7 @@
 <p>If you find this project helpful, please click ⭐ Star! This helps more people discover it.</p>
 
 <h2>🌟 Project Overview</h2>
-<p>This is a full-stack <strong>Fixed Asset Management System</strong> built with <strong>Nest.js</strong> and <strong>Angular SSR</strong>, designed for managing fixed assets within facilities. The system includes:</p>
+<p>This is a full-stack <strong>Fixed Asset Management System</strong> built with <strong>Golang Gin Framework</strong> and <strong>Angular SSR</strong>, designed for managing fixed assets within facilities. The system includes:</p>
 <ul>
   <li>Purchase and maintenance record management</li>
   <li>Asset write-off tracking</li>
@@ -54,7 +54,7 @@
 </ul>
 <h3>Backend:</h3>
 <ul>
-  <li>Ginv1.10.1</li>
+  <li>Gin v1.10.1</li>
   <li>Mongoose 9.10 for database interaction</li>
   <li>MongoDB driver v1.17.4</li>
   <li>Gin OpenAPI UI v0.24.1 for API documentation</li>
@@ -93,7 +93,7 @@ swag init
 
 
 // API Documentation URL
-http://localhost:7350/api
+http://localhost:6500/api
 </code></pre>
 
 <h3>Frontend</h3>
