@@ -237,7 +237,7 @@ func CreateNewAssetCode() (string, error) {
 		}
 	}
 
-	// 格式化
+	// format
 	return formatNumber(maxNumber, 6), nil
 }
 
