@@ -24,7 +24,7 @@ func CreateStockTakeForm(stockTakeForm *models.StockTakes) (interface{}, error) 
 	err := collection.FindOne(context.Background(), filter).Decode(&existingStockTakeForm)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			stockTakeForm.CreatedTime = time.Now()
+			stockTakeForm.CreatedTime = time.Now().Format("2006-01-02 15:04:05")
 			stockTakeForm.Status = 1 // 1 means "in progress"
 			result, err := collection.InsertOne(context.Background(), stockTakeForm)
 			if err != nil {
@@ -162,11 +162,12 @@ func UpdateStockTakeForm(updateData *models.StockTakes) (interface{}, error) {
 		return nil, err
 	}
 
-	if existingStockTake.Status == 0 {
+	switch existingStockTake.Status {
+	case 0:
 		return "Ooooops! This stock take form no longer active! Please create a new form!", nil
-	} else if existingStockTake.Status == 2 {
+	case 2:
 		return "Ooooops! This stock take form has been completed! Please create a new form!", nil
-	} else {
+	default:
 		res, err2 := collection.UpdateOne(context.Background(), bson.M{"_id": updateData.ID}, bson.M{"$set": updateData})
 		if err2 != nil {
 			return nil, err2
@@ -373,14 +374,15 @@ func FinishOrVoidStockTakeForm(_id string, status int, username string) (interfa
 		return nil, err
 	}
 
-	if existingStockTake.Status == 0 {
-		return "Ooooops! This stock take form no longer active! Please create a new form!", nil
-	} else if existingStockTake.Status == 2 {
-		return "Ooooops! This stock take form has been completed! Please create a new form!", nil
-	} else {
+	switch existingStockTake.Status {
+	case 0:
+		return gin.H{"message": "Ooooops! This stock take form no longer active! Please create a new form!"}, nil
+	case 2:
+		return gin.H{"message": "Ooooops! This stock take form has been completed! Please create a new form!"}, nil
+	default:
 		finalData := bson.M{
 			"finishBy":   username,
-			"finishTime": time.Now(),
+			"finishTime": time.Now().Format("2006-01-02 15:04:05"),
 			"status":     status,
 		}
 
