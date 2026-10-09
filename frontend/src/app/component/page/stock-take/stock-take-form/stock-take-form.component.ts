@@ -123,7 +123,7 @@ export class StockTakeFormComponent implements OnInit {
     }
 
     async updateForm() {
-        const res = await postApiWithAuth('/asset/stock-take/update-form', this.editForm)
+        const res = await postApiWithAuth('/asset/stock-take/update', this.editForm)
         if (res.finished) {
             this.message.success(res.msg)
         } else {
