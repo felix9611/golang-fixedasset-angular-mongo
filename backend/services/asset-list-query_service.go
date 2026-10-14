@@ -163,7 +163,7 @@ func QueryMakerForData(query *dto.DashboardReqDto) ([]bson.M, error) {
 	pipeline = append(pipeline, bson.D{{Key: "$match", Value: matchFilter}})
 
 	// ---------------- Date Conversion ----------------
-	// 將 purchaseDate (string) 轉成 Date
+	// purchaseDate (string) to Date
 	if query.DateType && query.DateTypeValue == "YearMonth" {
 		addFields := bson.D{
 			{Key: "$addFields", Value: bson.D{
