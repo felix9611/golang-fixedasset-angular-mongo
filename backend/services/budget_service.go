@@ -56,7 +56,7 @@ func CreateBudgetRecord(budgetRecord *models.Budgets) (interface{}, error) {
 		}
 		return result, nil
 	} else {
-		return "This Budget Record with the same details already exists", nil
+		return gin.H{"error": "Budget Record already exists"}, nil
 	}
 }
 
@@ -79,7 +79,7 @@ func GetOneBudgetRecord(id string) (interface{}, error) {
 	}
 
 	if budgetRecord.Status == 0 {
-		return "This Budget Record is inactive", nil
+		return gin.H{"error": "This Budget Record is voided!"}, nil
 	} else {
 		return &budgetRecord, nil
 	}
@@ -103,7 +103,7 @@ func VoidBudgetRecord(id string) (interface{}, error) {
 	}
 
 	if budgetRecord.Status == 0 {
-		return "This Budget Record is already inactive", nil
+		return gin.H{"error": "This Budget Record is voided!"}, nil
 	} else {
 		update := bson.M{
 			"$set": bson.M{
@@ -115,7 +115,7 @@ func VoidBudgetRecord(id string) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		return "This Budget Record has been voided just now", nil
+		return gin.H{"message": "Budget Record voided successfully"}, nil
 	}
 }
 
@@ -134,7 +134,7 @@ func UpdateBudgetRecord(updatedData *models.Budgets) (interface{}, error) {
 	}
 
 	if existingRecord.Status == 0 {
-		return "This Budget Record is inactive", nil
+		return gin.H{"error": "This Budget Record is voided!"}, nil
 	} else {
 		updatedData.UpdatedAt = time.Now()
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updatedData})
