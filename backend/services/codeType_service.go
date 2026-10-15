@@ -48,7 +48,7 @@ func CreateCodeType(codeType *models.CodeTypes) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Code Type Create", "POST", "Code Type", codeType, "Failed")
-		return "CodeType with the same name already exists", nil
+		return gin.H{"error": "This Code Type already exists"}, nil
 	}
 }
 
@@ -73,7 +73,7 @@ func GetOneCodeType(id string) (interface{}, error) {
 	}
 
 	if codeType.Status == 0 {
-		return "This Code Type is inactive", nil
+		return gin.H{"error": "This Code Type is voided!"}, nil
 	} else {
 		return &codeType, nil
 	}
@@ -116,7 +116,7 @@ func VoidOneCodeType(id string) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Code Type Void", "DELETE", "Code Type", codeType, "Failed")
-		return "This Code Type is already voided", nil
+		return gin.H{"error": "This Code Type is voided!"}, nil
 	}
 }
 
@@ -148,7 +148,7 @@ func UpdateCodeType(updateData *models.CodeTypes) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Code Type Update", "POST", "Code Type", updateData, "Failed")
-		return "This Code Type is already voided", nil
+		return gin.H{"error": "This Code Type is voided!"}, nil
 	}
 }
 
@@ -297,9 +297,9 @@ func BatchInsertCodeTypes(codeTypes []models.CodeTypes) (interface{}, error) {
 		result, _ := CreateCodeType(&codeType)
 
 		if result == nil {
-			return "failed to create code type", nil
+			return gin.H{"error": "batch insert failed"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
