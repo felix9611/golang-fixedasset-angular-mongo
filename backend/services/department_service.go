@@ -22,11 +22,11 @@ func BatchCreateDepartment(departments []models.Department) (interface{}, error)
 		result, _ := CreateDepartment(&department)
 
 		if result == nil {
-			return "failed to create vendor", nil
+			return gin.H{"error": "failed to batch create department"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
 
 func CreateDepartment(department *models.Department) (interface{}, error) {
@@ -69,7 +69,7 @@ func CreateDepartment(department *models.Department) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Department Create", "POST", "Department", department, "Failed")
-		return "Department with the same name already exists", nil
+		return gin.H{"error": "This department already exists"}, nil
 	}
 }
 
@@ -120,7 +120,7 @@ func GetOneDepartment(id string) (interface{}, error) {
 	}
 
 	if department.Status == 0 {
-		return "Department is inactive", nil
+		return gin.H{"error": "Department is voided"}, nil
 	} else {
 		return &department, nil
 	}
@@ -162,10 +162,10 @@ func VoidDepartmentById(id string) (interface{}, error) {
 
 		CreateActionRecord("Department Void", "DELETE", "Department", dept, "Success")
 
-		return result.ModifiedCount, nil
+		return result, nil
 	} else {
 		CreateActionRecord("Department Void", "DELETE", "Department", dept, "Failed")
-		return "Department is already voided", nil
+		return gin.H{"error": "Department is voided"}, nil
 	}
 }
 
@@ -203,7 +203,7 @@ func UpdateDeptById(id string, updateData *models.Department) (interface{}, erro
 		return result, nil
 	} else {
 		CreateActionRecord("Department Update", "POST", "Department", updateData, "Failed")
-		return "Department is already voided", nil
+		return gin.H{"error": "Department is voided"}, nil
 	}
 }
 
@@ -315,11 +315,11 @@ func BatchCreateDepartments(departments []models.Department) (interface{}, error
 	for _, department := range departments {
 		result, _ := CreateDepartment(&department)
 		if result == nil {
-			return "failed to create department", nil
+			return gin.H{"error": "failed to batch create department"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
 
 func DepartmentDataFinder(deptCode string, deptName string) (models.Department, error) {
