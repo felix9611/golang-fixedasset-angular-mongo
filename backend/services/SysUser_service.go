@@ -151,7 +151,7 @@ func GetOneSysUserById(id string) (interface{}, error) {
 	}
 }
 
-func GetUserByUsername(username string) (*models.SysUsers, error) {
+func GetUserByUsername(username string) (interface{}, error) {
 	collection := config.GetCollection("sys_users")
 	filter := bson.M{"username": username, "status": 1}
 
@@ -161,7 +161,7 @@ func GetUserByUsername(username string) (*models.SysUsers, error) {
 
 	err := collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
-		return {"error": "User not found"}, err
+		return gin.H{"error": "User not found"}, err
 	}
 	return &user, nil
 }
