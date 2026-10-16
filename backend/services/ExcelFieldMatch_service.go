@@ -52,7 +52,7 @@ func CreateExcelFieldMatch(data *models.ExcelFieldMatchs) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Excel Field Match Create", "POST", "Excel Field Match", data, "Failed")
-		return "This record already exist!", nil
+		return gin.H{"error": "This record already exist!"}, nil
 	}
 }
 
@@ -75,7 +75,7 @@ func GetOneExcelFieldMatch(id string) (interface{}, error) {
 	}
 
 	if excelFieldMatch.Status == 0 {
-		return "This Excel Field Match record is inactive", nil
+		return gin.H{"error": "This Excel Field Match record is voided!"}, nil
 	} else {
 		return excelFieldMatch, nil
 	}
@@ -96,7 +96,7 @@ func GetOneExcelFieldMatchByCode(code string) (interface{}, error) {
 	}
 
 	if excelFieldMatch.Status == 0 {
-		return "This Excel Field Match record is inactive", nil
+		return gin.H{"error": "This Excel Field Match record is voided!"}, nil
 	} else {
 		return excelFieldMatch, nil
 	}
@@ -124,14 +124,14 @@ func InactiveOneExcelFieldMatch(id string) (interface{}, error) {
 
 	if excelFieldMatch.Status == 0 {
 		CreateActionRecord("Excel Field Match Inactive", "DELETE", "Excel Field Match", excelFieldMatch, "Failed")
-		return "This Excel Field Match record is inactive", nil
+		return gin.H{"error": "This Excel Field Match record already voided!"}, nil
 	} else {
 		excelFieldMatch.Status = 0
 		excelFieldMatch.UpdatedAt = time.Now()
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": excelFieldMatch})
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Voided failed"}, err
 		}
 		CreateActionRecord("Excel Field Match Inactive", "DELETE", "Excel Field Match", excelFieldMatch, "Success")
 		return result, nil
@@ -154,12 +154,12 @@ func UpdateOneExcelFieldMatch(data *models.ExcelFieldMatchs) (interface{}, error
 
 	if excelFieldMatch.Status == 0 {
 		CreateActionRecord("Excel Field Match Update", "POST", "Excel Field Match", data, "Failed")
-		return "This Excel Field Match record is inactive", nil
+		return gin.H{"error": "This Excel Field Match record was voided!"}, nil
 	} else {
 		data.UpdatedAt = time.Now()
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": data})
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Update failed"}, err
 		}
 		CreateActionRecord("Excel Field Match Update", "POST", "Excel Field Match", data, "Success")
 		return result, nil
