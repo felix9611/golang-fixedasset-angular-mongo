@@ -18,11 +18,11 @@ func BatchCreateTaxInformation(TaxInfos []models.TaxInformations) (interface{}, 
 		result, _ := CreateTaxInformation(&taxInfo)
 
 		if result == nil {
-			return "failed to create vendor", nil
+			return gin.H{"message": "batch insert failed"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
 
 func CreateTaxInformation(taxInfo *models.TaxInformations) (interface{}, error) {
@@ -62,7 +62,7 @@ func CreateTaxInformation(taxInfo *models.TaxInformations) (interface{}, error) 
 
 		return result, nil
 	} else {
-		return "Tax Information with the same name already exists", nil
+		return gin.H{"message": "Tax Information already exists"}, nil
 	}
 }
 
@@ -87,7 +87,7 @@ func GetOneTaxInformation(id string) (interface{}, error) {
 	}
 
 	if taxInfo.Status == 0 {
-		return "This Tax Information is inactive", nil
+		return gin.H{"message": "Tax Information is voided"}, nil
 	} else {
 		return &taxInfo, nil
 	}
@@ -128,7 +128,7 @@ func VoidOneTaxInformation(id string) (interface{}, error) {
 		}
 		return result, nil
 	} else {
-		return "This Tax Information is already voided", nil
+		return gin.H{"message": "Tax Information is already voided"}, nil
 	}
 }
 
@@ -153,12 +153,12 @@ func UpdateTaxInformation(updateData *models.TaxInformations) (interface{}, erro
 			"$set": updateData,
 		})
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "failed to update tax information"}, err
 		}
 
 		return result, nil
 	} else {
-		return "This Tax Information is already voided", nil
+		return gin.H{"message": "Tax Information is already voided"}, nil
 	}
 }
 
