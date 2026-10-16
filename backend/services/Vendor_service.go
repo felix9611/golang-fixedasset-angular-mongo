@@ -18,11 +18,11 @@ func BatchCreateVendors(Vendors []models.Vendors) (interface{}, error) {
 		result, _ := CreateVendor(&vendor)
 
 		if result == nil {
-			return "failed to create vendor", nil
+			return gin.H{"error": "batch insert failed"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
 
 func CreateVendor(vendor *models.Vendors) (interface{}, error) {
@@ -57,7 +57,7 @@ func CreateVendor(vendor *models.Vendors) (interface{}, error) {
 
 		_, err := collection.InsertOne(ctx, vendor)
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Failed to create vendor"}, err
 		}
 
 		CreateActionRecord("Vendor Create", "POST", "Vendor", vendor, "Success")
@@ -65,7 +65,7 @@ func CreateVendor(vendor *models.Vendors) (interface{}, error) {
 		return vendor, nil
 	} else {
 		CreateActionRecord("Vendor Create", "POST", "Vendor", vendor, "Failed")
-		return "Vendor with the same name already exists", nil
+		return gin.H{"error": "This vendor already exists"}, nil
 	}
 
 }
@@ -91,7 +91,7 @@ func GetOneVendorById(id string) (interface{}, error) {
 	}
 
 	if vendor.Status == 0 {
-		return "Vendor is inactive", nil
+		return gin.H{"error": "Vendor is voided"}, nil
 	} else {
 		return &vendor, nil
 	}
@@ -117,7 +117,7 @@ func UpdateVendorById(updateData *models.Vendors) (interface{}, error) {
 
 		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": updateData})
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Failed to update vendor"}, err
 		}
 
 		CreateActionRecord("Vendor Update", "POST", "Vendor", updateData, "Success")
@@ -125,7 +125,7 @@ func UpdateVendorById(updateData *models.Vendors) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Vendor Update", "POST", "Vendor", updateData, "Failed")
-		return "Vendor is inactive", nil
+		return gin.H{"error": "Vendor is voided"}, nil
 	}
 }
 
@@ -161,7 +161,7 @@ func InactiveVendorByID(id string) (interface{}, error) {
 		}
 		return result, nil
 	} else {
-		return "Vendor is already inactive", nil
+		return gin.H{"error": "Vendor is already voided"}, nil
 	}
 }
 
