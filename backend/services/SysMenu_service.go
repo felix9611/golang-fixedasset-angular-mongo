@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -44,7 +45,7 @@ func CreateSysMenu(data *models.SysMenus) (interface{}, error) {
 		}
 		result, err := collection.InsertOne(ctx, data)
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Create failed"}, err
 		}
 
 		CreateActionRecord("Menu Item Create", "POST", "System Menu", data, "Success")
@@ -52,7 +53,7 @@ func CreateSysMenu(data *models.SysMenus) (interface{}, error) {
 		return result.InsertedID, nil
 	} else {
 		CreateActionRecord("Menu Item Create", "POST", "System Menu", data, "Failed")
-		return "Menu with the same name already exists", nil
+		return gin.H{"msg": "This menu item already exist!"}, nil
 	}
 
 }
@@ -76,7 +77,7 @@ func GetOneMenuItemById(id string) (interface{}, error) {
 	}
 
 	if menuItem.Status == 0 {
-		return "Menu item inactive", nil
+		return gin.H{"error": "Menu item already voided"}, nil
 	} else {
 		return menuItem, nil
 	}
@@ -106,7 +107,7 @@ func VoidMenuItemById(id string) (interface{}, error) {
 
 	if menuItem.Status == 0 {
 		CreateActionRecord("Menu Item Void", "DELETE", "System Menu", menuItem, "Failed")
-		return "Menu item already voided", nil
+		return gin.H{"error": "Menu item already voided"}, nil
 	} else {
 
 		menuItem.Status = 0
@@ -117,7 +118,7 @@ func VoidMenuItemById(id string) (interface{}, error) {
 		})
 
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Void failed"}, err
 		}
 
 		CreateActionRecord("Menu Item Void", "DELETE", "System Menu", menuItem, "Success")
@@ -142,7 +143,7 @@ func UpdateMenuItem(data *models.SysMenus) (interface{}, error) {
 
 	if menuItem.Status == 0 {
 		CreateActionRecord("Menu Item Update", "POST", "System Menu", data, "Failed")
-		return "This Menu Item is inactive", nil
+		return gin.H{"error": "Menu item already voided"}, nil
 	} else {
 		data.UpdatedAt = time.Now()
 
@@ -151,7 +152,7 @@ func UpdateMenuItem(data *models.SysMenus) (interface{}, error) {
 		CreateActionRecord("Menu Item Update", "POST", "System Menu", data, "Success")
 
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Update failed"}, err
 		}
 		return result, nil
 	}
