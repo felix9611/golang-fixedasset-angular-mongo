@@ -46,12 +46,13 @@ func CreateSysRole(role *models.SysRoles) (interface{}, error) {
 
 		_, err := collection.InsertOne(ctx, role)
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "failed to create role"}, err
 		}
-
+		CreateActionRecord("Role Create", "CREATE", "System Role", role, "Success")
 		return role, nil
 	} else {
-		return "Role with the same name already exists", nil
+		CreateActionRecord("Role Create", "CREATE", "System Role", role, "Failed")
+		return gin.H{"error": "this role already exists"}, nil
 	}
 }
 
@@ -98,8 +99,10 @@ func GetOneSysRoleById(id string) (interface{}, error) {
 	}
 
 	if role.Status == 0 {
-		return "Role is inactive", nil
+		CreateActionRecord("Role View", "VIEW", "System Role", &role, "Failed")
+		return gin.H{"error": "role is voided"}, nil
 	} else {
+		CreateActionRecord("Role View", "VIEW", "System Role", &role, "Success")
 		return &role, nil
 	}
 }
@@ -125,12 +128,15 @@ func UpdateRoleById(updateData *models.SysRoles) (interface{}, error) {
 
 		result, err := collection.UpdateOne(ctx, filter, update)
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "failed to update role"}, err
 		}
+
+		CreateActionRecord("Role Update", "UPDATE", "System Role", updateData, "Success")
 
 		return result.ModifiedCount, nil
 	} else {
-		return "Role is already voided", nil
+		CreateActionRecord("Role Update", "UPDATE", "System Role", updateData, "Failed")
+		return gin.H{"error": "role is voided"}, nil
 	}
 }
 
@@ -169,7 +175,7 @@ func VoidRoleById(id string) (interface{}, error) {
 		}
 		return result.ModifiedCount, nil
 	} else {
-		return "Role is already voided", nil
+		return gin.H{"error": "role is already voided"}, nil
 	}
 }
 
