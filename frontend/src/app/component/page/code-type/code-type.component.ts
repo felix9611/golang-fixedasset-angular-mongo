@@ -164,9 +164,13 @@ export class CodeTypeComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/base/code-type/one/${id}`)
-        this.editForm = res
-        this.okText = 'Update'
-        this.showDialog()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.okText = 'Update'
+            this.showDialog()
+        }
     }
 
     excelFileSetting: any = {

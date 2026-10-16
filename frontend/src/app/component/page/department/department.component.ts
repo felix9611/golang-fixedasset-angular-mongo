@@ -104,9 +104,9 @@ export class DepartmentComponent {
             ...this.editForm.id ? { id: this.editForm.id} : {},
         })
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.data.matchedCount === 1 || !res.msg || res.id?.InsertedID) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadDepartmentLists()
@@ -148,10 +148,13 @@ export class DepartmentComponent {
 
         const res: any = await deleteApiWithAuth(url)
 
-        this.message.info(`Void department ${this.handleRemoveId} successful`)
-
-        this.closeRemoveDialog()
-        this.loadDepartmentLists()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Delete successful!')
+            this.closeRemoveDialog()
+            this.loadDepartmentLists()
+        }
     }
 
 
@@ -161,9 +164,13 @@ export class DepartmentComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/sys/department/one/${id}`)
-        this.editForm = res.data
-        this.okText = 'Update'
-        this.showDialog()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.okText = 'Update'
+            this.showDialog()
+        }
     }
 
     excelFileSetting: any = {
