@@ -87,7 +87,7 @@ func CreateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 
 	if count == 0 {
 		CreateActionRecord("Repair Record Create", "POST", "Repair Record", record, "Failed")
-		return "This asset item is already written off", nil
+		return gin.H{"error": "This asset item is already written off!"}, nil
 	} else {
 		if record.Status == 0 {
 			record.Status = 1
@@ -133,7 +133,7 @@ func GetOneRepairRecord(id string) (interface{}, error) {
 	}
 
 	if record.Status == 0 {
-		return "Oooops! This record has been removed!", nil
+		return gin.H{"error": "Oooops! This record has been removed!"}, nil
 	} else {
 		return &record, nil
 	}
@@ -157,7 +157,7 @@ func UpdateRepairRecord(record *models.RepairRecords) (interface{}, error) {
 
 	if existingRecord.Status == 0 {
 		CreateActionRecord("Repair Record Update", "POST", "Repair Record", record, "Failed")
-		return "Oooops! This record has been removed!", nil
+		return gin.H{"error": "Oooops! This record has been removed!"}, nil
 	} else {
 		record.UpdatedAt = time.Now()
 		res, err := collection.UpdateOne(ctx, filter, bson.M{
@@ -209,7 +209,7 @@ func VoidRepairRecord(id string) (interface{}, error) {
 
 	} else {
 		CreateActionRecord("Repair Record Void", "DELETE", "Repair Record", record, "Failed")
-		return "This record is already voided", nil
+		return gin.H{"error": "This record is already voided"}, nil
 	}
 }
 
