@@ -153,9 +153,9 @@ export class UsersComponent {
             }
         })
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadUserLists()
@@ -199,10 +199,13 @@ export class UsersComponent {
 
         const res: any = await getApiWithAuth(url)
 
-        this.message.info(res.msg)
-        this.loadUserLists()
-        this.closeRemoveDialog()
-        
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Delete successful!')
+            this.closeRemoveDialog()
+            this.loadUserLists()
+        }
     }
 
 
@@ -212,10 +215,13 @@ export class UsersComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/sys/user/one/${id}`)
-        this.editForm = res
-        this.department = res.department
-        this.okText = 'Update'
-        this.showDialog()
+         if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.department = res.department
+            this.okText = 'Update'
+            this.showDialog()
+        }
     }
 
     // upload
