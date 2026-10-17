@@ -129,9 +129,9 @@ export class VendorComponent {
 
         const res = await postApiWithAuth(url, this.editForm)
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.result.ModifiedCount === 1 || !res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadVendorLists()
@@ -180,10 +180,13 @@ export class VendorComponent {
 
         const res: any = await deleteApiWithAuth(url)
 
-        this.message.info(res.msg)
-        this.loadVendorLists()
-        this.closeRemoveDialog()
-        
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Delete successful!')
+            this.closeRemoveDialog()
+            this.loadVendorLists()
+        }
     }
 
 
@@ -193,9 +196,13 @@ export class VendorComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/base/vendor/one/${id}`)
-        this.editForm = res
-        this.okText = 'Update'
-        this.showDialog()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.okText = 'Update'
+            this.showDialog()
+        }
     }
 
     cleanSearch() {
