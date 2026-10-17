@@ -153,12 +153,15 @@ export class WriteOffFormComponent implements OnInit {
         const todayValue = (this.editForm.cost * typeData.depreciationRate) / yearGap
         this.editForm.remainingValue = todayValue
 
-        
     }
 
     async getOne() {
-        this.editForm = await getApiWithAuth(`/asset/asset-list/one/${ this.theId}`)
-        
+        const res = await getApiWithAuth(`/asset/asset-list/one/${ this.theId}`)
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+        }
     }
 
     typeLists: any[] = []
@@ -215,7 +218,7 @@ export class WriteOffFormComponent implements OnInit {
                 this.backTo()
             })
         } else {
-            this.message.error(res)
+            this.message.error(res.error)
         }
     }
 
