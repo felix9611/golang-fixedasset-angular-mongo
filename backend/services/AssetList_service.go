@@ -301,13 +301,13 @@ func ListAsseetItemsWithFilter(req *dto.ListAssetReqDto) (interface{}, error) {
 		filters["asset_name"] = bson.M{"$regex": req.AssetName, "$options": "i"}
 	}
 	if len(req.TypeIds) > 0 {
-		filters["type_ids"] = bson.M{"$in": req.TypeIds}
+		filters["typeId"] = bson.M{"$in": req.TypeIds}
 	}
 	if len(req.PlaceIds) > 0 {
-		filters["place_ids"] = bson.M{"$in": req.PlaceIds}
+		filters["placeId"] = bson.M{"$in": req.PlaceIds}
 	}
 	if len(req.DeptIds) > 0 {
-		filters["dept_ids"] = bson.M{"$in": req.DeptIds}
+		filters["deptId"] = bson.M{"$in": req.DeptIds}
 	}
 	if len(req.PurchaseDates) > 0 {
 		filters["purchase_dates"] = bson.M{"$gte": req.PurchaseDates[0], "$lte": req.PurchaseDates[1]}
