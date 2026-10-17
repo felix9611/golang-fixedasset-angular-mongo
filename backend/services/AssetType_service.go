@@ -115,7 +115,7 @@ func VoidOneAssetType(id string) (interface{}, error) {
 		assetType.Status = 0
 		assetType.UpdatedAt = time.Now()
 
-		_, err := collection.UpdateOne(ctx, filter, assetType)
+		_, err := collection.UpdateOne(ctx, filter, bson.M{"$set": assetType})
 		if err != nil {
 			return gin.H{"error": "Void failed"}, err
 		}
