@@ -70,7 +70,7 @@ func CreateLocation(location *models.Locations) (interface{}, error) {
 
 	} else {
 		CreateActionRecord("Location Create", "POST", "Location", location, "Failed")
-		return "Location with the same name already exists", nil
+		return gin.H{"error": "Location already exists"}, nil
 	}
 }
 

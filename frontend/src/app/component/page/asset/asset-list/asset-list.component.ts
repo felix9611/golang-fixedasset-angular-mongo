@@ -99,17 +99,20 @@ export class AssetListComponent {
 
     typeLists: any[] = []
     async loadTypeList() {
-        this.typeLists = await getApiWithAuth('/asset/type/getAll')
+        const res = await getApiWithAuth('/asset/type/all')
+        this.typeLists = res.datas
     }
 
     deptLists: any[] = []
     async loadDeptList() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
+        const res = await getApiWithAuth('/sys/department/all')
+        this.deptLists = res.data
     }
 
     placeLists: any[] = []
     async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
+        const res = await getApiWithAuth('/base/location/all')
+        this.placeLists = res.data
     }
 
     async loadAssetListLists() {
