@@ -43,17 +43,17 @@ func GetOneStockTakeFormByID(id string) (interface{}, error) {
 
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return gin.H{"error": "Failed to get stock take form"}, err
 	}
 
 	err2 := collection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&stockTakeForm)
 	if err2 != nil {
-		return nil, err2
+		return gin.H{"error": "Failed to get stock take form"}, err2
 	}
 
 	stockTakeItems, err := GetStockTakeItem(id)
 	if err != nil {
-		return nil, err
+		return gin.H{"error": "Failed to get stock take items"}, err
 	}
 
 	return gin.H{
@@ -391,6 +391,6 @@ func FinishOrVoidStockTakeForm(_id string, status int, username string) (interfa
 			return nil, err2
 		}
 
-		return gin.H{"result": res, "message": "Updated successfully!", "finished": true}, nil
+		return gin.H{"result": res, "message": "Updated status successfully!", "finished": true}, nil
 	}
 }
