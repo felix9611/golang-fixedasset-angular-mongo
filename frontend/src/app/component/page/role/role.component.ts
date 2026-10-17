@@ -113,9 +113,9 @@ export class RoleComponent implements OnInit{
             ...this.editForm.id ? { _id: this.editForm.id} : {},
         })
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.editForm = {
                 id: '',
                 code: '',
@@ -169,12 +169,13 @@ export class RoleComponent implements OnInit{
 
         const res: any = await deleteApiWithAuth(url)
 
-        if (res.message) {
-            this.message.info(res.message)
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Delete successful!')
+            this.closeRemoveDialog()
+            this.loadSysRoleLists()
         }
-        this.loadSysRoleLists()
-        this.closeRemoveDialog()
-        
     }
 
 
@@ -184,9 +185,13 @@ export class RoleComponent implements OnInit{
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/sys/role/one/${id}`)
-        this.editForm = res.data
-        this.okText = 'Update'
-        this.showDialog()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res.data
+            this.okText = 'Update'
+            this.showDialog()
+        }
     }
 
     selectedMenusIds: string[] = [];
