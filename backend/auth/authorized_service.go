@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"golang-fixedasset-mongo-backend/backend/dto"
-	"golang-fixedasset-mongo-backend/backend/tools"
 	"golang-fixedasset-mongo-backend/backend/services"
+	"golang-fixedasset-mongo-backend/backend/tools"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type AuthUser struct {
@@ -51,7 +52,7 @@ func LoginAuthenticator() func(c *gin.Context) (interface{}, error) {
 		if err := c.ShouldBind(&loginVals); err != nil {
 			return "", err
 		}
-		
+
 		userID := loginVals.Username
 		password := loginVals.Password
 
