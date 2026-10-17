@@ -112,9 +112,9 @@ export class AssetTypeComponent {
             ...this.editForm.depreciationRate ? { depreciationRate: this.editForm.depreciationRate / 100 } : {}
         })
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadAssetTypeLists()
@@ -157,10 +157,13 @@ export class AssetTypeComponent {
 
             const res: any = await deleteApiWithAuth(url)
 
-            this.message.info(res.msg)
-
-            this.closeRemoveDialog()
-            this.loadAssetTypeLists()
+            if (res.error) {
+                this.message.error(res.error)
+            } else if (!res.error) {
+                this.message.success('Delete successful!')
+                this.closeRemoveDialog()
+                this.loadAssetTypeLists()
+            }
         }
     }
 
@@ -171,12 +174,16 @@ export class AssetTypeComponent {
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/asset/type/one/${id}`)
-        this.editForm = {
-            ...res,
-            depreciationRate: res.depreciationRate * 100
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = {
+                ...res,
+                depreciationRate: res.depreciationRate * 100
+            }
+            this.okText = 'Update'
+            this.showDialog()
         }
-        this.okText = 'Update'
-        this.showDialog()
     }
 
     excelFileSetting: any = {
