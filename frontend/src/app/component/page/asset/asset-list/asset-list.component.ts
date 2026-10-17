@@ -114,9 +114,6 @@ export class AssetListComponent {
 
     async loadAssetListLists() {
         const res = await postApiWithAuth('/asset/asset-list/list', this.searchForm)
-        for (let i = 0; i < res.lists.length; i++) {
-            console.log(res.lists[i].location)
-        }
         this.dataLists = res.lists
         this.totals = res.total
     }

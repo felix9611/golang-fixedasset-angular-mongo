@@ -73,32 +73,7 @@ export class MenuListComponent implements OnInit {
         delete: true
     }
 
-    listOfData = [
-        {
-          id: '1',
-          name: 'John Brown',
-          age: 32,
-          expand: false,
-          address: 'New York No. 1 Lake Park',
-          description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.'
-        },
-        {
-          id:'2',
-          name: 'Jim Green',
-          age: 42,
-          expand: false,
-          address: 'London No. 1 Lake Park',
-          description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.'
-        },
-        {
-          id: '3',
-          name: 'Joe Black',
-          age: 32,
-          expand: false,
-          address: 'Sidney No. 1 Lake Park',
-          description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-        }
-      ];
+    listOfData = []
 
     searchForm = {
         name: ''
@@ -171,9 +146,9 @@ export class MenuListComponent implements OnInit {
         const url = this.editForm._id === '' ? '/sys/menu/create' : `/sys/menu/update`
         const res = await postApiWithAuth(url, this.editForm)
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.matchedCount === 1 || !res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.editForm = {
                 _id: '',
                 mainId: '',
@@ -191,14 +166,18 @@ export class MenuListComponent implements OnInit {
             this.closeEditDialog()
             this.loadSysMenuLists()
             this.loadMainItemLists()
-
         }
-
     }
 
+
     async getDataById(id: string) {
-        this.okText = 'Update'
-        this.editForm = await getApiWithAuth(`/sys/menu/one/${id}`)
-        this.editDialogVisible = true
+        const res = await getApiWithAuth(`/sys/menu/one/${id}`)
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.okText = 'Update'
+            this.editDialogVisible = true
+        }
     }
 } 

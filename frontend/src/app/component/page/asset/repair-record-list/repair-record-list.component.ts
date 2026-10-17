@@ -140,30 +140,36 @@ export class RepairRecordListComponent {
         this.removeDialog = false
     }
 
-
     dateFormat(data: string) {
         return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
     }
 
     editTitle: string = ''
     async openEdit(data: any) {
-        this.editFormDialog = true
+        
         this.editTitle = `Edit Repair Record (Code: ${data.assetlist.assetCode})`
         const id = data._id
         const getUrl = `/asset/repair-record/one/${id}`
-        this.editForm = await getApiWithAuth(getUrl)
+        const res = await getApiWithAuth(getUrl)
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.okText = 'Update'
+            this.editFormDialog = true
+        }
     }
 
     async goToSave() {
             
         const res = await postApiWithAuth('/asset/repair-record/update', this.editForm)
             
-        if (res.ModifiedCount === 1) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.info('Update successfully!')
             this.loadRepairRecordLists()
             this.closeEditDialog()
-        } else {
-            this.message.error(res.msg)
         }
     }
 
@@ -171,13 +177,15 @@ export class RepairRecordListComponent {
         this.editFormDialog = false
     }
 
-    async goToWriteOff() {
+    async goToVoidRecord() {
         const res = await deleteApiWithAuth(`/asset/repair-record/void/${this.handleId}`)
-
-        this.message.info("Voided successfully!")
-
-        this.closeRemoveDialog()
-        this.loadRepairRecordLists()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Delete successful!')
+            this.closeRemoveDialog()
+            this.loadRepairRecordLists()
+        }
     }
 
     excelFileSetting: any = {

@@ -64,15 +64,15 @@ export class CodeTypeComponent {
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
-          this.rightSubscription.unsubscribe()
-      }
+           this.rightSubscription.unsubscribe()
+        }
     }
 
     userRightInside: any = {
-        read: true,
-        write: true,
-        update: true,
-        delete: true,
+        read: false,
+        write: false,
+        update: false,
+        delete: false
     }
 
     searchForm: any = {
@@ -104,9 +104,9 @@ export class CodeTypeComponent {
 
         const res = await postApiWithAuth(url, this.editForm)
 
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else if (res.MatchedCount === 1 || !res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadCodeTypeLists()
@@ -148,22 +148,29 @@ export class CodeTypeComponent {
 
         const res: any = await deleteApiWithAuth(url)
 
-        this.message.info('Void successful!')
-
-        this.closeRemoveDialog()
-        this.loadCodeTypeLists()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Delete successful!')
+            this.closeRemoveDialog()
+            this.loadCodeTypeLists()
+        }
     }
 
 
     dateFormat(data: string) {
-        return data ? moment(data).format('DD-MM-YYYY HH:mm') : null
+        return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null
     }
 
     async getOneData(id:string) {
         const res = await getApiWithAuth(`/base/code-type/one/${id}`)
-        this.editForm = res
-        this.okText = 'Update'
-        this.showDialog()
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.okText = 'Update'
+            this.showDialog()
+        }
     }
 
     excelFileSetting: any = {

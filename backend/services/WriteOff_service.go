@@ -97,7 +97,7 @@ func CreateWriteOff(data dto.CreateWriteOffRecrod) (interface{}, error) {
 
 		if errCreate != nil {
 			CreateActionRecord("Write Off Create", "POST", "Write Off", finalData, "Failed")
-			return nil, errCreate
+			return gin.H{"error": "Failed to create write off! Please try again"}, errCreate
 		}
 
 		CreateActionRecord("Write Off Create", "POST", "Write Off", finalData, "Success")

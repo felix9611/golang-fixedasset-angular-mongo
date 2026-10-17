@@ -20,11 +20,11 @@ func BatchCreateLocation(locations []models.Locations) (interface{}, error) {
 		result, _ := CreateLocation(&location)
 
 		if result == nil {
-			return "failed to create vendor", nil
+			return gin.H{"error": "batch insert failed"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
 
 func CreateLocation(location *models.Locations) (interface{}, error) {
@@ -60,7 +60,8 @@ func CreateLocation(location *models.Locations) (interface{}, error) {
 		_, err := collection.InsertOne(ctx, location)
 
 		if err != nil {
-			return nil, err
+			CreateActionRecord("Location Create", "POST", "Location", location, "Failed")
+			return gin.H{"error": "Failed to create location"}, err
 		}
 
 		CreateActionRecord("Location Create", "POST", "Location", location, "Success")
@@ -93,7 +94,7 @@ func GetOneLocationById(id string) (interface{}, error) {
 	}
 
 	if location.Status == 0 {
-		return "Location is inactive", nil
+		return gin.H{"error": "Location is voided!"}, nil
 	} else {
 		return &location, nil
 	}
@@ -125,7 +126,7 @@ func UpdateLocationById(updateData *models.Locations) (interface{}, error) {
 		return result, nil
 	} else {
 		CreateActionRecord("Location Update", "POST", "Location", updateData, "Failed")
-		return "Location is inactive", nil
+		return gin.H{"error": "Location is voided!"}, nil
 	}
 }
 
@@ -160,10 +161,10 @@ func InactiveLocationByID(id string) (interface{}, error) {
 
 		CreateActionRecord("Location Inactive", "DELETE", "Location", existingLocation, "Success")
 
-		return "Location deactivated successfully", nil
+		return gin.H{"message": "Location is voided!"}, nil
 	} else {
 		CreateActionRecord("Location Inactive", "DELETE", "Location", existingLocation, "Failed")
-		return "Location is already inactive", nil
+		return gin.H{"error": "Location is voided!"}, nil
 	}
 }
 

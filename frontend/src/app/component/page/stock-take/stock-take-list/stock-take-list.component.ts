@@ -115,9 +115,9 @@ export class StockTakeListComponent implements OnInit {
 
     async submitForm() {
         const res = await postApiWithAuth('/asset/stock-take/create', this.editForm)
-        if (res.msg) {
-            this.message.error(res.msg)
-        } else {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadStockTakeLists()
@@ -161,12 +161,11 @@ export class StockTakeListComponent implements OnInit {
     async finshForm() {
         const res = await deleteApiWithAuth(`/asset/stock-take/finish/${this.handleId}`)
         if (res.finished) {
-            this.message.success(res.msg)
+            this.message.success(res.message)
             this.loadStockTakeLists()
             this.closeFinishDialog()
         } else {
-            this.message.error(res.msg)
-            this.closeFinishDialog()
+            this.message.error(res.error)
         }
     }
 
@@ -177,8 +176,7 @@ export class StockTakeListComponent implements OnInit {
             this.loadStockTakeLists()
             this.closeFinishDialog()
         } else {
-            this.message.error(res.message)
-            this.closeFinishDialog()
+            this.message.error(res.error)
         }
     }
 }

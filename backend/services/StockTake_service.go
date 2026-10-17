@@ -32,9 +32,9 @@ func CreateStockTakeForm(stockTakeForm *models.StockTakes) (interface{}, error) 
 			}
 			return result, nil
 		}
-		return nil, err
+		return gin.H{"error": "Failed to create stock take form"}, err
 	}
-	return "A Stock Take form already exists", nil
+	return gin.H{"error": "This stock take form already exists"}, nil
 }
 
 func GetOneStockTakeFormByID(id string) (interface{}, error) {
@@ -43,17 +43,17 @@ func GetOneStockTakeFormByID(id string) (interface{}, error) {
 
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return gin.H{"error": "Failed to get stock take form"}, err
 	}
 
 	err2 := collection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&stockTakeForm)
 	if err2 != nil {
-		return nil, err2
+		return gin.H{"error": "Failed to get stock take form"}, err2
 	}
 
 	stockTakeItems, err := GetStockTakeItem(id)
 	if err != nil {
-		return nil, err
+		return gin.H{"error": "Failed to get stock take items"}, err
 	}
 
 	return gin.H{
@@ -164,13 +164,13 @@ func UpdateStockTakeForm(updateData *models.StockTakes) (interface{}, error) {
 
 	switch existingStockTake.Status {
 	case 0:
-		return "Ooooops! This stock take form no longer active! Please create a new form!", nil
+		return gin.H{"error": "Ooooops! This stock take form no longer active! Please create a new form!"}, nil
 	case 2:
-		return "Ooooops! This stock take form has been completed! Please create a new form!", nil
+		return gin.H{"error": "Ooooops! This stock take form has been completed! Please create a new form!"}, nil
 	default:
 		res, err2 := collection.UpdateOne(context.Background(), bson.M{"_id": updateData.ID}, bson.M{"$set": updateData})
 		if err2 != nil {
-			return nil, err2
+			return gin.H{"error": "Failed to update stock take form!"}, err2
 		}
 
 		return res, nil
@@ -349,7 +349,7 @@ func StockTakeItemSubmit(stockTakeItem *models.StockTakeItems) (interface{}, err
 	res, errInsert := collection.InsertOne(context.Background(), stockTakeItem)
 
 	if errInsert != nil {
-		return nil, errInsert
+		return gin.H{"error": "Something went wrong"}, errInsert
 	}
 
 	return res, nil
@@ -391,6 +391,6 @@ func FinishOrVoidStockTakeForm(_id string, status int, username string) (interfa
 			return nil, err2
 		}
 
-		return gin.H{"result": res, "message": "Updated successfully!", "finished": true}, nil
+		return gin.H{"result": res, "message": "Updated status successfully!", "finished": true}, nil
 	}
 }

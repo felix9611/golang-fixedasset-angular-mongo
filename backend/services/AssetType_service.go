@@ -18,11 +18,11 @@ func BatchCreateAssetTypes(assetTypes []models.AssetTypes) (interface{}, error) 
 		result, _ := CreateAssetType(&assetType)
 
 		if result == nil {
-			return "failed to create code type", nil
+			return gin.H{"error": "batch insert failed"}, nil
 		}
 	}
 
-	return "batch insert completed", nil
+	return gin.H{"message": "batch insert completed"}, nil
 }
 
 func CreateAssetType(assetType *models.AssetTypes) (interface{}, error) {
@@ -48,17 +48,18 @@ func CreateAssetType(assetType *models.AssetTypes) (interface{}, error) {
 			assetType.UpdatedAt = time.Now()
 		}
 
-		CreateActionRecord("Asset Type Create", "POST", "Asset Type", assetType, "Success")
-
 		result, err := collection.InsertOne(context.Background(), assetType)
 		if err != nil {
-			return nil, err
+			CreateActionRecord("Asset Type Create", "POST", "Asset Type", assetType, "Failed")
+			return gin.H{"error": "Create failed"}, err
 		}
+
+		CreateActionRecord("Asset Type Create", "POST", "Asset Type", assetType, "Success")
 
 		return result, nil
 	} else {
 		CreateActionRecord("Asset Type Create", "POST", "Asset Type", assetType, "Failed")
-		return "This Asset Type with the same name already exists", nil
+		return gin.H{"error": "This asset Type already exists"}, nil
 	}
 }
 
@@ -82,7 +83,7 @@ func GetOneAssetType(id string) (interface{}, error) {
 	}
 
 	if assetType.Status == 0 {
-		return "This Asset Type is inactive", nil
+		return gin.H{"error": "This Asset Type is voided!"}, nil
 	} else {
 		return &assetType, nil
 	}
@@ -114,12 +115,12 @@ func VoidOneAssetType(id string) (interface{}, error) {
 		assetType.Status = 0
 		assetType.UpdatedAt = time.Now()
 
-		_, err := collection.UpdateOne(ctx, filter, assetType)
+		_, err := collection.UpdateOne(ctx, filter, bson.M{"$set": assetType})
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Void failed"}, err
 		}
 		CreateActionRecord("Asset Type Void", "DELETE", "Asset Type", assetType, "Success")
-		return "This Asset Type has been voided just now", nil
+		return gin.H{"message": "Void success"}, nil
 	}
 }
 
@@ -139,7 +140,7 @@ func UpdateAssetType(updateData *models.AssetTypes) (interface{}, error) {
 
 	if assetType.Status == 0 {
 		CreateActionRecord("Asset Type Update", "POST", "Asset Type", updateData, "Failed")
-		return "This Asset Type is inactive", nil
+		return gin.H{"error": "This Asset Type is voided!"}, nil
 	} else {
 		updateData.UpdatedAt = time.Now()
 
@@ -148,7 +149,7 @@ func UpdateAssetType(updateData *models.AssetTypes) (interface{}, error) {
 		CreateActionRecord("Asset Type Update", "POST", "Asset Type", updateData, "Success")
 
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Update failed"}, err
 		}
 		return result, nil
 	}

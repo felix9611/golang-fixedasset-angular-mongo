@@ -109,7 +109,7 @@ func GetOneAssetItemByID(id string) (interface{}, error) {
 		return nil, err2
 	}
 	if assetItem.Status == 0 {
-		return "This Asset item was write off", nil
+		return gin.H{"error": "This Asset item was write off"}, nil
 	} else {
 
 		return &assetItem, nil
@@ -161,7 +161,7 @@ func CreateAssetItem(assetItem *models.AssetLists) (interface{}, error) {
 
 			res, errInsert := collection.InsertOne(context.Background(), assetItem)
 			if errInsert != nil {
-				return nil, errInsert
+				return gin.H{"error": "Failed to create asset"}, errInsert
 			}
 
 			if len(updateFiles) > 0 {
@@ -171,15 +171,18 @@ func CreateAssetItem(assetItem *models.AssetLists) (interface{}, error) {
 				}
 			}
 
+			CreateActionRecord("Asset Item Create", "POST", "Asset Item", assetItem, "Success")
+
 			return res, nil
 		} else {
+			CreateActionRecord("Asset Item Create", "POST", "Asset Item", assetItem, "Failed")
 			// Some other error
-			return nil, err
+			return gin.H{"error": "Failed to create asset"}, err
 		}
 	}
 
 	// If we get here, asset already exists
-	return "This asset name already exists! Please check again!", nil
+	return gin.H{"error": "This asset already exists! Please check again!"}, nil
 }
 
 func formatNumber(num int, digits int) string {
@@ -279,7 +282,7 @@ func UpdateAssetItem(updateData *models.AssetLists) (interface{}, error) {
 
 		return res, nil
 	} else {
-		return "This asset item may be invalidated or not exist! Please contact admin!", nil
+		return gin.H{"error": "This asset item may be voided or not exist! Please contact admin!"}, nil
 	}
 }
 
@@ -855,7 +858,7 @@ func WriteOffInactiveAsset(assetId string) (interface{}, error) {
 
 		_, err := collection.UpdateOne(ctx, filter, asset)
 		if err != nil {
-			return nil, err
+			return gin.H{"error": "Failed to write off"}, err
 		}
 		return asset, nil
 	}

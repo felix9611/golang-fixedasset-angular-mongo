@@ -104,9 +104,9 @@
 
         <nz-modal
             [(nzVisible)]="removeDialog" 
-            nzTitle="Confirm Write Off"
+            nzTitle="Confirm Remove Record"
             (nzOnCancel)="closeRemoveDialog()"
-            (nzOnOk)="goToWriteOff()"
+            (nzOnOk)="goToVoidRecord()"
         >
             <ng-container *nzModalContent>
                 Are you sure to confirm remove this record?

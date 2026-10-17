@@ -92,17 +92,13 @@ export class WriteOffListComponent {
     }
 
     typeLists: any[] = []
-
-
     deptLists: any[] = []
-
-
     placeLists: any[] = []
+    
     async loadLocationList() {
         const res = await getApiWithAuth('/base/location/all')
         this.placeLists = res.data
     }
-
 
     async loadWriteOffLists() {
         const res = await postApiWithAuth('/asset/write-off/list', this.searchForm)
@@ -110,16 +106,6 @@ export class WriteOffListComponent {
         this.dataLists = res.lists
         this.totals = res.total
     }
-
-    handleRomeve(id: string) {
-        this.handleId = id
-        this.removeDialog = true
-    }
-
-    closeRemoveDialog() {
-        this.removeDialog = false
-    }
-
 
     dateFormat(data: string) {
         return data ? moment(new Date(data)).format('DD-MM-YYYY HH:MM') : null

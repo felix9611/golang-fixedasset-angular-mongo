@@ -203,9 +203,14 @@ export class AssetFormComponent implements OnInit {
     }
 
     async getOne() {
-        this.editForm = await getApiWithAuth(`/asset/asset-list/one/${ this.theId}`)
+        const res = await getApiWithAuth(`/asset/asset-list/one/${ this.theId}`)
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.editForm = res
+            this.editForm.assetListFiles = await getApiWithAuth(`/asset/asset-list/load-file/${this.theId}`)
+        }
         
-        this.editForm.assetListFiles = await getApiWithAuth(`/asset/asset-list/load-file/${this.theId}`)
     }
 
     typeLists: any[] = []
@@ -273,12 +278,17 @@ export class AssetFormComponent implements OnInit {
 
         const res = await postApiWithAuth(url, this.editForm)
 
-        if (!res.msg) {
+        if (res.error) {
+            this.message.error(res.error)
+        } else if (!res.error) {
+            this.message.success('Save successful!')
+            if (!res.msg) {
             this.message.info('Data save successfully!')
-            timer(2500).subscribe(() => {
-                this.routeTo.navigate(['/asset-list'])
-            })
-        }
+                timer(2500).subscribe(() => {
+                    this.routeTo.navigate(['/asset-list'])
+                })
+            }
+        }    
     }
 
     resetForm() {
