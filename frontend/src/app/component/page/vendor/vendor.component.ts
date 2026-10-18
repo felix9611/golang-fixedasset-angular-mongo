@@ -149,6 +149,7 @@ export class VendorComponent {
                 contactPerson: '',
                 remark: '',
             }
+            this.okText = 'Create'
         }
     }
 

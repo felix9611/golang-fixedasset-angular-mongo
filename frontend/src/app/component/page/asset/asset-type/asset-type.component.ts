@@ -125,6 +125,8 @@ export class AssetTypeComponent {
                 typeName: '',
                 remark: ''
             }
+
+            this.okText = 'Create'
         }
     }
 

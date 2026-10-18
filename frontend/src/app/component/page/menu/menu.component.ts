@@ -166,6 +166,7 @@ export class MenuListComponent implements OnInit {
             this.closeEditDialog()
             this.loadSysMenuLists()
             this.loadMainItemLists()
+            this.okText = 'Create'
         }
     }
 
