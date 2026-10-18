@@ -108,7 +108,6 @@ export class RoleComponent implements OnInit{
         const url = this.editForm.id === '' ? '/sys/role/create' : `/sys/role/update`
 
         const res = await postApiWithAuth(url, {
-            
             ...this.editForm,
             ...this.editForm.id ? { _id: this.editForm.id} : {},
         })
@@ -132,6 +131,8 @@ export class RoleComponent implements OnInit{
             this.message.success('Save successful!')
             this.closeDialog()
             this.loadSysRoleLists()
+
+            this.okText = 'Create'
         }
     }
 

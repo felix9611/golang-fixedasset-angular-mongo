@@ -117,6 +117,8 @@ export class DepartmentComponent {
                 deptName: '',
                 remark: ''
             }
+
+            this.okText = 'Create'
         }
     }
 

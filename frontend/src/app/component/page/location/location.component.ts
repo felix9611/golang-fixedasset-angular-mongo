@@ -124,6 +124,8 @@ export class LocationComponent {
                 placeName: '',
                 remark: ''
             }
+
+            this.okText = 'Create'
         }
     }
 
