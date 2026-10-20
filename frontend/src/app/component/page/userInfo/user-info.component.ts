@@ -31,7 +31,8 @@ export class UserInfoComponent implements OnInit {
         roleIds: [],
         roleLists: [],
         email: '', 
-        loginRecords: []
+        loginRecords: [],
+        departments: []
     }
 
     resetPwForm: any = {

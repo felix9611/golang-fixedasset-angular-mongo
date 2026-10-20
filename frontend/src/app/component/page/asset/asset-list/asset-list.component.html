@@ -51,7 +51,7 @@
                     name="deptId" 
                     [(ngModel)]="searchForm.deptIds"  
                     nzMode="multiple" nzAllowClear  nzShowArrow
-                     nzPlaceHolder="Location">
+                     nzPlaceHolder="Department">
                     @for (option of deptLists; track option) {
                       <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
                     }

@@ -16,10 +16,11 @@ import { RepairRecordCreateComponent } from '../repair-record-create/repair-reco
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'
 import { UserStoreService } from '../../../../../state/user.service'
 import { findMenuItem } from '../../../tool-function'
-import { Subscription } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { UploadDialogComponent } from '../../../components/upload-dialog-component/upload-dialog-component.component'
 import { DownloadExcelTemplateComponent } from '../../../components/download-template-component/download-template-component.component'
 import { DownloadExcelDataComponent } from '../../../components/download-excel-component/download-excel-data-component.component'
+import { AssetListDto } from './asset-list.interface'
 
 @Component({
     // selector: 'app-footer',
@@ -46,6 +47,7 @@ import { DownloadExcelDataComponent } from '../../../components/download-excel-c
 })
 export class AssetListComponent {
     private rightSubscription: Subscription
+    private userRightSubscription: Subscription
     constructor(
         private routeTo: Router,
         private userStoreService: UserStoreService
@@ -63,17 +65,34 @@ export class AssetListComponent {
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
         })
+
+        this.userRightSubscription = this.userStoreService.user$.subscribe((data: any) => {
+            this.superAdmin = data.superAdmin
+            if (data.superAdmin !== true) {
+                this.placeLists = data.locations
+                this.deptLists = data.departments
+                this.searchForm.placeIds = data.placeIds
+                this.searchForm.deptIds = data.deptIds
+            }
+        })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
            this.rightSubscription.unsubscribe()
-     }
+        }
+        if (this.userStoreService.user$) {
+            this.userRightSubscription.unsubscribe()
+        }
     }
 
-    searchForm: any = {
+    searchForm: AssetListDto = {
         page: 1,
-        limit: 10
+        limit: 10,
+        placeIds: [],
+        typeIds: [],
+        deptIds: [],
+        purchaseDates: []
     }
 
     userRightInside: any = {
@@ -83,6 +102,8 @@ export class AssetListComponent {
         delete: false
     }
 
+    locationFieldLock: boolean = false
+    superAdmin: boolean = false
 
     dataLists: any[] = []
     totals: number = 0
@@ -105,14 +126,18 @@ export class AssetListComponent {
 
     deptLists: any[] = []
     async loadDeptList() {
-        const res = await getApiWithAuth('/sys/department/all')
-        this.deptLists = res.data
+        if (this.superAdmin === true) {
+            const res = await getApiWithAuth('/sys/department/all')
+            this.deptLists = res.data
+        }
     }
 
     placeLists: any[] = []
     async loadLocationList() {
-        const res = await getApiWithAuth('/base/location/all')
-        this.placeLists = res.data
+        if (this.superAdmin === true) {
+            const res = await getApiWithAuth('/base/location/all')
+            this.placeLists = res.data
+        }
     }
 
     async loadAssetListLists() {

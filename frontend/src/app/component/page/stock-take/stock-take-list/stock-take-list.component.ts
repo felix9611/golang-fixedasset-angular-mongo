@@ -39,12 +39,13 @@ import { Subscription } from 'rxjs'
 })
 export class StockTakeListComponent implements OnInit {
    private rightSubscription: Subscription
+   private userRightSubscription: Subscription
     constructor(
         private routeTo: Router,
         private message: NzMessageService,
         private userStoreService: UserStoreService
     ) {
-      this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
+        this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
            const answer = findMenuItem(data, 'Stock Take', 'stock-takes')
             this.userRightInside = {
                 read: answer?.read ?? false,
@@ -55,11 +56,21 @@ export class StockTakeListComponent implements OnInit {
                  // keep default value
             }
         })
+        this.userRightSubscription = this.userStoreService.user$.subscribe((data: any) => {
+            this.superAdmin = data.superAdmin
+            if (data.superAdmin !== true) {
+                this.searchForm.placeIds = data.placeIds
+                this.placeLists = data.locations
+            }
+        })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
             this.rightSubscription.unsubscribe()
+        }
+        if (this.userStoreService.user$) {
+            this.userRightSubscription.unsubscribe()
         }
     }
 
@@ -67,6 +78,8 @@ export class StockTakeListComponent implements OnInit {
         this.loadLocationList()
         this.loadStockTakeLists()
     }
+
+    superAdmin: boolean = false
 
     userRightInside: any = {
         read: true,
@@ -109,8 +122,10 @@ export class StockTakeListComponent implements OnInit {
 
     placeLists: any[] = []
     async loadLocationList() {
-        const res = await getApiWithAuth('/base/location/all')
-        this.placeLists = res.data
+        if (this.superAdmin === true) {
+            const res = await getApiWithAuth('/base/location/all')
+            this.placeLists = res.data
+        }
     }
 
     async submitForm() {
