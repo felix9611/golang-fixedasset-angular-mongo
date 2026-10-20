@@ -45,6 +45,8 @@ import { Subscription } from 'rxjs'
 })
 export class StockTakeFormComponent implements OnInit {
     private rightSubscription: Subscription
+    private userRightSubscription: Subscription
+
     constructor(
         private route: ActivatedRoute, 
         private routeTo: Router,
@@ -62,13 +64,25 @@ export class StockTakeFormComponent implements OnInit {
                  // keep default value
             }
         })
+
+        this.userRightSubscription = this.userStoreService.user$.subscribe((data: any) => {
+            this.superAdmin = data.superAdmin
+            if (data.superAdmin !== true) {
+                this.placeLists = data.locations
+            }
+        })
     }
 
     ngOnDestroy() {
     if (this.userStoreService.menuRole$) {
            this.rightSubscription.unsubscribe()
         }
+        if (this.userStoreService.user$) {
+            this.userRightSubscription.unsubscribe()
+        }
     }
+
+    superAdmin: boolean = false
 
     userRightInside: any = {
         read: true,
@@ -123,8 +137,10 @@ export class StockTakeFormComponent implements OnInit {
 
     placeLists: any[] = []
     async loadLocationList() {
-        const data = await getApiWithAuth('/base/location/all')
-        this.placeLists = data.data
+        if (this.superAdmin === true) {
+            const res = await getApiWithAuth('/base/location/all')
+            this.placeLists = res.data
+        }
     }
 
     async updateForm() {
