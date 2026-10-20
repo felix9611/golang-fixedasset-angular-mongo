@@ -48,9 +48,13 @@
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                    <nz-form-label class="font-bold" nzFor="department">Department</nz-form-label>
-                    <nz-form-control [nzSpan]="14">
-                        {{ userInfo.department?.deptName }}
+                    <nz-form-label class="font-bold" nzFor="roles">Departments</nz-form-label>
+                    <nz-form-control [nzSpan]="20">
+                        <div *ngFor="let location of userInfo.departments" class="flex  p-1">
+                            <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1]">
+                                {{ location.deptName }}
+                            </div>
+                        </div>
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
