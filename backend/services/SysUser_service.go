@@ -52,6 +52,14 @@ func CreateSysUser(user *models.SysUsers) (interface{}, error) {
 			user.Password = tools.HashPassword("888888", tools.Salt)
 		}
 
+		if len(user.Roles) == 0 {
+			user.Roles = []primitive.ObjectID{}
+		}
+
+		if len(user.PlaceIds) == 0 {
+			user.PlaceIds = []primitive.ObjectID{}
+		}
+
 		result, err := collection.InsertOne(ctx, user)
 		if err != nil {
 			return gin.H{"error": "Failed to create user"}, err
@@ -180,9 +188,21 @@ func GetUserDetailByUsername(username string) (interface{}, error) {
 	}
 
 	var roleLists []models.SysRoles
-	roleLists, err = findRoleListByUser(user.Roles)
+	if user.Roles != nil {
+		roleLists, _ = findRoleListByUser(user.Roles)
+	}
 
-	department, err := GetOneDepartment(user.DeptId.Hex())
+	var department models.Department
+	if user.DeptId != primitive.NilObjectID {
+		departmentResult, _ := GetOneDepartment(user.DeptId.Hex())
+		department, _ = departmentResult.(models.Department)
+	}
+
+	var locationLists []models.Locations
+	if user.PlaceIds != nil {
+		locationLists, _ = GetLocationsByIds(user.PlaceIds)
+	}
+
 	var loginRecords []models.LoginRecords
 	loginRecords, err = GetLoginRecords(user.Username)
 
@@ -200,6 +220,8 @@ func GetUserDetailByUsername(username string) (interface{}, error) {
 		"roleLists":    roleLists,
 		"department":   department,
 		"loginRecords": loginRecords,
+		"superAdmin":   user.SuperAdmin,
+		"locations":    locationLists,
 	}
 
 	return last, nil

@@ -5,5 +5,7 @@ export interface UserForm {
     avatarBase64?: string
     deptId?: number
     email: string
-    roles?: number[]
+    roles?: string[],
+    superAdmin?: boolean
+    placeIds?: string[]
 }
