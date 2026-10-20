@@ -12,7 +12,7 @@ type SysUsers struct {
 	Password     string               `bson:"password" json:"password"`
 	Email        string               `bson:"email" json:"email"`
 	AvatarBase64 string               `bson:"avatarBase64" json:"avatarBase64"`
-	DeptId       primitive.ObjectID   `bson:"DeptId,omitempty" json:"deptId"`
+	DeptIds      []primitive.ObjectID `bson:"deptIds,omitempty" json:"deptIds"`
 	Roles        []primitive.ObjectID `bson:"roles,omitempty" json:"roles"`
 	SuperAdmin   bool                 `bson:"superAdmin" json:"superAdmin"`
 	PlaceIds     []primitive.ObjectID `bson:"placeIds" json:"placeIds"`

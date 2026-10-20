@@ -80,7 +80,7 @@ export class UsersComponent {
         id: '',
         username: '',
         avatarBase64: '',
-        deptId: 0,
+        deptIds: [],
         email: '',
         roles: [],
     }
@@ -173,7 +173,7 @@ export class UsersComponent {
                 id: '',
                 username: '',
                 avatarBase64: '',
-                deptId: 0,
+                deptIds: [],
                 email: '',
                 roles: []
             }

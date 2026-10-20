@@ -192,10 +192,9 @@ func GetUserDetailByUsername(username string) (interface{}, error) {
 		roleLists, _ = findRoleListByUser(user.Roles)
 	}
 
-	var department models.Department
-	if user.DeptId != primitive.NilObjectID {
-		departmentResult, _ := GetOneDepartment(user.DeptId.Hex())
-		department, _ = departmentResult.(models.Department)
+	var department []models.Department
+	if user.DeptIds != nil {
+		department, _ = GetDepartmentsByIds(user.DeptIds)
 	}
 
 	var locationLists []models.Locations
@@ -216,12 +215,13 @@ func GetUserDetailByUsername(username string) (interface{}, error) {
 		"email":        user.Email,
 		"avatarBase64": user.AvatarBase64,
 		"roles":        user.Roles,
-		"deptId":       user.DeptId,
 		"roleLists":    roleLists,
-		"department":   department,
 		"loginRecords": loginRecords,
 		"superAdmin":   user.SuperAdmin,
+		"placeIds":     user.PlaceIds,
 		"locations":    locationLists,
+		"deptIds":      user.DeptIds,
+		"departments":  department,
 	}
 
 	return last, nil

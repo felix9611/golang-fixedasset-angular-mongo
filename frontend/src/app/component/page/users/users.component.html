@@ -141,11 +141,17 @@
                     <nz-form-item>
                         <nz-form-label [nzSpan]="6" nzFor="email">Department</nz-form-label>
                         <nz-form-control [nzSpan]="14">
-                            <nz-select name="deptId" [(ngModel)]="editForm.deptId" nzAllowClear  nzShowArrow nzPlaceHolder="Please select">
+                            <nz-select 
+                                name="deptIdS" 
+                                [(ngModel)]="editForm.deptIds"
+                                nzPlaceHolder="Please select"  
+                                nzMode="multiple"  
+                                nzAllowClear  nzShowArrow
+                                [nzShowArrow]="true">
                                 @for (option of deptLists; track option) {
                                   <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
                                 }
-                              </nz-select>
+                            </nz-select>
                         </nz-form-control>
                     </nz-form-item>
                     <nz-form-item>
