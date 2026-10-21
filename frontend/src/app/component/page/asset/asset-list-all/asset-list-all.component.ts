@@ -46,20 +46,6 @@ export class AssetListAllComponent {
                 this.searchForm.deptIds = data.deptIds
             }
         })
-        /*this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Asset List Report', 'asset-list-all')
-            this.userRightInside = {
-                read: answer?.read ?? false
-                 // keep default value
-            }
-        })
-        this.userStoreService.menuRole$.subscribe((data: any) => {
-            const answer = findMenuItem(data, 'Asset List Report', 'asset-list-all')
-                                                            
-            this.userRightInside = {
-                read: answer.read
-            }
-        }) */
     }
 
     ngOnDestroy() {
