@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
@@ -19,19 +20,32 @@ import (
 // @Success      200      {object}  dto.GeneralCreateResponseBody
 // @Router      /base/budget/create [post]
 func CreateBudgetRecord(c *gin.Context) {
-	var budgetDto models.Budgets
-	if err := c.ShouldBindJSON(&budgetDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.CreateBudgetRecord(&budgetDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var budgetDto models.Budgets
+		if err := c.ShouldBindJSON(&budgetDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		result, err := services.CreateBudgetRecord(&budgetDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Get one budget record by id
@@ -43,13 +57,26 @@ func CreateBudgetRecord(c *gin.Context) {
 // @Success      200      {object}  models.Budgets
 // @Router       /base/budget/one/{id} [get]
 func GetBudgetRecordById(c *gin.Context) {
-	id := c.Param("id")
-	result, err := services.GetOneBudgetRecord(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.GetOneBudgetRecord(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      List Budgets
@@ -61,17 +88,30 @@ func GetBudgetRecordById(c *gin.Context) {
 // @Success      200      {object}  dto.BudgetList
 // @Router       /sys/budget/list [post]
 func ListPageBudgetRecords(c *gin.Context) {
-	var budgetPageDto dto.ListBudgetRecordsDto
-	if err := c.ShouldBindJSON(&budgetPageDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	budgets, err := services.ListBudgetRecords(&budgetPageDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list budgets"})
-		return
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var budgetPageDto dto.ListBudgetRecordsDto
+		if err := c.ShouldBindJSON(&budgetPageDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		budgets, err := services.ListBudgetRecords(&budgetPageDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list budgets"})
+			return
+		}
+		c.JSON(http.StatusOK, budgets)
 	}
-	c.JSON(http.StatusOK, budgets)
 }
 
 // @Summary      List Budgets With Filter
@@ -83,17 +123,30 @@ func ListPageBudgetRecords(c *gin.Context) {
 // @Success      200      {object}  []models.Budgets
 // @Router       /sys/budget/filter/list [post]
 func ListPageBudgetRecordsWithFilter(c *gin.Context) {
-	var budgetPageDto dto.ListBudgetRecordsDto
-	if err := c.ShouldBindJSON(&budgetPageDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	budgets, err := services.ListBudgetRecordsFilter(&budgetPageDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list budgets"})
-		return
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var budgetPageDto dto.ListBudgetRecordsDto
+		if err := c.ShouldBindJSON(&budgetPageDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		budgets, err := services.ListBudgetRecordsFilter(&budgetPageDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list budgets"})
+			return
+		}
+		c.JSON(http.StatusOK, budgets)
 	}
-	c.JSON(http.StatusOK, budgets)
 }
 
 // @Summary      Get budget summary
@@ -121,18 +174,31 @@ func GetBudgetSummary(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
 // @Router      /base/budget/update [post]
 func UpdateBudgetRecord(c *gin.Context) {
-	var budgetDto models.Budgets
-	if err := c.ShouldBindJSON(&budgetDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.UpdateBudgetRecord(&budgetDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var budgetDto models.Budgets
+		if err := c.ShouldBindJSON(&budgetDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		result, err := services.UpdateBudgetRecord(&budgetDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, result)
 	}
-	c.JSON(http.StatusOK, result)
 }
 
 // @Summary      Delete one budget record by id
@@ -144,13 +210,26 @@ func UpdateBudgetRecord(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
 // @Router      /base/budget/void/{id} [delete]
 func InactiveBudgetRecord(c *gin.Context) {
-	id := c.Param("id")
-	result, err := services.VoidBudgetRecord(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Budget record inactivated successfully", "data": result})
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.VoidBudgetRecord(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Budget record inactivated successfully", "data": result})
+	}
 }
 
 func RegisterBudgetRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
