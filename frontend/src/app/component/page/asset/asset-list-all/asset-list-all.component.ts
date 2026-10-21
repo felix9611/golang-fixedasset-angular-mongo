@@ -34,11 +34,18 @@ import { Subscription } from 'rxjs'
     styleUrl: './asset-list-all.component.css',
 })
 export class AssetListAllComponent {
-   // private rightSubscription: Subscription
+    private userSubscription: Subscription
     constructor(
         private userStoreService: UserStoreService,
         private routeTo: Router
     ) {
+         this.userSubscription = this.userStoreService.user$.subscribe((data: any) => {
+            this.superAdmin = data.superAdmin
+            if (data.superAdmin !== true) {
+                this.searchForm.placeIds = data.placeIds
+                this.searchForm.deptIds = data.deptIds
+            }
+        })
         /*this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Asset List Report', 'asset-list-all')
             this.userRightInside = {
@@ -56,10 +63,12 @@ export class AssetListAllComponent {
     }
 
     ngOnDestroy() {
-    //    if (this.userStoreService.menuRole$) {
-     //       this.rightSubscription.unsubscribe()
-     //   }
+        if (this.userStoreService.user$) {
+           this.userSubscription.unsubscribe()
+        }
     }
+
+    superAdmin: boolean = false
 
     userRightInside: any = {
         read: true
@@ -85,24 +94,8 @@ export class AssetListAllComponent {
       //  this.loadLocationList()
     }
 
-    typeLists: any[] = []
-    async loadTypeList() {
-        this.typeLists = await getApiWithAuth('/asset/type/getAll')
-    }
-
-    deptLists: any[] = []
-    async loadDeptList() {
-        this.deptLists = await getApiWithAuth('/sys/department/getAll')
-    }
-
-    placeLists: any[] = []
-    async loadLocationList() {
-        this.placeLists = await getApiWithAuth('/base/location/getAll')
-    }
-
-
     async loadAssetListLists() {
-        this.dataLists = await getApiWithAuth('/asset/asset-list/list-all')
+        this.dataLists = await postApiWithAuth('/asset/asset-list/filter/list', this.searchForm)
     }
 
     handleRomeve(id: string) {
