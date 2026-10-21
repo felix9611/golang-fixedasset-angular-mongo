@@ -1,10 +1,11 @@
 package auth
 
 import (
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"time"		
-	"github.com/gin-gonic/gin"
 	"log"
+	"time"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -13,7 +14,6 @@ var (
 )
 
 func HandlerMiddleWare(authMiddleware *jwt.GinJWTMiddleware) gin.HandlerFunc {
-	// 確保中介軟體已初始化
 	if err := authMiddleware.MiddlewareInit(); err != nil {
 		log.Fatal("authMiddleware.MiddlewareInit() Error:" + err.Error())
 	}
@@ -24,13 +24,17 @@ func InitAuthParams() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{
 		Realm:       "test zone",
 		Key:         []byte("secret key"),
-		Timeout:     time.Hour * 24 * 3,
-		MaxRefresh:  time.Hour * 24 * 3,
+		Timeout:     time.Hour * 24 * 1,
+		MaxRefresh:  time.Hour * 24 * 1,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*AuthUser); ok {
 				return jwt.MapClaims{
-					identityKey: v.Username,
+					identityKey:  v.Username,
+					"roleIds":    v.RoleIds,
+					"placeIds":   v.PlaceIds,
+					"deptIds":    v.DeptIds,
+					"superAdmin": v.SuperAdmin,
 				}
 			}
 			return jwt.MapClaims{}
