@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
@@ -19,19 +20,33 @@ import (
 // @Success      200      {object}  dto.GeneralCreateResponseBody
 // @Router      /asset/type/create [post]
 func CreateAssetType(c *gin.Context) {
-	var assetType models.AssetTypes
-	if err := c.ShouldBindJSON(&assetType); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.CreateAssetType(&assetType)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var assetType models.AssetTypes
+		if err := c.ShouldBindJSON(&assetType); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		result, err := services.CreateAssetType(&assetType)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Get one Asset Type record by id
@@ -43,13 +58,27 @@ func CreateAssetType(c *gin.Context) {
 // @Success      200      {object}  models.AssetTypes
 // @Router       /asset/type/one/{id} [get]
 func GetAssetTypeById(c *gin.Context) {
-	id := c.Param("id")
-	result, err := services.GetOneAssetType(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.GetOneAssetType(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Void one Asset Type record by id
@@ -61,13 +90,27 @@ func GetAssetTypeById(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
 // @Router      /asset/type/void/{id} [delete]
 func InactiveAssetType(c *gin.Context) {
-	id := c.Param("id")
-	result, err := services.VoidOneAssetType(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Asset Type inactivated successfully", "data": result})
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.VoidOneAssetType(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Asset Type inactivated successfully", "data": result})
+	}
 }
 
 // @Summary      Update one Asset Type record
@@ -79,19 +122,33 @@ func InactiveAssetType(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router      /asset/type/update [post]
 func UpdateAssetType(c *gin.Context) {
-	var assetType models.AssetTypes
-	if err := c.ShouldBindJSON(&assetType); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.UpdateAssetType(&assetType)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var assetType models.AssetTypes
+		if err := c.ShouldBindJSON(&assetType); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		result, err := services.UpdateAssetType(&assetType)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Get one Asset Type records
@@ -102,12 +159,26 @@ func UpdateAssetType(c *gin.Context) {
 // @Success      200      {object}  []models.AssetTypes
 // @Router       /asset/type/all [get]
 func GetAssetTypes(c *gin.Context) {
-	assetTypes, err := services.ListAllAssetType()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get asset types"})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, assetTypes)
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		assetTypes, err := services.ListAllAssetType()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get asset types"})
+			return
+		}
+		c.JSON(http.StatusOK, assetTypes)
+	}
 }
 
 // @Summary      List Asset Types
@@ -119,18 +190,31 @@ func GetAssetTypes(c *gin.Context) {
 // @Success      200      {object}  dto.AssetTypeList
 // @Router       /asset/type/list [post]
 func ListPageAssetTypes(c *gin.Context) {
-	var assetTypePageDto dto.AssetTypeListDto
-	if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	assetTypes, err := services.ListAssetType(&assetTypePageDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
-		return
-	}
-	c.JSON(http.StatusOK, assetTypes)
 
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
+		return
+	}
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var assetTypePageDto dto.AssetTypeListDto
+		if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		assetTypes, err := services.ListAssetType(&assetTypePageDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
+			return
+		}
+		c.JSON(http.StatusOK, assetTypes)
+	}
 }
 
 // @Summary      List Asset Types
@@ -142,17 +226,32 @@ func ListPageAssetTypes(c *gin.Context) {
 // @Success      200      {object}  []models.AssetTypes
 // @Router       /asset/type/filter/list [post]
 func ListAssetTypes(c *gin.Context) {
-	var assetTypePageDto dto.AssetTypeListDto
-	if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	assetTypes, err := services.ListAssetTypeNoPaging(&assetTypePageDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
-		return
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var assetTypePageDto dto.AssetTypeListDto
+		if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		assetTypes, err := services.ListAssetTypeNoPaging(&assetTypePageDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
+			return
+		}
+		c.JSON(http.StatusOK, assetTypes)
 	}
-	c.JSON(http.StatusOK, assetTypes)
+
 }
 
 // @Summary      Batch upload Asset Type record
@@ -164,19 +263,33 @@ func ListAssetTypes(c *gin.Context) {
 // @Success      200      string  "Batch upload Asset Type record"
 // @Router       /asset/type/batch-create [post]
 func BatchUploadAssetTypes(c *gin.Context) {
-	var codeTypes []models.AssetTypes
-	if err := c.ShouldBindJSON(&codeTypes); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.BatchCreateAssetTypes(codeTypes)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var codeTypes []models.AssetTypes
+		if err := c.ShouldBindJSON(&codeTypes); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		result, err := services.BatchCreateAssetTypes(codeTypes)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 func RegisterAssetTypeRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {

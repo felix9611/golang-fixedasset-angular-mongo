@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/services"
 	"net/http"
@@ -18,19 +19,32 @@ import (
 // @Success      200      []models.WriteOff
 // @Router      /asset/write-off/create [post]
 func BatchCreateWriteOffRecord(c *gin.Context) {
-	var assetData []dto.WriteOffPureList
-	if err := c.ShouldBindJSON(&assetData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.BatchCreateWriteOff(assetData)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var assetData []dto.WriteOffPureList
+		if err := c.ShouldBindJSON(&assetData); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		result, err := services.BatchCreateWriteOff(assetData)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Create one Write Off record

@@ -39,12 +39,12 @@ import { DownloadExcelDataComponent } from '../../../components/download-excel-c
 })
 export class WriteOffListComponent {
     private rightSubscription: Subscription
+    private userRightSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService,
         private routeTo: Router
      ) {
-    
         this.rightSubscription = this.userStoreService.menuRole$.subscribe((data: any) => {
             const answer = findMenuItem(data, 'Write Off Record', 'write-off-list')
             this.userRightInside = {
@@ -58,11 +58,22 @@ export class WriteOffListComponent {
             this.excelFileSetting.code = answer?.excelFunctionCode ?? ''
             this.preLoadExcelSetting()
        })
+
+       this.userRightSubscription = this.userStoreService.user$.subscribe((data: any) => {
+            this.superAdmin = data.superAdmin
+            if (data.superAdmin !== true) {
+                this.placeLists = data.locations
+                this.searchForm.placeIds = data.placeIds
+            }
+        })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
             this.rightSubscription.unsubscribe()
+        }
+        if (this.userStoreService.user$) {
+            this.userRightSubscription.unsubscribe()
         }
     }
 
@@ -72,6 +83,8 @@ export class WriteOffListComponent {
         update: true,
         delete: true,
     }
+
+    superAdmin: boolean = false
 
     searchForm: any = {
         page: 1,
@@ -96,15 +109,26 @@ export class WriteOffListComponent {
     placeLists: any[] = []
     
     async loadLocationList() {
-        const res = await getApiWithAuth('/base/location/all')
-        this.placeLists = res.data
+        if (this.superAdmin === true) {
+            const res = await getApiWithAuth('/base/location/all')
+            this.placeLists = res.data
+        }
     }
 
     async loadWriteOffLists() {
-        const res = await postApiWithAuth('/asset/write-off/list', this.searchForm)
-        console.log(res.lists)
-        this.dataLists = res.lists
-        this.totals = res.total
+        if (this.superAdmin === true) {
+            const res = await postApiWithAuth('/asset/write-off/list', this.searchForm)
+            this.dataLists = res.lists
+            this.totals = res.total
+        } else {
+            if (this.searchForm.deptIds.length === 0) {
+                this.message.error('Please select least one department')
+            } else {
+                const res = await postApiWithAuth('/asset/write-off/list', this.searchForm)
+                this.dataLists = res.lists
+                this.totals = res.total
+            }
+        }
     }
 
     dateFormat(data: string) {

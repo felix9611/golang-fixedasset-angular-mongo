@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
 	"net/http"
+	"slices"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // @Summary      Create one stock take form
@@ -24,6 +27,28 @@ func CreateStockTakeApi(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
+		return
+	}
+
+	if !user.SuperAdmin {
+		placeID, err := primitive.ObjectIDFromHex(stockTake.ActionPlaceId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if !slices.Contains(user.PlaceIds, placeID) {
+			c.JSON(403, gin.H{
+				"error": "Location access denied",
+			})
+			return
+		}
+	}
+
 	data, err := services.CreateStockTakeForm(&stockTake)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
@@ -46,6 +71,28 @@ func UpdateStockTakeApi(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
+		return
+	}
+
+	if !user.SuperAdmin {
+		placeID, err := primitive.ObjectIDFromHex(stockTake.ActionPlaceId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if !slices.Contains(user.PlaceIds, placeID) {
+			c.JSON(403, gin.H{
+				"error": "Location access denied",
+			})
+			return
+		}
+	}
+
 	data, err := services.UpdateStockTakeForm(&stockTake)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Update failed"})
@@ -89,8 +136,39 @@ func GetStockTakeById(c *gin.Context) {
 	id := c.Param("id")
 	data, err := services.GetOneStockTakeFormByID(id)
 	if err != nil {
-		//c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get stock take form"})
-		c.JSON(http.StatusOK, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get stock take form"})
+		return
+	}
+
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
+		return
+	}
+
+	if !user.SuperAdmin {
+		stockTake, ok := data.(map[string]interface{})
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get stock take form"})
+			return
+		}
+		actionPlaceID, ok := stockTake["actionPlaceId"].(string)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get stock take form"})
+			return
+		}
+		placeID, err := primitive.ObjectIDFromHex(actionPlaceID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if !slices.Contains(user.PlaceIds, placeID) {
+			c.JSON(403, gin.H{
+				"error": "Location access denied",
+			})
+			return
+		}
 	}
 	c.JSON(http.StatusOK, data)
 }

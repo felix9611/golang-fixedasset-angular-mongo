@@ -36,3 +36,24 @@ func GetNestedString(item interface{}, parentKey, childKey string) string {
 	}
 	return ""
 }
+
+// claims array of strings
+func ClaimStrings(value interface{}) []primitive.ObjectID {
+	result := []primitive.ObjectID{}
+
+	values, ok := value.([]interface{})
+	if !ok {
+		return result
+	}
+
+	for _, v := range values {
+		if s, ok := v.(string); ok {
+			id, err := primitive.ObjectIDFromHex(s)
+			if err == nil {
+				result = append(result, id)
+			}
+		}
+	}
+
+	return result
+}
