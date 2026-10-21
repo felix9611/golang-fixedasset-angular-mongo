@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
@@ -88,14 +89,27 @@ func UpdateRepairRecord(c *gin.Context) {
 }
 
 func VoidRepairRecord(c *gin.Context) {
-	id := c.Param("id")
-	result, err := services.VoidRepairRecord(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.VoidRepairRecord(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Batch upload Repair Record record
