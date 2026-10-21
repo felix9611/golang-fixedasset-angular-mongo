@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"golang-fixedasset-mongo-backend/backend/tools"
 	"log"
 	"time"
 
@@ -41,9 +42,22 @@ func InitAuthParams() *jwt.GinJWTMiddleware {
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return &AuthUser{
-				Username: claims[identityKey].(string),
+			username, ok := claims[identityKey].(string)
+			if !ok {
+				return nil
 			}
+			user := &AuthUser{
+				Username: username,
+			}
+			if v, ok := claims["superAdmin"].(bool); ok {
+				user.SuperAdmin = v
+			}
+
+			user.RoleIds = tools.ClaimStrings(claims["roleIds"])
+			user.PlaceIds = tools.ClaimStrings(claims["placeIds"])
+			user.DeptIds = tools.ClaimStrings(claims["deptIds"])
+
+			return user
 		},
 		Authenticator: LoginAuthenticator(),
 		Authorizator:  Authorizator(),
