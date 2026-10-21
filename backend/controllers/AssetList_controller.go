@@ -277,13 +277,26 @@ func LoadFilesByAssetId(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router       /asset/asset-list/file-remove/{id} [delete]
 func RemoveAssetFile(c *gin.Context) {
-	id := c.Param("id")
-	res, err := services.DeleteAssetFile(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, res)
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		res, err := services.DeleteAssetFile(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, res)
+	}
 }
 
 // @Summary      Batch upload Asset item record
@@ -295,19 +308,32 @@ func RemoveAssetFile(c *gin.Context) {
 // @Success      200      string  "Batch upload Asset Type record"
 // @Router       /asset/asset-list/batch-create [post]
 func BatchUploadAssetList(c *gin.Context) {
-	var codeTypes []dto.AssetListsPureDetails
-	if err := c.ShouldBindJSON(&codeTypes); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.BatchCreateAssetItems(codeTypes)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var codeTypes []dto.AssetListsPureDetails
+		if err := c.ShouldBindJSON(&codeTypes); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		result, err := services.BatchCreateAssetItems(codeTypes)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 func RegisterAssetListRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
