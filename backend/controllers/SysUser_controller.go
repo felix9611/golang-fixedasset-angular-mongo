@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"golang-fixedasset-mongo-backend/backend/auth"
 	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
@@ -20,18 +21,31 @@ import (
 // @Success      200      {object}  dto.SysUserCreateResponseDto
 // @Router      /sys/user/create [post]
 func CreateSysUser(c *gin.Context) {
-	var user models.SysUsers
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	id, err := services.CreateSysUser(&user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
-		return
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var user models.SysUsers
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		id, err := services.CreateSysUser(&user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
+			return
+		}
+		c.JSON(http.StatusCreated, gin.H{"id": id})
 	}
-	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
 // @Summary      Update one Sys User
@@ -43,19 +57,32 @@ func CreateSysUser(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
 // @Router      /sys/user/update [post]
 func UpdateSysUserByID(c *gin.Context) {
-	var user models.SysUsers
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.UpdateSysUserByID(&user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var user models.SysUsers
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, gin.H{"result": result})
+		result, err := services.UpdateSysUserByID(&user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"result": result})
+	}
 }
 
 // @Summary      Get one Sys User record by id
@@ -67,13 +94,26 @@ func UpdateSysUserByID(c *gin.Context) {
 // @Success      200      {object}  models.SysUsers
 // @Router       /sys/user/one/{id} [get]
 func GetSysUsersById(c *gin.Context) {
-	id := c.Param("id")
-	user, err := services.GetOneSysUserById(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		user, err := services.GetOneSysUserById(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+			return
+		}
+		c.JSON(http.StatusOK, user)
+	}
 }
 
 // @Summary      Void one Sys User by id
@@ -85,14 +125,27 @@ func GetSysUsersById(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
 // @Router      /sys/user/{id} [delete]
 func InactiveUserByID(c *gin.Context) {
-	id := c.Param("id")
-	result, err := services.InactiveUserByID(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to inactive user"})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"result": result})
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.InactiveUserByID(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to inactive user"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"result": result})
+	}
 }
 
 // @Summary      List Sys Users
@@ -104,19 +157,32 @@ func InactiveUserByID(c *gin.Context) {
 // @Success      200      {object}  dto.SysUserList
 // @Router       /sys/user/list [post]
 func SysUserLists(c *gin.Context) {
-	var pageDto dto.SysUserPageDto
-	if err := c.ShouldBindJSON(&pageDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
 		return
 	}
 
-	result, err := services.SysUserList(&pageDto)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user list"})
-		return
-	}
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		var pageDto dto.SysUserPageDto
+		if err := c.ShouldBindJSON(&pageDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, gin.H{"data": result})
+		result, err := services.SysUserList(&pageDto)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user list"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": result})
+	}
 }
 
 // @Summary      Update one Sys User Avatar
