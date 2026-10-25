@@ -28,23 +28,29 @@ func CreateSysUser(c *gin.Context) {
 		return
 	}
 
-	if !user.SuperAdmin {
+	var newUser dto.CreateUserBody
+	if err := c.ShouldBindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if newUser.Key == "" {
 		c.JSON(403, gin.H{
-			"error": "Access denied",
+			"error": "You haven't right for create user!",
 		})
 	} else {
-		var user models.SysUsers
-		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		if !user.SuperAdmin {
+			c.JSON(403, gin.H{
+				"error": "Access denied",
+			})
+		} else {
+			id, err := services.CreateSysUser(&newUser.UserData)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
+				return
+			}
+			c.JSON(http.StatusCreated, gin.H{"id": id})
 		}
-
-		id, err := services.CreateSysUser(&user)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
-			return
-		}
-		c.JSON(http.StatusCreated, gin.H{"id": id})
 	}
 }
 
