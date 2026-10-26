@@ -159,26 +159,12 @@ func UpdateAssetType(c *gin.Context) {
 // @Success      200      {object}  []models.AssetTypes
 // @Router       /asset/type/all [get]
 func GetAssetTypes(c *gin.Context) {
-
-	value, _ := c.Get(identityKey)
-	user, ok := value.(*auth.AuthUser)
-	if !ok || user == nil {
-		c.JSON(401, gin.H{"error": "Invalid user"})
+	assetTypes, err := services.ListAllAssetType()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get asset types"})
 		return
 	}
-
-	if !user.SuperAdmin {
-		c.JSON(403, gin.H{
-			"error": "Access denied",
-		})
-	} else {
-		assetTypes, err := services.ListAllAssetType()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get asset types"})
-			return
-		}
-		c.JSON(http.StatusOK, assetTypes)
-	}
+	c.JSON(http.StatusOK, assetTypes)
 }
 
 // @Summary      List Asset Types
