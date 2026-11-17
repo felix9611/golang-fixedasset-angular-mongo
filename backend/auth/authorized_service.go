@@ -16,6 +16,7 @@ type AuthUser struct {
 	PlaceIds   []primitive.ObjectID `json:"placeIds"`
 	DeptIds    []primitive.ObjectID `json:"deptIds"`
 	SuperAdmin bool                 `json:"superAdmin"`
+	Manager    bool                 `json:"manager"`
 }
 
 func AuthPayloadFunc() func(data interface{}) jwt.MapClaims {
@@ -27,6 +28,7 @@ func AuthPayloadFunc() func(data interface{}) jwt.MapClaims {
 				"placeIds":   v.PlaceIds,
 				"deptIds":    v.DeptIds,
 				"superAdmin": v.SuperAdmin,
+				"manager":    v.Manager,
 			}
 		}
 		return jwt.MapClaims{}
@@ -38,7 +40,7 @@ func AuthIdentityHandler() func(c *gin.Context) interface{} {
 		claims := jwt.ExtractClaims(c)
 		username, ok := claims[identityKey].(string)
 		if !ok {
-			return nil // 導致 Unauthorized
+			return nil // Unauthorized
 		}
 		return &AuthUser{
 			Username: username,
@@ -86,6 +88,7 @@ func LoginAuthenticator() func(c *gin.Context) (interface{}, error) {
 				PlaceIds:   user.PlaceIds,
 				DeptIds:    user.DeptIds,
 				SuperAdmin: user.SuperAdmin,
+				Manager:    user.Manager,
 			}, nil
 		}
 	}

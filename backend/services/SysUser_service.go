@@ -223,6 +223,7 @@ func GetUserDetailByUsername(username string) (interface{}, error) {
 		"locations":    locationLists,
 		"deptIds":      user.DeptIds,
 		"departments":  department,
+		"manager":      user.Manager,
 	}
 
 	return last, nil
