@@ -201,18 +201,13 @@ func GetJobDashboardListQuery(req dto.ListJobDashboardRequestDto, status int, us
 		// Lookup SysUsers
 		bson.D{
 			{Key: "$lookup", Value: bson.M{
-				"from": "sysusers",
+				"from": "sys_users",
 
 				"let": bson.M{
 					"userIds": bson.M{
 						"$map": bson.M{
-							"input": bson.M{
-								"$ifNull": bson.A{
-									"$userIds",
-									bson.A{},
-								},
-							},
-							"as": "userId",
+							"input": "$userIds",
+							"as":    "userId",
 							"in": bson.M{
 								"$toObjectId": "$$userId",
 							},
