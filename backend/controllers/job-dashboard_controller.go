@@ -185,6 +185,37 @@ func UpdateJobDashboardStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Sync tasks
+// @Description  Sync tasks
+// @Tags         Job Board
+// @Accept       json
+// @Produce      json
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router      /tasks/sync [post]
+func SyncJobDashboard(c *gin.Context) {
+	value, _ := c.Get(identityKey)
+	data, err := json.Marshal(value)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user data"})
+		return
+	}
+
+	var user dto.AuthUser
+
+	if err := json.Unmarshal(data, &user); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user structure"})
+		return
+	}
+
+	result, err := services.SyncTasks(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterTaskBoardsRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	taskBoards := rg.Group("/tasks", handle.MiddlewareFunc())
 	{
@@ -194,5 +225,6 @@ func RegisterTaskBoardsRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware)
 		taskBoards.POST("/update", UpdateTaskById)
 		taskBoards.POST("/change-status", UpdateJobDashboardStatus)
 		taskBoards.DELETE("/void/:id", VoidTaskByID)
+		taskBoards.GET("/sync", SyncJobDashboard)
 	}
 }

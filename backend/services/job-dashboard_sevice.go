@@ -508,3 +508,72 @@ func VoidTaskById(id string) (interface{}, error) {
 		return result, nil
 	}
 }
+
+func SyncTasks(user *dto.AuthUser) (interface{}, error) {
+	collection := GetJobDashboardCollections()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"jobValid": true}
+
+	if !(user.SuperAdmin || user.Manager) {
+		filter["$or"] = bson.A{
+			bson.M{
+				"userIds": bson.M{
+					"$in": bson.A{user.ID},
+				},
+			},
+			bson.M{
+				"createdBy": user.Username,
+			},
+		}
+	}
+
+	pipeline := mongo.Pipeline{
+		// Match
+		bson.D{
+			{Key: "$match", Value: filter},
+		},
+
+		//project
+		bson.D{
+			{
+				Key: "$project",
+				Value: bson.M{
+					"_id":    1,
+					"title":  1,
+					"status": 1,
+					"name":   1,
+				},
+			},
+		},
+
+		//sort
+		bson.D{
+			{Key: "$sort", Value: bson.M{"sortOrder": 1}},
+		},
+
+		//limit
+		bson.D{
+			{Key: "$limit", Value: 10},
+		},
+	}
+
+	// --------------------------
+	// Execute Aggregation
+	// --------------------------
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	results := make([]bson.M, 0)
+
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
