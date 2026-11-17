@@ -16,7 +16,8 @@ import { TasksNoticeComponent } from '../../component/components/task-notice/tas
     RouterModule, 
     MatIconModule, 
     MatButtonModule,
-    TasksNoticeComponent],
+    TasksNoticeComponent
+],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
