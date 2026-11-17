@@ -37,6 +37,7 @@ func InitAuthParams() *jwt.GinJWTMiddleware {
 					"placeIds":   v.PlaceIds,
 					"deptIds":    v.DeptIds,
 					"superAdmin": v.SuperAdmin,
+					"manager":    v.Manager,
 				}
 			}
 			return jwt.MapClaims{}
