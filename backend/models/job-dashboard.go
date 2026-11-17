@@ -17,11 +17,12 @@ type JobDashboard struct {
 	Comments        []CommentList      `bson:"comments" json:"comments"`
 	CheckLists      []CheckList        `bson:"checkLists" json:"checkLists"`
 	UserIds         []string           `bson:"userIds" json:"userIds"`
-	JobRelationData JobRelationData    `bson:"jobRelation" json:"jobRelation"`
+	JobRelationData JobRelationData    `bson:"jobRelationData" json:"jobRelationData"`
 	JobValid        bool               `bson:"jobValid" json:"jobValid"`
 	SortOrder       int                `bson:"sortOrder" json:"sortOrder"`
 	Status          int                `bson:"status" json:"status"`
 	CreatedAt       string             `bson:"createdAt,omitempty" json:"createdAt"`
+	CreatedBy       string             `bson:"createdBy,omitempty" json:"createdBy"`
 	UpdatedAt       string             `bson:"updatedAt,omitempty" json:"updatedAt"`
 }
 
@@ -48,10 +49,10 @@ type AttachmentLists struct {
 }
 
 type JobRelationData struct {
-	AssetCode     string `bson:"AssetCode" json:"AssetCode"`
-	TypeCode      string `bson:"TypeCode" json:"TypeCode"`
-	DeptCode      string `bson:"DeptCode" json:"DeptCode"`
-	PlaceCode     string `bson:"PlaceCode" json:"PlaceCode"`
-	VendorCode    string `bson:"VendorCode" json:"VendorCode"`
-	StockTakeName string `bson:"StockTakeName" json:"StockTakeName"`
+	AssetCode     string `bson:"AssetCode" json:"assetCode"`
+	TypeCode      string `bson:"TypeCode" json:"typeCode"`
+	DeptCode      string `bson:"DeptCode" json:"deptCode"`
+	PlaceCode     string `bson:"PlaceCode" json:"placeCode"`
+	VendorCode    string `bson:"VendorCode" json:"vendorCode"`
+	StockTakeName string `bson:"StockTakeName" json:"stockTakeName"`
 }
