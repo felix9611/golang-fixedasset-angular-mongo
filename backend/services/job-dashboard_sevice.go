@@ -439,3 +439,40 @@ func UpdateTask(task *models.JobDashboard) (interface{}, error) {
 		return result, nil
 	}
 }
+
+func UpdateJobDashboardStatus(task *dto.UpdateJobDashboardStatusDto) (interface{}, error) {
+	collection := GetJobDashboardCollections()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": task.ID}
+
+	var existingTask models.JobDashboard
+	err := collection.FindOne(ctx, filter).Decode(&existingTask)
+	if err != nil {
+		return nil, err
+	}
+
+	if existingTask.Status == 0 {
+		CreateActionRecord("Job Dashboard Update", "POST", "Job Dashboard", task, "Failed")
+		return gin.H{"error": "This task is voided!"}, nil
+	} else {
+
+		finalData := bson.M{
+			"$set": bson.M{
+				"status":    task.Status,
+				"updatedAt": time.Now().Format("2006-01-02 15:04:05"),
+				"sortOrder": task.SortOrder,
+			},
+		}
+
+		result, err := collection.UpdateOne(ctx, filter, finalData)
+		if err != nil {
+			return nil, err
+		}
+
+		CreateActionRecord("Job Dashboard Update", "POST", "Job Dashboard", task, "Success")
+
+		return result, nil
+	}
+}
