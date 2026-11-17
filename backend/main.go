@@ -70,6 +70,7 @@ func main() {
 	controllers.RegisterRepairRecordRoutes(api, authServiceMiddleware)
 	controllers.RegisterExcelFieldMatchRoutes(api, authServiceMiddleware)
 	controllers.RegisterWriteOffsRoutes(api, authServiceMiddleware)
+	controllers.RegisterTaskBoardsRoutes(api, authServiceMiddleware)
 
 	router.Run(":6500")
 }
