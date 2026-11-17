@@ -142,6 +142,24 @@ func UpdateTaskById(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary      Delete task by id
+// @Description  Delete task by id
+// @Tags         Job Board
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Task ID"
+// @Success      200      {object}  dto.GeneralUpdateInactiveResponseBody
+// @Router       /tasks/void/{id} [delete]
+func VoidTaskByID(c *gin.Context) {
+	id := c.Param("id")
+	result, err := services.VoidTaskById(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to deactivate role"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Role deactivated successfully", "id": id, "data": result})
+}
+
 // @Summary      Moving one task
 // @Description  Moving one task
 // @Tags         Job Board
@@ -175,5 +193,6 @@ func RegisterTaskBoardsRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware)
 		taskBoards.GET("/get-one/:id", GetTaskById)
 		taskBoards.POST("/update", UpdateTaskById)
 		taskBoards.POST("/change-status", UpdateJobDashboardStatus)
+		taskBoards.DELETE("/void/:id", VoidTaskByID)
 	}
 }

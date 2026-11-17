@@ -202,7 +202,6 @@ func GetJobDashboardListQuery(req dto.ListJobDashboardRequestDto, status int, us
 		bson.D{
 			{Key: "$lookup", Value: bson.M{
 				"from": "sys_users",
-
 				"let": bson.M{
 					"userIds": bson.M{
 						"$map": bson.M{
@@ -467,6 +466,44 @@ func UpdateJobDashboardStatus(task *dto.UpdateJobDashboardStatusDto) (interface{
 		}
 
 		CreateActionRecord("Job Dashboard Update", "POST", "Job Dashboard", task, "Success")
+
+		return result, nil
+	}
+}
+
+func VoidTaskById(id string) (interface{}, error) {
+	collection := GetJobDashboardCollections()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID}
+
+	var task models.JobDashboard
+	err = collection.FindOne(ctx, filter).Decode(&task)
+
+	if err != nil {
+		return gin.H{"error": "Not Found"}, nil
+	}
+
+	if task.Status == 0 {
+		CreateActionRecord("Job Dashboard Void", "POST", "Job Dashboard", task, "Failed")
+		return gin.H{"error": "This task is voided!"}, nil
+	} else {
+		task.Status = 0
+		task.JobValid = false
+		task.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
+		result, err := collection.UpdateOne(ctx, filter, bson.M{"$set": task})
+		if err != nil {
+			return nil, err
+		}
+
+		CreateActionRecord("Job Dashboard Void", "POST", "Job Dashboard", task, "Success")
 
 		return result, nil
 	}
