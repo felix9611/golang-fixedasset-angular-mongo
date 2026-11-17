@@ -29,11 +29,10 @@ func BatchCreateLocation(locations []models.Locations) (interface{}, error) {
 
 func CreateLocation(location *models.Locations) (interface{}, error) {
 	collection := config.GetCollection("locations")
-
-	filter := bson.M{"status": 1, "vendorName": location.PlaceCode, "placeCode": location.PlaceName}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	filter := bson.M{"status": 1, "vendorName": location.PlaceCode, "placeCode": location.PlaceName}
 
 	count, err := collection.CountDocuments(ctx, filter)
 
