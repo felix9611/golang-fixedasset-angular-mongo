@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"encoding/json"
 	"golang-fixedasset-mongo-backend/backend/auth"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
 	"golang-fixedasset-mongo-backend/backend/services"
 	"net/http"
@@ -37,6 +39,7 @@ func CreateJobBoard(c *gin.Context) {
 			"error": "You do not allow to create this task on this status",
 		})
 	} else {
+		task.CreatedBy = user.Username
 		id, err := services.CreateTasks(&task)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Create failed"})
@@ -46,9 +49,79 @@ func CreateJobBoard(c *gin.Context) {
 	}
 }
 
+// @Summary      List all job task
+// @Description  List all job task
+// @Tags         Task Board
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.ListJobDashboardRequestDto  true  "Job Dashboard Request Body"
+// @Success      200      {object}  models.JobDashboard
+// @Router      /tasks/list [post]
+func ListJobBoard(c *gin.Context) {
+	value, _ := c.Get(identityKey)
+	data, err := json.Marshal(value)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user data"})
+		return
+	}
+
+	var user dto.AuthUser
+
+	if err := json.Unmarshal(data, &user); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user structure"})
+		return
+	}
+
+	var task dto.ListJobDashboardRequestDto
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.ListJobDashboard(task, user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Load failed"})
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+// @Summary      Get one task by id
+// @Description  Get one task by id
+// @Tags         Task Board
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Task ID"
+// @Success      200      {object}  models.JobDashboard
+// @Router       /tasksget-one/{id} [get]
+func GetTaskById(c *gin.Context) {
+	value, _ := c.Get(identityKey)
+	user, ok := value.(*auth.AuthUser)
+	if !ok || user == nil {
+		c.JSON(401, gin.H{"error": "Invalid user"})
+		return
+	}
+
+	if !user.SuperAdmin {
+		c.JSON(403, gin.H{
+			"error": "Access denied",
+		})
+	} else {
+		id := c.Param("id")
+		result, err := services.GetTaskById(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, result)
+	}
+}
+
 func RegisterTaskBoardsRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	taskBoards := rg.Group("/tasks", handle.MiddlewareFunc())
 	{
 		taskBoards.POST("/create", CreateJobBoard)
+		taskBoards.POST("/list", ListJobBoard)
+		taskBoards.GET("/get-one/:id", GetTaskById)
 	}
 }

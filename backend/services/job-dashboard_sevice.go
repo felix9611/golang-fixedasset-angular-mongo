@@ -3,11 +3,14 @@ package services
 import (
 	"context"
 	"golang-fixedasset-mongo-backend/backend/config"
+	"golang-fixedasset-mongo-backend/backend/dto"
 	"golang-fixedasset-mongo-backend/backend/models"
+	"regexp"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -106,4 +109,304 @@ func CreateJobNumber() (string, error) {
 
 	// format
 	return formatNumber(maxNumber, 8), nil
+}
+
+func ListJobDashboard(req dto.ListJobDashboardRequestDto, user dto.AuthUser) (gin.H, error) {
+
+	userFilter := bson.M{}
+
+	// Only restrict normal users
+	if !user.SuperAdmin && !user.Manager {
+		userFilter = bson.M{
+			"$or": bson.A{
+				bson.M{
+					"userIds": bson.M{
+						"$in": bson.A{user.ID},
+					},
+				},
+				bson.M{
+					"createdBy": user.Username,
+				},
+			},
+			"jobValid": true,
+		}
+	}
+
+	// Kanban statuses
+	statuses := []struct {
+		Key    string
+		Status int
+	}{
+		{"toDoList", 1},
+		{"inProgressList", 2},
+		{"pendingReviewList", 3},
+		{"inReviewList", 4},
+		{"completedList", 5},
+	}
+
+	result := gin.H{}
+
+	for _, item := range statuses {
+
+		jobs, err := GetJobDashboardListQuery(
+			req,
+			item.Status,
+			userFilter,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		result[item.Key] = jobs
+	}
+
+	return result, nil
+}
+
+func GetJobDashboardListQuery(req dto.ListJobDashboardRequestDto, status int, userFilter bson.M) ([]bson.M, error) {
+	collection := GetJobDashboardCollections()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	// --------------------------
+	// 1. Match Query
+	// --------------------------
+
+	allQuery := bson.M{
+		"status": status,
+	}
+
+	if req.Name != "" {
+		allQuery["title"] = bson.M{
+			"$regex":   regexp.QuoteMeta(req.Name),
+			"$options": "i",
+		}
+	}
+
+	for key, value := range userFilter {
+		allQuery[key] = value
+	}
+
+	// --------------------------
+	// 2. Aggregation Pipeline
+	// --------------------------
+
+	pipeline := mongo.Pipeline{
+
+		// Match
+		bson.D{
+			{Key: "$match", Value: allQuery},
+		},
+
+		// Lookup SysUsers
+		bson.D{
+			{Key: "$lookup", Value: bson.M{
+				"from": "sysusers",
+
+				"let": bson.M{
+					"userIds": bson.M{
+						"$map": bson.M{
+							"input": bson.M{
+								"$ifNull": bson.A{
+									"$userIds",
+									bson.A{},
+								},
+							},
+							"as": "userId",
+							"in": bson.M{
+								"$toObjectId": "$$userId",
+							},
+						},
+					},
+				},
+
+				"pipeline": bson.A{
+					bson.M{
+						"$match": bson.M{
+							"$expr": bson.M{
+								"$in": bson.A{
+									"$_id",
+									"$$userIds",
+								},
+							},
+						},
+					},
+					bson.M{
+						"$project": bson.M{
+							"_id":          0,
+							"username":     1,
+							"avatarBase64": 1,
+						},
+					},
+				},
+
+				"as": "users",
+			}},
+		},
+
+		// Sort
+		bson.D{
+			{Key: "$sort", Value: bson.D{
+				{Key: "sortOrder", Value: 1},
+			}},
+		},
+
+		// Project
+		bson.D{
+			{Key: "$project", Value: bson.M{
+
+				"_id": 1,
+
+				// Comments Count
+				"commentsCount": bson.M{
+					"$size": bson.M{
+						"$filter": bson.M{
+							"input": bson.M{
+								"$ifNull": bson.A{
+									"$comments",
+									bson.A{},
+								},
+							},
+							"as": "comment",
+							"cond": bson.M{
+								"$eq": bson.A{
+									"$$comment.status",
+									1,
+								},
+							},
+						},
+					},
+				},
+
+				// Attachments Count
+				"attachmentsCount": bson.M{
+					"$size": bson.M{
+						"$filter": bson.M{
+							"input": bson.M{
+								"$ifNull": bson.A{
+									"$attachments",
+									bson.A{},
+								},
+							},
+							"as": "attachment",
+							"cond": bson.M{
+								"$eq": bson.A{
+									"$$attachment.status",
+									1,
+								},
+							},
+						},
+					},
+				},
+
+				// Finished Checklists Count
+				"checklistsFinishedCount": bson.M{
+					"$size": bson.M{
+						"$filter": bson.M{
+							"input": bson.M{
+								"$ifNull": bson.A{
+									"$checkLists",
+									bson.A{},
+								},
+							},
+							"as": "checkList",
+							"cond": bson.M{
+								"$and": bson.A{
+									bson.M{
+										"$eq": bson.A{
+											"$$checkList.status",
+											1,
+										},
+									},
+									bson.M{
+										"$eq": bson.A{
+											"$$checkList.checked",
+											true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+
+				// Active Checklists Count
+				"checklistsCount": bson.M{
+					"$size": bson.M{
+						"$filter": bson.M{
+							"input": bson.M{
+								"$ifNull": bson.A{
+									"$checkLists",
+									bson.A{},
+								},
+							},
+							"as": "checkList",
+							"cond": bson.M{
+								"$eq": bson.A{
+									"$$checkList.status",
+									1,
+								},
+							},
+						},
+					},
+				},
+
+				// Job Fields
+				"title":       1,
+				"number":      1,
+				"description": 1,
+				"category":    1,
+				"tags":        1,
+				"labels":      1,
+				"jobEndDate":  1,
+				"createdAt":   1,
+				"jobValid":    1,
+				"status":      1,
+				"sortOrder":   1,
+				"userIds":     1,
+				"users":       1,
+			}},
+		},
+	}
+
+	// --------------------------
+	// 3. Execute Aggregation
+	// --------------------------
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	results := make([]bson.M, 0)
+
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func GetTaskById(id string) (interface{}, error) {
+	collection := GetJobDashboardCollections()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID}
+
+	var task models.JobDashboard
+	err = collection.FindOne(ctx, filter).Decode(&task)
+
+	if err != nil {
+		return gin.H{"error": "Not Found"}, nil
+	}
+
+	return &task, nil
 }
