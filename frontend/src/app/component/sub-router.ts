@@ -24,6 +24,7 @@ import { DashboardComponent } from './page/dashboard/dashboard.component'
 import { MenuListComponent } from './page/menu/menu.component'
 import { ExcelFieldMatchComponent } from './page/excel-field-match/excel-field-match.component'
 import { AccessGuard } from '../../state/AccessGuard'
+import { JobBoardsComponent } from './page/job-boards/job-boards.component'
 
 export const pagesRoutes: Routes = [
     {
@@ -145,5 +146,10 @@ export const pagesRoutes: Routes = [
         path: 'vendor',
         component: VendorComponent,
         canActivate: [AuthGuard]
+    },
+    {
+        path: 'tasks',
+        component: JobBoardsComponent,
+        canActivate: [AccessGuard]
     }
 ]
