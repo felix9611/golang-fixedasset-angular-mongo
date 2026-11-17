@@ -15,6 +15,7 @@ type SysUsers struct {
 	DeptIds      []primitive.ObjectID `bson:"deptIds,omitempty" json:"deptIds"`
 	Roles        []primitive.ObjectID `bson:"roles,omitempty" json:"roles"`
 	SuperAdmin   bool                 `bson:"superAdmin" json:"superAdmin"`
+	Manager      bool                 `bson:"manager" json:"manager"`
 	PlaceIds     []primitive.ObjectID `bson:"placeIds" json:"placeIds"`
 	Status       int                  `bson:"status" json:"status"`
 	CreatedAt    time.Time            `bson:"createdAt,omitempty" json:"createdAt"`
