@@ -26,9 +26,10 @@ export class UserStoreService {
         roleLists: [],
         email: '', 
         loginRecords: [],
+        manager: false,
         superAdmin: false,
         placeIds: [],
-        locations: []
+        locations: [],
     }
     private userMenu: any[] = []
     private userMenuRole: any[] = []
