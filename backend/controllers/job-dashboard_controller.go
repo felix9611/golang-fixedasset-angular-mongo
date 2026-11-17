@@ -117,11 +117,37 @@ func GetTaskById(c *gin.Context) {
 	}
 }
 
+// @Summary      Update one task
+// @Description  Update one task
+// @Tags         Job Board
+// @Accept       json
+// @Produce      json
+// @Param        request  body      models.JobDashboard  true  "Location Request Body for update"
+// @Success      200      {object}  dto.GeneralUpdateResponse
+// @Router      /tasks/update [post]
+func UpdateTaskById(c *gin.Context) {
+
+	var task models.JobDashboard
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := services.UpdateTask(&task)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func RegisterTaskBoardsRoutes(rg *gin.RouterGroup, handle *jwt.GinJWTMiddleware) {
 	taskBoards := rg.Group("/tasks", handle.MiddlewareFunc())
 	{
 		taskBoards.POST("/create", CreateJobBoard)
 		taskBoards.POST("/list", ListJobBoard)
 		taskBoards.GET("/get-one/:id", GetTaskById)
+		taskBoards.POST("/update", UpdateTaskById)
 	}
 }
