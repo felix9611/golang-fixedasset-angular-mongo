@@ -17,6 +17,7 @@ type AuthUser struct {
 	DeptIds    []primitive.ObjectID `json:"deptIds"`
 	SuperAdmin bool                 `json:"superAdmin"`
 	Manager    bool                 `json:"manager"`
+	ID         primitive.ObjectID   `json:"id"`
 }
 
 func AuthPayloadFunc() func(data interface{}) jwt.MapClaims {
@@ -29,6 +30,7 @@ func AuthPayloadFunc() func(data interface{}) jwt.MapClaims {
 				"deptIds":    v.DeptIds,
 				"superAdmin": v.SuperAdmin,
 				"manager":    v.Manager,
+				"id":         v.ID,
 			}
 		}
 		return jwt.MapClaims{}
@@ -89,6 +91,7 @@ func LoginAuthenticator() func(c *gin.Context) (interface{}, error) {
 				DeptIds:    user.DeptIds,
 				SuperAdmin: user.SuperAdmin,
 				Manager:    user.Manager,
+				ID:         user.ID,
 			}, nil
 		}
 	}
