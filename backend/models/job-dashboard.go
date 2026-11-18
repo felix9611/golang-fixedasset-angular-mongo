@@ -44,7 +44,7 @@ type AttachmentLists struct {
 	FileName  string `bson:"fileName" json:"fileName"`
 	FileType  string `bson:"fileType" json:"fileType"`
 	Base64    string `bson:"base64" json:"base64"`
-	UpdatedAt bool   `bson:"updatedAt" json:"updatedAt"`
+	UpdatedAt string `bson:"updatedAt" json:"updatedAt"`
 	Status    int    `bson:"status" json:"status"`
 }
 
