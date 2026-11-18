@@ -11,6 +11,7 @@ export interface UserInfo {
     roleLists?: any[]
     loginRecords?: any[],
     superAdmin?: boolean
+    manager?: boolean
     placeIds?: string[],
     locations?: any[]
 }

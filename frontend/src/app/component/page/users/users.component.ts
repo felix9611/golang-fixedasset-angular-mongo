@@ -40,6 +40,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox'
 })
 export class UsersComponent {
     private rightSubscription: Subscription
+    private userSubscription: Subscription
     constructor(
         private message: NzMessageService,
         private userStoreService: UserStoreService
@@ -55,13 +56,22 @@ export class UsersComponent {
                  // keep default value
             }
         })
+
+        this.userSubscription = this.userStoreService.user$.subscribe((data: any) => {
+            this.superAdmin = data.superAdmin
+        })
     }
 
     ngOnDestroy() {
         if (this.userStoreService.menuRole$) {
            this.rightSubscription.unsubscribe()
         }
+        if (this.userStoreService.user$) {
+            this.userSubscription.unsubscribe()
+        }
     }
+
+    superAdmin: boolean = false
 
     userRightInside: any = {
         read: true,
@@ -69,7 +79,6 @@ export class UsersComponent {
         update: true,
         delete: true
     }
-
 
     searchForm: any = {
         page: 1,
