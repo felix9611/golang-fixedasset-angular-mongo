@@ -91,7 +91,7 @@ func LoginAuthenticator() func(c *gin.Context) (interface{}, error) {
 				DeptIds:    user.DeptIds,
 				SuperAdmin: user.SuperAdmin,
 				Manager:    user.Manager,
-				ID:         user.ID,
+				ID:         *user.ID,
 			}, nil
 		}
 	}

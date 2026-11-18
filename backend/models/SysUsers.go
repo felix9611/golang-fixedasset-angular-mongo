@@ -7,7 +7,7 @@ import (
 )
 
 type SysUsers struct {
-	ID           primitive.ObjectID   `bson:"_id,omitempty"  json:"id"`
+	ID           *primitive.ObjectID  `bson:"_id"  json:"id"`
 	Username     string               `bson:"username" json:"username"`
 	Password     string               `bson:"password" json:"password"`
 	Email        string               `bson:"email" json:"email"`

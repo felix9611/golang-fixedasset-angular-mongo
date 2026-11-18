@@ -95,26 +95,13 @@ func ListJobBoard(c *gin.Context) {
 // @Success      200      {object}  models.JobDashboard
 // @Router       /tasksget-one/{id} [get]
 func GetTaskById(c *gin.Context) {
-	value, _ := c.Get(identityKey)
-	user, ok := value.(*auth.AuthUser)
-	if !ok || user == nil {
-		c.JSON(401, gin.H{"error": "Invalid user"})
+	id := c.Param("id")
+	result, err := services.GetTaskById(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	if !user.SuperAdmin {
-		c.JSON(403, gin.H{
-			"error": "Access denied",
-		})
-	} else {
-		id := c.Param("id")
-		result, err := services.GetTaskById(id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, result)
-	}
+	c.JSON(http.StatusOK, result)
 }
 
 // @Summary      Update one task
@@ -126,6 +113,19 @@ func GetTaskById(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router      /tasks/update [post]
 func UpdateTaskById(c *gin.Context) {
+	value, _ := c.Get(identityKey)
+	data, err := json.Marshal(value)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user data"})
+		return
+	}
+
+	var user dto.AuthUser
+
+	if err := json.Unmarshal(data, &user); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user structure"})
+		return
+	}
 
 	var task models.JobDashboard
 	if err := c.ShouldBindJSON(&task); err != nil {
@@ -133,13 +133,19 @@ func UpdateTaskById(c *gin.Context) {
 		return
 	}
 
-	result, err := services.UpdateTask(&task)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !(user.SuperAdmin || user.Manager) && task.Status >= 3 {
+		c.JSON(403, gin.H{
+			"error": "You do not allow to update this task on this status",
+		})
+	} else {
+		result, err := services.UpdateTask(&task)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Delete task by id
@@ -169,6 +175,19 @@ func VoidTaskByID(c *gin.Context) {
 // @Success      200      {object}  dto.GeneralUpdateResponse
 // @Router      /tasks/change-status [post]
 func UpdateJobDashboardStatus(c *gin.Context) {
+	value, _ := c.Get(identityKey)
+	data, err := json.Marshal(value)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user data"})
+		return
+	}
+
+	var user dto.AuthUser
+
+	if err := json.Unmarshal(data, &user); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user structure"})
+		return
+	}
 
 	var task *dto.UpdateJobDashboardStatusDto
 	if err := c.ShouldBindJSON(&task); err != nil {
@@ -176,13 +195,19 @@ func UpdateJobDashboardStatus(c *gin.Context) {
 		return
 	}
 
-	result, err := services.UpdateJobDashboardStatus(task)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if !(user.SuperAdmin || user.Manager) && task.Status > 3 {
+		c.JSON(403, gin.H{
+			"error": "You do not allow to update this task on this status",
+		})
+	} else {
+		result, err := services.UpdateJobDashboardStatus(task)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-	c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 // @Summary      Sync tasks
