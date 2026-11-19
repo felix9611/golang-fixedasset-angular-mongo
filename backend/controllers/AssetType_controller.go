@@ -212,31 +212,17 @@ func ListPageAssetTypes(c *gin.Context) {
 // @Success      200      {object}  []models.AssetTypes
 // @Router       /asset/type/filter/list [post]
 func ListAssetTypes(c *gin.Context) {
-
-	value, _ := c.Get(identityKey)
-	user, ok := value.(*auth.AuthUser)
-	if !ok || user == nil {
-		c.JSON(401, gin.H{"error": "Invalid user"})
+	var assetTypePageDto dto.AssetTypeListDto
+	if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if !user.SuperAdmin {
-		c.JSON(403, gin.H{
-			"error": "Access denied",
-		})
-	} else {
-		var assetTypePageDto dto.AssetTypeListDto
-		if err := c.ShouldBindJSON(&assetTypePageDto); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		assetTypes, err := services.ListAssetTypeNoPaging(&assetTypePageDto)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
-			return
-		}
-		c.JSON(http.StatusOK, assetTypes)
+	assetTypes, err := services.ListAssetTypeNoPaging(&assetTypePageDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list asset types"})
+		return
 	}
+	c.JSON(http.StatusOK, assetTypes)
 
 }
 
