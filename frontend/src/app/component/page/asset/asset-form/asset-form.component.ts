@@ -25,6 +25,7 @@ import { uploadImgToBase64 } from '../../../../../tool/imageUpload'
 import { FileViewComponent } from '../../../components/file-view-dialog/file-view-dialog.component'
 import { findMenuItem } from '../../../tool-function'
 import { UserStoreService } from '../../../../../state/user.service'
+import { FilterListApiSmall, ListOption } from '../../../components/filter-list-small/filter-list.component'
 // import { UploadComponentComponent } from '../../../components/upload-component/upload-component.component'
 
 @Component({
@@ -49,7 +50,8 @@ import { UserStoreService } from '../../../../../state/user.service'
         NzButtonModule, 
         NzIconModule,
         NzModalModule,
-        FileViewComponent
+        FileViewComponent,
+        FilterListApiSmall,
     ],
     templateUrl: './asset-form.component.html',
     styleUrl: './asset-form.component.css',
@@ -170,6 +172,45 @@ export class AssetFormComponent implements OnInit {
         this.loadVendorList()
         this.loadTaxInfoList()
     }
+
+    /* new filter field */
+    deptTotal: number = 0
+    depts: any = []
+    deptOptions: ListOption[] = [];
+    deptSearchForm: any = {
+        deptCode: '',
+        deptName: '',
+        page: 1,
+        limit: 10
+    }
+    loadDeptLists = async (
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<ListOption[]> => {
+        const payload = {
+          ...this.deptSearchForm,
+          ...body,
+        }
+    
+        try {
+          const res = await postApiWithAuth(url, payload);
+    
+          this.depts = res.data.lists ?? [];
+          this.deptTotal = res.data.total ?? 0;
+    
+          this.deptOptions = this.depts.map((a: any) => ({
+            value: a.id,
+            label: `${a.deptName}`,
+          }));
+    
+          return this.deptOptions;
+        } catch (error) {
+          this.message.error('API request failed');
+          throw error;
+        }
+    }
+
+
 
     beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]): Observable<boolean> =>
         new Observable((observer: Observer<boolean>) => {
