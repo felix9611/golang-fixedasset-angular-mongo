@@ -6,15 +6,19 @@
             </div>
             <div class="text-center text-[2rem] font-bold">
                 Stock Detail Form (
-                <span *ngIf="editForm.status === 2">
-                    Finish
-                </span>
-                <span *ngIf="editForm.status === 1">
-                    Active
-                </span>
-                <span *ngIf="editForm.status === 0">
-                    Cancel
-                </span>)
+                @if (editForm.status === 2) {
+                    <span>
+                        Finish
+                    </span>
+                } @else if (editForm.status === 1) {
+                    <span>
+                        Active
+                    </span>
+                } @else if (editForm.status === 0) {
+                    <span>
+                        Cancel
+                    </span>
+                })
             </div>
         </div>
         <form nz-form class="grid lg:grid-cols-4 p-2 gap-2">
@@ -36,6 +40,7 @@
                         [searchDataKey]="['placeCode', 'placeName']"
                         [(singleValue)]="editForm.actionPlaceId"
                         (singleValueChange)="editForm.actionPlaceId"
+                        [disabled]="editForm.status !== 1"
                     />
                 </nz-form-control>
             </nz-form-item>
