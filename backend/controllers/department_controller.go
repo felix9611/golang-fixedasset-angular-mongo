@@ -232,17 +232,25 @@ func ListPageDepartmentWithFilter(c *gin.Context) {
 		return
 	}
 
-	if !user.SuperAdmin {
-		c.JSON(403, gin.H{
-			"error": "Access denied",
-		})
+	if !(user.SuperAdmin || user.Manager) {
+		var deptPageDto dto.DepartmentPageDto
+		if err := c.ShouldBindJSON(&deptPageDto); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		departments, err := services.DepartmentListWithFilters(&deptPageDto, user.DeptIds)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list departments"})
+			return
+		}
+		c.JSON(http.StatusOK, departments)
 	} else {
 		var deptPageDto dto.DepartmentPageDto
 		if err := c.ShouldBindJSON(&deptPageDto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		departments, err := services.DepartmentListWithFilters(&deptPageDto)
+		departments, err := services.DepartmentListWithFilters(&deptPageDto, nil)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list departments"})
 			return

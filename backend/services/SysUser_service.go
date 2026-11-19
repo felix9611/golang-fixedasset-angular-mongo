@@ -261,6 +261,10 @@ func UpdateUserPassword(Username string, NewPassword string) (interface{}, error
 }
 
 func SysUserList(pageDto *dto.SysUserPageDto) (interface{}, error) {
+	collection := config.GetCollection("sys_users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.M{"status": 1}
 
 	if pageDto.Page < 1 {
 		pageDto.Page = 1
@@ -270,11 +274,17 @@ func SysUserList(pageDto *dto.SysUserPageDto) (interface{}, error) {
 		pageDto.Limit = 10
 	}
 
-	collection := config.GetCollection("sys_users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	if len(pageDto.DeptIds) > 0 {
+		filter["deptIds"] = bson.M{"$in": pageDto.DeptIds}
+	}
 
-	filter := bson.M{"status": 1}
+	if len(pageDto.PlaceIds) > 0 {
+		filter["placeIds"] = bson.M{"$in": pageDto.PlaceIds}
+	}
+
+	if len(pageDto.RoleIds) > 0 {
+		filter["roles"] = bson.M{"$in": pageDto.RoleIds}
+	}
 
 	count, errCount := collection.CountDocuments(ctx, filter)
 

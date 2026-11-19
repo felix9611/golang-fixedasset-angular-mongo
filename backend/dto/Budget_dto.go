@@ -10,8 +10,8 @@ import (
 type ListBudgetRecordsDto struct {
 	Name    string      `json:"name"`
 	Page    int64       `json:"page"`
-	DeptID  []string    `json:"deptId"`
-	PlaceId []string    `json:"placeId"`
+	DeptID  []string    `json:"deptIds"`
+	PlaceId []string    `json:"placeIds"`
 	Date    []time.Time `json:"date"`
 	Limit   int64       `json:"limit"`
 }

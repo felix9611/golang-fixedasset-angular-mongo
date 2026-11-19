@@ -18,6 +18,7 @@ import { StockTakeForm } from './interface'
 import { findMenuItem } from '../../../tool-function'
 import { UserStoreService } from '../../../../../state/user.service'
 import { Subscription } from 'rxjs'
+import { FilterListApiSmall, ListOption } from '../../../components/filter-list-small/filter-list.component'
 
 @Component({
     standalone: true,
@@ -32,7 +33,8 @@ import { Subscription } from 'rxjs'
         NzTableModule, 
         NzInputModule, 
         NzPaginationModule, 
-        FormsModule
+        FormsModule,
+        FilterListApiSmall
     ],
     templateUrl: './stock-take-list.component.html',
     styleUrl: './stock-take-list.component.css',
@@ -60,7 +62,6 @@ export class StockTakeListComponent implements OnInit {
             this.superAdmin = data.superAdmin
             if (data.superAdmin !== true) {
                 this.searchForm.placeIds = data.placeIds
-                this.placeLists = data.locations
             }
         })
     }
@@ -102,7 +103,8 @@ export class StockTakeListComponent implements OnInit {
 
     searchForm: any = {
         page: 1,
-        limit: 10
+        limit: 10,
+        placeIds: []
     }
     formDialog: boolean = false
 
@@ -115,19 +117,9 @@ export class StockTakeListComponent implements OnInit {
     }
 
     async loadStockTakeLists() {
-        if (this.superAdmin === true) {
-            const res = await postApiWithAuth('/asset/stock-take/list', this.searchForm)
-            this.dataLists = res.lists
-            this.totals = res.total
-        } else {
-            if (this.searchForm.placeIds.length === 0) {
-                this.message.error('Please select least one location')
-            } else {
-                const res = await postApiWithAuth('/asset/stock-take/list', this.searchForm)
-                this.dataLists = res.lists
-                this.totals = res.total
-            }
-        }
+        const res = await postApiWithAuth('/asset/stock-take/list', this.searchForm)
+        this.dataLists = res.lists
+        this.totals = res.total
     }
 
     placeLists: any[] = []
@@ -202,6 +194,42 @@ export class StockTakeListComponent implements OnInit {
             this.closeFinishDialog()
         } else {
             this.message.error(res.error)
+        }
+    }
+    // Location data
+    placeTotal: number = 0
+    places: any = []
+    placeOptions: ListOption[] = [];
+    placeSearchForm: any = {
+        placeCode: '',
+        placeName: '',
+        page: 1,
+        limit: 10
+    }
+    loadPlaceLists = async (
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<ListOption[]> => {
+        const payload = {
+            ...this.placeSearchForm,
+            ...body,
+        }
+        
+        try {
+            const res = await postApiWithAuth(url, payload);
+            
+            this.places = res ?? [];
+            this.placeTotal = res.length ?? 0;
+            
+            this.placeOptions = this.places.map((a: any) => ({
+                value: a.id,
+                label: `${a.placeCode}`,
+            }))
+        
+            return this.placeOptions
+        } catch (error) {
+            this.message.error('API request failed')
+            throw error
         }
     }
 }

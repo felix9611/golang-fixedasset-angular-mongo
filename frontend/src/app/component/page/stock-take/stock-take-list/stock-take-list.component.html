@@ -5,17 +5,17 @@
                 <input class="h-full" nz-input type="text" id="name" name="name" placeholder="Input Name" [(ngModel)]="searchForm.name" />
             </div>
             <div class="w-[150px] h-full">
-                <nz-select
-                    nzSize="large"
-                    class="w-full h-full" 
-                    name="placeId" 
-                    [(ngModel)]="searchForm.placeIds"  
-                    nzMode="multiple" nzAllowClear nzShowArrow
-                     nzPlaceHolder="Location">
-                    @for (option of placeLists; track option) {
-                      <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
-                    }
-                </nz-select>
+                <app-filter-list-small
+                    class="lg:w-[500px]"
+                    label="Location"
+                    [apiUrl]="'/base/location/filter/list'"
+                    [requestBody]="placeSearchForm"
+                    [postApi]="loadPlaceLists"
+                    [multiple]="true"
+                    [searchDataKey]="['placeCode', 'placeName']"
+                    [(value)]="searchForm.placeIds"
+                    (valueChange)="searchForm.placeIds"
+                />
             </div>
             <div (click)="loadStockTakeLists()" class="w-[100px]  border-1 border-[#54A4FF] hover:bg-[#2E7FDB] text-center px-1 py-2 rounded-lg">
                 Search
@@ -60,24 +60,27 @@
                     </td>
                     <td>
                         <div class="flex gap-3">
-                            <div 
-                                *ngIf="userRightInside.update"
-                                (click)="getToDetail(data._id)"
-                                class="w-[100px] hover:bg-[#90E975] bg-[#B7FFA1] border-1 border-[#3AB713] text-[#3AB713] text-center p-1 rounded-lg">
-                                Detail
-                            </div>
-                            <div 
-                                *ngIf="data.status === 1 && userRightInside.delete"
-                                (click)="openCancelDialog(data._id)"
-                                class="w-[100px] bg-[#ffba5e] hover:bg-[#eca13c] border-1 border-[#c47000] text-[#c47000] text-center p-1 rounded-lg">
-                                Cancel
-                            </div>
-                            <div 
-                                *ngIf="data.status === 1 && userRightInside.update"
-                                (click)="openFinishDialog(data._id)"
-                                class="w-[100px] bg-[#FFA8A8] hover:bg-[#EC7272] border-1 border-[#CB0000] text-[#CB0000] text-center p-1 rounded-lg">
-                                Finished
-                            </div>
+                            @if (userRightInside.update) {
+                                <div 
+                                    (click)="getToDetail(data._id)"
+                                    class="w-[100px] hover:bg-[#90E975] bg-[#B7FFA1] border-1 border-[#3AB713] text-[#3AB713] text-center p-1 rounded-lg">
+                                    Detail
+                                </div>
+                            }
+                            @if (data.status === 1 && userRightInside.delete) {
+                                <div
+                                    (click)="openCancelDialog(data._id)"
+                                    class="w-[100px] bg-[#ffba5e] hover:bg-[#eca13c] border-1 border-[#c47000] text-[#c47000] text-center p-1 rounded-lg">
+                                    Cancel
+                                </div>
+                            }
+                            @if (data.status === 1 && userRightInside.update) {
+                                <div 
+                                    (click)="openFinishDialog(data._id)"
+                                    class="w-[100px] bg-[#FFA8A8] hover:bg-[#EC7272] border-1 border-[#CB0000] text-[#CB0000] text-center p-1 rounded-lg">
+                                    Finished
+                                </div>
+                            }
                         </div>
                     </td>
                 </tr>
@@ -111,16 +114,16 @@
                     <nz-form-item>
                         <nz-form-label [nzSpan]="6" nzFor="email">Location</nz-form-label>
                         <nz-form-control [nzSpan]="14">
-                            <nz-select
-                                class="w-full h-full" 
-                                name="actionPlaceId2" 
-                                [(ngModel)]="editForm.actionPlaceId"  
-                                nzAllowClear nzShowArrow
-                                nzPlaceHolder="Please Select">
-                                @for (option of placeLists; track option) {
-                                <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
-                                }
-                            </nz-select>
+                            <app-filter-list-small
+                                label="Location"
+                                [apiUrl]="'/base/location/filter/list'"
+                                [requestBody]="placeSearchForm"
+                                [postApi]="loadPlaceLists"
+                                [multiple]="false"
+                                [searchDataKey]="['placeCode', 'placeName']"
+                                [(singleValue)]="editForm.actionPlaceId"
+                                (singleValueChange)="editForm.actionPlaceId"
+                            />
                         </nz-form-control>
                     </nz-form-item>
                     <nz-form-item>

@@ -1,61 +1,47 @@
 <div class="bg-white px-[2rem]">
     <div class="p-1  lg:p-6"  *ngIf="userRightInside.read">
         <div class="flex gap-2 py-5">
-           <!-- <div class="w-[240px]">
-                <nz-range-picker
-                    nzSize="large"
-                    class="h-full"
-                    name="date"
-                    [nzShowTime]="{ nzFormat: 'HH:mm' }"
-                    nzFormat="yyyy-MM-dd HH:mm:ss"
-                    [(ngModel)]="searchForm.purchaseDates"
-                ></nz-range-picker>
-            </div>-->
             <div class="w-[150px]">
                 <input class="h-full" nz-input type="text" name="assetCode" placeholder="Asset Code" [(ngModel)]="searchForm.assetCode" />
             </div>
             <div class="w-[150px]">
                 <input class="h-full" nz-input type="text" name="assetName" placeholder="Asset Name" [(ngModel)]="searchForm.assetName" />
             </div>
-            
-            <div class="w-[150px] h-full">
-                <nz-select
-                    nzSize="large"
-                    class="w-full h-full" 
-                    name="typeId" 
-                    [(ngModel)]="searchForm.typeIds"  
-                    nzMode="multiple" nzAllowClear  nzShowArrow
-                     nzPlaceHolder="Asset Type">
-                    @for (option of typeLists; track option) {
-                      <nz-option [nzLabel]="option.typeName" [nzValue]="option.id"></nz-option>
-                    }
-                </nz-select>
+            <div class="lg:w-[185px]">
+                <app-filter-list-small
+                    label="Asset Type"
+                    [apiUrl]="'/asset/type/filter/list'"
+                    [requestBody]="assetTypeSearchForm"
+                    [postApi]="loadAssetTypeLists"
+                    [multiple]="true"
+                    [searchDataKey]="['typeCode', 'typeName']"
+                    [(value)]="searchForm.typeIds"
+                    (valueChange)="searchForm.typeIds"
+                />
             </div>
-            <div class="w-[150px] h-full">
-                <nz-select
-                    nzSize="large"
-                    class="w-full h-full" 
-                    name="placeId" 
-                    [(ngModel)]="searchForm.placeIds"  
-                    nzMode="multiple" nzAllowClear   nzShowArrow
-                     nzPlaceHolder="Location">
-                    @for (option of placeLists; track option) {
-                      <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
-                    }
-                </nz-select>
+            <div class="lg:w-[185px] h-full">
+                <app-filter-list-small
+                    label="Location"
+                    [apiUrl]="'/base/location/filter/list'"
+                    [requestBody]="placeSearchForm"
+                    [postApi]="loadPlaceLists"
+                    [multiple]="true"
+                    [searchDataKey]="['placeCode', 'placeName']"
+                    [(value)]="searchForm.placeIds"
+                    (valueChange)="searchForm.placeIds"
+                />
             </div>
-            <div class="w-[150px] h-full">
-                <nz-select
-                    nzSize="large"
-                    class="w-full h-full" 
-                    name="deptId" 
-                    [(ngModel)]="searchForm.deptIds"  
-                    nzMode="multiple" nzAllowClear  nzShowArrow
-                     nzPlaceHolder="Department">
-                    @for (option of deptLists; track option) {
-                      <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
-                    }
-                </nz-select>
+            <div class="lg:w-[185px] h-full">
+                <app-filter-list-small
+                    label="Department"
+                    [apiUrl]="'/sys/department/filter/list'"
+                    [requestBody]="deptSearchForm"
+                    [postApi]="loadDeptLists"
+                    [multiple]="true"
+                    [searchDataKey]="['deptCode', 'deptName']"
+                    [(value)]="searchForm.deptIds"
+                    (valueChange)="searchForm.deptIds"
+                />
             </div>
             <div (click)="loadAssetListLists()" class="w-[100px]  border-1 border-[#54A4FF] hover:bg-[#2E7FDB] text-center px-1 py-2 rounded-lg">
                 Search
