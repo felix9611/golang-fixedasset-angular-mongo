@@ -1,7 +1,7 @@
 
 <h1>Fixed Asset Management System In Golang</h1>
 <p><strong>Golang Gin & Angular SSR | Cloud-based Web Application for Asset Management</strong></p>
-<p>Current version: V1.8 </p>
+<p>Current version: V1.9 </p>
 <p>Next version function: Unit test and Excel Data Export </p>
 <p>If you find this project helpful, please click ⭐ Star! This helps more people discover it.</p>
 
