@@ -21,6 +21,7 @@ import { downloadTempExcelFile } from '../../../../tool/excel-helper'
 import { DownloadExcelTemplateComponent } from '../../components/download-template-component/download-template-component.component'
 import { UploadDialogComponent } from '../../components/upload-dialog-component/upload-dialog-component.component'
 import { DownloadExcelDataComponent } from '../../components/download-excel-component/download-excel-data-component.component'
+import { FilterListApiSmall, ListOption } from '../../components/filter-list-small/filter-list.component'
 
 @Component({
     // selector: 'app-footer',
@@ -39,7 +40,8 @@ import { DownloadExcelDataComponent } from '../../components/download-excel-comp
         NzInputNumberModule,
         DownloadExcelTemplateComponent,
         UploadDialogComponent,
-        DownloadExcelDataComponent
+        DownloadExcelDataComponent,
+        FilterListApiSmall
     ],
     templateUrl: './budget.component.html',
     styleUrl: './budget.component.css',
@@ -83,14 +85,16 @@ export class BudgetComponent {
 
     searchForm: any = {
         date: [],
+        deptIds: [],
+        placeIds: [],
         page: 1,
         limit: 10
     }
 
     editForm: BudgetForm =  {
         id: '',
-        deptId: [],
-        placeId: [],
+        deptId: '',
+        placeId: '',
         budgetNo: '',
         budgetName: '',
         year: '',
@@ -150,8 +154,8 @@ export class BudgetComponent {
 
             this.editForm = {
                 id: '',
-                deptId: [],
-                placeId: [],
+                deptId: '',
+                placeId: '',
                 budgetNo: '',
                 budgetName: '',
                 year: '',
@@ -230,5 +234,77 @@ export class BudgetComponent {
         this.dbFieldList = res.fieldLists.map((item: any) => item.dbFieldName)
         this.excelFieldList = res.fieldLists.map((item: any) => item.excelFieldName)
     }
+    // Department data
+    deptTotal: number = 0
+    depts: any = []
+    deptOptions: ListOption[] = [];
+    deptSearchForm: any = {
+        deptCode: '',
+        deptName: '',
+        page: 1,
+        limit: 10
+    }
+    loadDeptLists = async (
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<ListOption[]> => {
+        const payload = {
+          ...this.deptSearchForm,
+          ...body,
+        }
     
+        try {
+            const res = await postApiWithAuth(url, payload)
+        
+            this.depts = res.data.lists ?? []
+            this.deptTotal = res.data.total ?? 0
+        
+            this.deptOptions = this.depts.map((a: any) => ({
+                value: a.id,
+                label: `${a.deptCode}`,
+            }));
+        
+            return this.deptOptions
+        } catch (error) {
+            this.message.error('API request failed')
+            throw error
+        }
+    }
+
+    // Location data
+    placeTotal: number = 0
+    places: any = []
+    placeOptions: ListOption[] = [];
+    placeSearchForm: any = {
+        placeCode: '',
+        placeName: '',
+        page: 1,
+        limit: 10
+    }
+    loadPlaceLists = async (
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<ListOption[]> => {
+        const payload = {
+          ...this.placeSearchForm,
+          ...body,
+        }
+    
+        try {
+            const res = await postApiWithAuth(url, payload);
+        
+            this.places = res ?? [];
+            this.placeTotal = res.length ?? 0;
+        
+            this.placeOptions = this.places.map((a: any) => ({
+                value: a.id,
+                label: `${a.placeCode}`,
+            }))
+    
+            return this.placeOptions
+        } catch (error) {
+            this.message.error('API request failed')
+            throw error
+        }
+    }
 }
