@@ -1,6 +1,10 @@
 package dto
 
-import "golang-fixedasset-mongo-backend/backend/models"
+import (
+	"golang-fixedasset-mongo-backend/backend/models"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type CreateUserBody struct {
 	Key      string          `json:"key"`
@@ -8,10 +12,12 @@ type CreateUserBody struct {
 }
 
 type SysUserPageDto struct {
-	RoleIds []string `json:"roleIds"`
-	Name    string   `json:"name"`
-	Page    int64    `json:"page"`
-	Limit   int64    `json:"limit"`
+	RoleIds  []primitive.ObjectID `json:"roleIds"`
+	PlaceIds []primitive.ObjectID `json:"placeIds"`
+	DeptIds  []primitive.ObjectID `json:"deptIds"`
+	Name     string               `json:"name"`
+	Page     int64                `json:"page"`
+	Limit    int64                `json:"limit"`
 }
 
 type SysUserList struct {
