@@ -17,6 +17,7 @@ import { UserStoreService } from '../../../../../state/user.service'
 import { findMenuItem } from '../../../tool-function'
 import { Subscription } from 'rxjs'
 import { DownloadExcelDataComponent } from '../../../components/download-excel-component/download-excel-data-component.component'
+import { FilterListApiSmall, ListOption } from '../../../components/filter-list-small/filter-list.component'
 
 @Component({
     // selector: 'app-footer',
@@ -32,7 +33,8 @@ import { DownloadExcelDataComponent } from '../../../components/download-excel-c
         NzInputModule, 
         NzPaginationModule,
         NzDatePickerModule,
-        DownloadExcelDataComponent
+        DownloadExcelDataComponent,
+        FilterListApiSmall
     ],
     templateUrl: './write-off-list.component.html',
     styleUrl: './write-off-list.component.css',
@@ -62,8 +64,8 @@ export class WriteOffListComponent {
        this.userRightSubscription = this.userStoreService.user$.subscribe((data: any) => {
             this.superAdmin = data.superAdmin
             if (data.superAdmin !== true) {
-                this.placeLists = data.locations
                 this.searchForm.placeIds = data.placeIds
+                this.loadWriteOffLists()
             }
         })
     }
@@ -88,7 +90,8 @@ export class WriteOffListComponent {
 
     searchForm: any = {
         page: 1,
-        limit: 10
+        limit: 10,
+        placeIds: []
     }
 
     okText: string = 'Create'
@@ -101,18 +104,6 @@ export class WriteOffListComponent {
 
     ngOnInit() {
         this.loadWriteOffLists()
-        this.loadLocationList()
-    }
-
-    typeLists: any[] = []
-    deptLists: any[] = []
-    placeLists: any[] = []
-    
-    async loadLocationList() {
-        if (this.superAdmin === true) {
-            const res = await getApiWithAuth('/base/location/all')
-            this.placeLists = res.data
-        }
     }
 
     async loadWriteOffLists() {
@@ -157,5 +148,41 @@ export class WriteOffListComponent {
         const res = await getApiWithAuth(`/sys/excel-field-match/code/${this.excelFileSetting.code}`)
         this.dbFieldList = res.fieldLists.map((item: any) => item.dbFieldName)
         this.excelFieldList = res.fieldLists.map((item: any) => item.excelFieldName)
+    }
+   // Location data
+    placeTotal: number = 0
+    places: any = []
+    placeOptions: ListOption[] = [];
+    placeSearchForm: any = {
+        placeCode: '',
+        placeName: '',
+        page: 1,
+        limit: 10
+    }
+    loadPlaceLists = async (
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<ListOption[]> => {
+        const payload = {
+            ...this.placeSearchForm,
+            ...body,
+        }
+        
+        try {
+            const res = await postApiWithAuth(url, payload);
+            
+            this.places = res ?? [];
+            this.placeTotal = res.length ?? 0;
+            
+            this.placeOptions = this.places.map((a: any) => ({
+                value: a.id,
+                label: `${a.placeCode}`,
+            }))
+        
+            return this.placeOptions
+        } catch (error) {
+            this.message.error('API request failed')
+            throw error
+        }
     }
 }
