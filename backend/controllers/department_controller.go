@@ -232,7 +232,7 @@ func ListPageDepartmentWithFilter(c *gin.Context) {
 		return
 	}
 
-	if !user.SuperAdmin {
+	if !(user.SuperAdmin || user.Manager) {
 		var deptPageDto dto.DepartmentPageDto
 		if err := c.ShouldBindJSON(&deptPageDto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

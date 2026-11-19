@@ -190,8 +190,11 @@ func InactiveLocationByID(id string) (interface{}, error) {
 	}
 }
 
-func LocationListWithFilter(pageDto *dto.LocationPageDto) (interface{}, error) {
+func LocationListWithFilter(pageDto *dto.LocationPageDto, ids []primitive.ObjectID) (interface{}, error) {
 	collection := config.GetCollection("locations")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	filter := bson.M{
 		"status": 1,
 		"$or": []bson.M{
@@ -200,11 +203,12 @@ func LocationListWithFilter(pageDto *dto.LocationPageDto) (interface{}, error) {
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	if len(ids) > 0 {
+		filter["_id"] = bson.M{"$in": ids}
+	}
 
 	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"created_at", -1}})
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 	cursor, err := collection.Find(ctx, filter, findOptions)
 
 	if err != nil {
