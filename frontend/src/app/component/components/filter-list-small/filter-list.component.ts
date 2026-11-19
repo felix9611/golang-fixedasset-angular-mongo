@@ -49,7 +49,7 @@ export interface ListOption {
           }
         </div>
       }
-      @if (expanded) {
+      @if (expanded && !disabled) {
         <app-filter-list-popover
           [label]="label"
           [anchor]="filterTrigger"
@@ -133,6 +133,7 @@ export class FilterListApiSmall implements OnChanges, OnInit, OnDestroy {
   @Input() label = '';
   @Input() multiple = false;
   @Input() multipleDisplay = false;
+  @Input() disabled = false;
   @Output() valueChange = new EventEmitter<string[]>();
   @Output() singleValueChange = new EventEmitter<string>();
 
