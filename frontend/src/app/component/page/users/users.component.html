@@ -4,26 +4,29 @@
             <div class="w-[150px]">
                 <input class="h-full" nz-input type="text" id="name" name="name" placeholder="Input Name/Code" [(ngModel)]="searchForm.name" />
             </div>
-            <div class="w-[200px]">
-                <nz-select 
-                    nzSize="large"
-                    name="department" 
-                    [(ngModel)]="searchForm.roleIds"  
-                    nzPlaceHolder="Roles"  
-                    nzMode="multiple"  
-                    nzAllowClear  nzShowArrow
-                    [nzShowArrow]="true">
-                    @for (option of roleLists; track option) {
-                        <nz-option [nzLabel]="option.name" [nzValue]="option._id"></nz-option>
-                    }
-                </nz-select>
+             <div class="w-[200px]">
+                <app-filter-list-small
+                    label="Roles"
+                    [apiUrl]="'/sys/role/list'"
+                    [requestBody]="roleSearchForm"
+                    [postApi]="loadRoleLists"
+                    [multiple]="true"
+                    [searchDataKey]="['name']"
+                    [(value)]="searchForm.roleIds"
+                    (valueChange)="searchForm.roleIds"
+                />
             </div>
             <div class="w-[200px]">
-                <nz-select name="deptId" nzSize="large" [(ngModel)]="searchForm.deptIds" nzAllowClear nzMode="multiple"   nzShowArrow nzPlaceHolder="Departments">
-                    @for (option of deptLists; track option) {
-                      <nz-option [nzLabel]="option.deptName" [nzValue]="option._id"></nz-option>
-                    }
-                  </nz-select>
+                <app-filter-list-small
+                    label="Department"
+                    [apiUrl]="'/sys/department/filter/list'"
+                    [requestBody]="deptSearchForm"
+                    [postApi]="loadDeptLists"
+                    [multiple]="true"
+                    [searchDataKey]="['deptCode', 'deptName']"
+                    [(value)]="searchForm.deptIds"
+                    (valueChange)="searchForm.deptIds"
+                />
             </div>
             <div (click)="loadUserLists()" class="w-[100px]  border-1 border-[#54A4FF] hover:bg-[#2E7FDB] text-center px-1 py-2 rounded-lg">
                 Search
@@ -56,18 +59,20 @@
                         <td>{{  dateFormat(data.updatedAt)  }}</td>
                         <td>
                             <div class="flex gap-3">
-                                <div 
-                                    *ngIf="userRightInside.update"
-                                    (click)="getOneData(data.id)" 
-                                    class="w-[100px] hover:bg-[#90E975] bg-[#B7FFA1] border-1 border-[#3AB713] text-[#3AB713] text-center p-1 rounded-lg">
-                                    Edit
-                                </div>
-                                <div 
-                                    *ngIf="data.username !== 'admin' && userRightInside.delete"
-                                    (click)="handleRomeve(data.id)"
-                                    class="w-[100px] bg-[#FFA8A8] hover:bg-[#EC7272] border-1 border-[#CB0000] text-[#CB0000] text-center p-1 rounded-lg">
-                                    Delete
-                                </div>
+                                @if (userRightInside.update) {
+                                    <div
+                                        (click)="getOneData(data.id)" 
+                                        class="w-[100px] hover:bg-[#90E975] bg-[#B7FFA1] border-1 border-[#3AB713] text-[#3AB713] text-center p-1 rounded-lg">
+                                        Edit
+                                    </div>
+                                }   
+                                @if (data.username !== 'admin' && userRightInside.delete) {
+                                    <div
+                                        (click)="handleRomeve(data.id)"
+                                        class="w-[100px] bg-[#FFA8A8] hover:bg-[#EC7272] border-1 border-[#CB0000] text-[#CB0000] text-center p-1 rounded-lg">
+                                        Delete
+                                    </div>
+                                }
                             </div>
                         </td>
                     </tr>
@@ -153,51 +158,48 @@
                     <nz-form-item>
                         <nz-form-label [nzSpan]="6" nzFor="email">Department</nz-form-label>
                         <nz-form-control [nzSpan]="14">
-                            <nz-select 
-                                name="deptIdS" 
-                                [(ngModel)]="editForm.deptIds"
-                                nzPlaceHolder="Please select"  
-                                nzMode="multiple"  
-                                nzAllowClear  nzShowArrow
-                                [nzShowArrow]="true">
-                                @for (option of deptLists; track option) {
-                                  <nz-option [nzLabel]="option.deptName" [nzValue]="option.id"></nz-option>
-                                }
-                            </nz-select>
+                            <app-filter-list-small
+                                label="Department"
+                                [apiUrl]="'/sys/department/filter/list'"
+                                [requestBody]="deptSearchForm"
+                                [postApi]="loadDeptLists"
+                                [multiple]="true"
+                                [searchDataKey]="['deptCode', 'deptName']"
+                                [(value)]="editForm.deptIds"
+                                (valueChange)="editForm.deptIds"
+                            />
                         </nz-form-control>
                     </nz-form-item>
                     <nz-form-item>
                         <nz-form-label [nzSpan]="6" nzFor="email">Roles</nz-form-label>
                         <nz-form-control [nzSpan]="14">
-                            <nz-select 
-                                name="department" 
-                                [(ngModel)]="editForm.roles"  
-                                nzPlaceHolder="Please select"  
-                                nzMode="multiple"  
-                                nzAllowClear  nzShowArrow
-                                [nzShowArrow]="true">
-                                @for (option of roleLists; track option) {
-                                    <nz-option [nzLabel]="option.name" [nzValue]="option.id"></nz-option>
-                                }
-                            </nz-select>
+                            <app-filter-list-small
+                                label="Role"
+                                [apiUrl]="'/sys/role/list'"
+                                [requestBody]="roleSearchForm"
+                                [postApi]="loadRoleLists"
+                                [multiple]="true"
+                                [searchDataKey]="['name']"
+                                [(value)]="editForm.roles"
+                                (valueChange)="editForm.roles"
+                            />
                         </nz-form-control>
                     </nz-form-item>
                     <nz-form-item>
-                    <nz-form-label [nzSpan]="6" nzFor="email">Location</nz-form-label>
-                        <nz-form-control>
-                            <nz-select 
-                                    name="placeId"
-                                    [(ngModel)]="editForm.placeIds"  
-                                    nzPlaceHolder="Please select"  
-                                    nzMode="multiple"  
-                                    nzAllowClear  nzShowArrow
-                                    [nzShowArrow]="true">
-                                    @for (option of placeLists; track option) {
-                                        <nz-option [nzLabel]="option.placeName" [nzValue]="option.id"></nz-option>
-                                    }   
-                            </nz-select>
-                    </nz-form-control>
-                </nz-form-item>
+                        <nz-form-label [nzSpan]="6" nzFor="email">Location</nz-form-label>
+                            <nz-form-control>
+                                <app-filter-list-small
+                                    label="Location"
+                                    [apiUrl]="'/base/location/filter/list'"
+                                    [requestBody]="placeSearchForm"
+                                    [postApi]="loadPlaceLists"
+                                    [multiple]="true"
+                                    [searchDataKey]="['placeCode', 'placeName']"
+                                    [(value)]="editForm.placeIds"
+                                    (valueChange)="editForm.placeIds"
+                                />
+                        </nz-form-control>
+                    </nz-form-item>
                 </form>
             </ng-container>
            
