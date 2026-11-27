@@ -43,14 +43,14 @@ export class LoginComponent implements OnInit{
 
         const res = await postApiWithAuth('/login', this.loginForm)
 
-        if (!res.msg) {
+        if (!res.message) {
             this.userStoreService.setAccessToken(res.token)
             const checkpoint = await this.userStoreService.isAuthenticated()
             if (checkpoint) {
-                this.router.navigate(['/'])
+                this.router.navigate(['/tasks'])
             }
         } else {
-            this.message.error(res.msg)
+            this.message.error(res.message)
         }
         
        

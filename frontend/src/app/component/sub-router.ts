@@ -150,6 +150,6 @@ export const pagesRoutes: Routes = [
     {
         path: 'tasks',
         component: JobBoardsComponent,
-        canActivate: [AccessGuard]
+        canActivate: [AuthGuard]
     }
 ]

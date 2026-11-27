@@ -58,9 +58,9 @@
                 <nz-form-item>
                     <nz-form-label class="font-bold" nzFor="roles">Departments</nz-form-label>
                     <nz-form-control [nzSpan]="20">
-                        <div class="flex p-1 gap-3">
+                        <div class="flex p-1 flex-wrap gap-3">
                             @for (dept of userInfo.departments; track dept._id) {
-                                <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1]">
+                                <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1] whitespace-nowrap">
                                     {{ dept.deptName }}
                                 </div>
                             }
@@ -70,24 +70,26 @@
                 <nz-form-item>
                     <nz-form-label class="font-bold" nzFor="roles">Roles</nz-form-label>
                     <nz-form-control [nzSpan]="20">
-                            <div class="flex gap-3">
-                                @for (role of userInfo.roleLists; track role._id) {
-                                    <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1]">
-                                        {{ role.name }}
-                                    </div>
-                                }
-                            </div>
+                        <div class="flex flex-wrap  gap-3">
+                            @for (role of userInfo.roleLists; track role._id) {
+                                <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1] whitespace-nowrap">
+                                    {{ role.name }}
+                                </div>
+                            }
+                        </div>
                     </nz-form-control>
                 </nz-form-item>
                <nz-form-item>
-                    <nz-form-label class="font-bold" nzFor="roles">Locatons</nz-form-label>
+                    <nz-form-label class="font-bold" nzFor="roles">
+                        Locations
+                    </nz-form-label>
                     <nz-form-control [nzSpan]="20">
-                        <div class="flex  p-1 gap-3">
-                             @for (location of userInfo.locations; track location._id) {
-                                <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1]">
+                        <div class="flex flex-wrap p-1 gap-2">
+                            @for (location of userInfo.locations; track location._id) {
+                                <div class="border-1 border-[#21b700] rounded-lg p-1 text-[#21b700] bg-[#bfffb1] whitespace-nowrap">
                                     {{ location.placeName }}
                                 </div>
-                                }
+                            }
                         </div>
                     </nz-form-control>
                 </nz-form-item>
